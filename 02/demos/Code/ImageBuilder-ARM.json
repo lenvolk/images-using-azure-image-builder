@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.VirtualMachineImages/imageTemplates",
+      "apiVersion": "2020-02-14",
+      "location": "westus2",
+      "dependsOn": [],
+      "tags": {
+        "imagebuilderTemplate": "windows2019"
+      },
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "/subscriptions/25de1ca2-09a3-42e0-97cc-5fffbc53286f/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib51096721747": {}
+        }
+      },
+      "properties": {
+        "buildTimeoutInMinutes": 100,
+        "source": {
+          "type": "PlatformImage",
+          "publisher": "MicrosoftWindowsServer",
+          "offer": "WindowsServer",
+          "sku": "2019-Datacenter",
+          "version": "latest"
+        },
+        "customize": [
+          {
+            "type": "PowerShell",
+            "name": "CreateBuildPath",
+            "runElevated": false,
+            "scriptUri": "https://bookmark.ws/AIB_SampleScript"
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "echo we-rebooted  > c:\\ImageBuilder\\reboot.txt",
+            "restartTimeout": "5m"
+          },
+          {
+            "type": "File",
+            "name": "downloadBuildArtifacts",
+            "sourceUri": "https://bookmark.ws/AIB_SampleFile",
+            "destination": "c:\\ImageBuilder\\index.html"
+          },
+          {
+            "type": "PowerShell",
+            "name": "settingUpMgmtAgtPath",
+            "runElevated": false,
+            "inline": [
+              "echo Hello > c:\\ImageBuilder\\InlineResult.txt",
+              "echo HelloToYouToo >> c:\\ImageBuilder\\InlineResult.txt"
+            ]
+          },
+          {
+            "type": "WindowsUpdate",
+            "searchCriteria": "IsInstalled=0",
+            "filters": [
+              "exclude:$_.Title -like '*Preview*'",
+              "include:$true"
+            ],
+            "updateLimit": 20
+          }
+        ],
+        "distribute": [
+          {
+            "type": "ManagedImage",
+            "imageId": "/subscriptions/25de1ca2-09a3-42e0-97cc-5fffbc53286f/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/images/aibImageJSON",
+            "location": "westus2",
+            "runOutputName": "aibImageJSON",
+            "artifactTags": {
+              "source": "azVmImageBuilder",
+              "baseosimg": "windows2019"
+            }
+          }
+        ]
+      },
+      "Name": "aibImageARM"
+    }
+  ]
+}

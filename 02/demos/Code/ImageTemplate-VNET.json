@@ -1,0 +1,46 @@
+{
+  "type": "Microsoft.VirtualMachineImages/imageTemplates",
+  "apiVersion": "2020-02-14",
+  "location": "westus2",
+  "dependsOn": [],
+  "tags": {
+    "imagebuilderTemplate": "windows2019"
+  },
+  "identity": {
+    "type": "UserAssigned",
+    "userAssignedIdentities": {
+      "/subscriptions/25de1ca2-09a3-42e0-97cc-5fffbc53286f/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib51096721747": {}
+    }
+  },
+  "properties": {
+    "buildTimeoutInMinutes": 100,
+    "source": {
+      "type": "PlatformImage",
+      "publisher": "MicrosoftWindowsServer",
+      "offer": "WindowsServer",
+      "sku": "2019-Datacenter",
+      "version": "latest"
+    },
+    "customize": [
+      {
+        "type": "PowerShell",
+        "name": "CreateBuildPath",
+        "runElevated": false,
+        "scriptUri": "https://bookmark.ws/AIB_SampleScript"
+      }
+    ],
+    "distribute": [
+      {
+        "type": "ManagedImage",
+        "imageId": "/subscriptions/25de1ca2-09a3-42e0-97cc-5fffbc53286f/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/images/aibImageJSON",
+        "location": "westus2",
+        "runOutputName": "aibImageJSON",
+        "artifactTags": {
+          "source": "azVmImageBuilder",
+          "baseosimg": "windows2019"
+        }
+      }
+    ],
+    "vmProfile": null
+  }
+}
