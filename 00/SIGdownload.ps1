@@ -1,4 +1,5 @@
 $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+# MAG: Connect-AzAccount -EnvironmentName AzureUSGovernment
 Connect-AzAccount -Subscription $subscription
 
 $location = "eastus"
