@@ -1,7 +1,9 @@
 # Author/Build/Deploy PS
 # Set Subscription, RG Name etc.
 #
-# Install-Module Az.ImageBuilder before proceeding 
+# Install-Module Az.ImageBuilder.Tools
+# Install-Module -Name Az.ImageBuilder -RequiredVersion 0.1.2
+#before proceeding 
 # cd 02\demos\Code\ 
 . '.\00 Variables.ps1'
 
@@ -20,6 +22,8 @@ Connect-AzAccount -Subscription $subscription
 Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network |
   Where-Object RegistrationState -ne Registered |
     Register-AzResourceProvider
+
+# OR you can run Invoke-AIBProviderCheck
 
 # Create resource group
 $RGScope=(New-AzResourceGroup -Name $aibRG -Location $location).ResourceId
