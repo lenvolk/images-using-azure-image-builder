@@ -1,3 +1,4 @@
+# Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 # Author/Build/Deploy CLI
 # Upgrade az data 
 choco upgrade azure-cli
@@ -18,6 +19,11 @@ $imageRoleDefName = "Azure Image Builder Image Def" + (Get-Random -Minimum 10000
 $imageId = "/subscriptions/$subscription/resourceGroups/$aibRG/providers/Microsoft.Compute/images/$imageName"
 
 # Login to Azure / set subscription
+#
+# Disconnect-AzAccount  #log out from ps session
+# az logout  #log out from az session
+# az account clear
+#
 az login --only-show-errors -o table --query Dummy
 az account set -s $subscription
 
@@ -29,11 +35,12 @@ az provider register -n Microsoft.Storage
 az provider register -n Microsoft.Network
 
 # would need to be run from start/run/wsl
-az provider show -n Microsoft.VirtualMachineImages | grep registrationState
-az provider show -n Microsoft.KeyVault | grep registrationState
-az provider show -n Microsoft.Compute | grep registrationState
-az provider show -n Microsoft.Storage | grep registrationState
-az provider show -n Microsoft.Network | grep registrationState
+# az provider show -n Microsoft.VirtualMachineImages | grep registrationState
+az provider show -n Microsoft.VirtualMachineImages | Select-String "registrationState"
+az provider show -n Microsoft.KeyVault | Select-String registrationState
+az provider show -n Microsoft.Compute | Select-String registrationState
+az provider show -n Microsoft.Storage | Select-String registrationState
+az provider show -n Microsoft.Network | Select-String registrationState
 
 # Create resource group
 $RGScope = (az group create -n $aibRG -l $location --query id -o tsv)

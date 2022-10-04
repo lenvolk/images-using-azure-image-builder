@@ -1,5 +1,8 @@
 # Author/Build/Deploy PS
 # Set Subscription, RG Name etc.
+#
+# Install-Module Az.ImageBuilder before proceeding 
+# cd 02\demos\Code\ 
 . '.\00 Variables.ps1'
 
 # Set Image Name
@@ -22,7 +25,7 @@ Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault,
 $RGScope=(New-AzResourceGroup -Name $aibRG -Location $location).ResourceId
 
 # Create Identity
-$Identity=(New-AzUserAssignedIdentity -ResourceGroupName $aibRG -Name $identityName)
+$Identity=(New-AzUserAssignedIdentity -ResourceGroupName $aibRG -Name $identityName -Location $location)
 $imgBuilderCliId=$Identity.clientId
 $imgBuilderId=$Identity.id
 
@@ -44,6 +47,7 @@ $SrcObjParams = @{
     Sku = '2019-Datacenter'
     Version = 'latest'
   }
+
 $srcPlatform = New-AzImageBuilderSourceObject @SrcObjParams
 
 # Define distribution method
