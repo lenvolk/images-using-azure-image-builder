@@ -2,7 +2,7 @@ $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
 # MAG: Connect-AzAccount -EnvironmentName AzureUSGovernment
 # az cloud list --output table
 Connect-AzAccount -Subscription $subscription
-
+# Disconnect-AzAccount
 $location = "eastus"
 $rgName = "SIGRG"
 $SIGName = "LabSIG"
