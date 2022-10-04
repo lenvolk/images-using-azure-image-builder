@@ -7,7 +7,7 @@ $location = "eastus"
 $rgName = "SIGRG"
 $SIGName = "LabSIG"
 $SIGDefName = "wvd-win10"
-$ImageVer = "3.0.0"
+$ImageVer = "4.0.0"
 #$region = "Central# US"
 
 $SelectedImageVer = Get-AzGalleryImageVersion -ResourceGroupName $rgName -GalleryName $SIGName -GalleryImageDefinitionName $SIGDefName -Name $ImageVer

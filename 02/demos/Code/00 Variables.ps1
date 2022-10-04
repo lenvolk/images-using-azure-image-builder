@@ -1,5 +1,5 @@
 $aibRG = "imageBuilderRG"
-$subscription = "25de1ca2-09a3-42e0-97cc-5fffbc53286f"
+$subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
 $VM_User = "aibadmin"
 $WinVM_Password = "P@ssw0rdP@ssw0rd"
 $location = "westus2"
