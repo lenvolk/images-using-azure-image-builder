@@ -100,7 +100,7 @@ Remove-AzUserAssignedIdentity -ResourceGroupName $aibRG -Name $identityName
 # Create VM
 New-AzVM -ResourceGroupName $aibRG -Image $imageId -Name $imageName -Credential $Cred
 
-$VMIP=(Get-AzPublicIpAddress -ResourceGroupName $aibRG -Name $imageName).IpAddress
+$VMIP="(Get-AzPublicIpAddress -ResourceGroupName $aibRG -Name $imageName).IpAddress"
 
 # Connect to VM
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password

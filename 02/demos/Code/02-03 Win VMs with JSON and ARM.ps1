@@ -10,6 +10,7 @@ $identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
 $imageRoleDefName="Azure Image Builder Image Def"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
 $imageId="/subscriptions/$subscription/resourceGroups/$aibRG/providers/Microsoft.Compute/images/$imageName"
 
+az login --only-show-errors -o table --query Dummy
 # Set Azure subscription
 az account set -s $subscription
 

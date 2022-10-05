@@ -1,5 +1,5 @@
 {
-  "Name": "Azure Image Builder Image Def62373568644",
+  "Name": "Azure Image Builder Image Def22169353854",
   "IsCustom": true,
   "Description": "Image Builder access to create resources for the image build, you should delete or split out as appropriate",
   "Actions": [
