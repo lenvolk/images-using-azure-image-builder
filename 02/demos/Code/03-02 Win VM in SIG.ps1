@@ -6,7 +6,7 @@
 $PrevImageName="aibImageJSON"
 $imageName="aibImageSIG"
 
-# Try to deploy old Image in new Region
+# Try to deploy old Image in new Region. Will fail
 az vm create --resource-group $aibRG --name VM_Old `
         --admin-username $VM_User --admin-password $WinVM_Password `
         --image $PrevImageName --location eastus --public-ip-sku Standard 

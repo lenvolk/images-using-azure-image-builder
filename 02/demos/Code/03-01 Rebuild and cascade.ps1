@@ -53,10 +53,11 @@ $Identities=(az identity list -g $aibRG) | ConvertFrom-Json
 $Identity=(az identity show -g $aibRG -n $Identities[0].name) | ConvertFrom-Json
 $imgBuilderCliId=$Identity.clientId
 $imgBuilderId=$Identity.id
+$identityName = $identity.name
 
 # Create template
 az image builder create --name $imageName -g $aibRG --identity $identityName `
-    --image-source $imageSource --managed-image-destinations $imageName=$location --defer
+    --image-source $imageSource --managed-image-destinations "$imageName=$location" --defer
 
 # Add Customizer
 az image builder customizer add -n $imageName -g $aibRG `
@@ -65,7 +66,6 @@ az image builder customizer add -n $imageName -g $aibRG `
 
 # Create template
 az image builder update -n $imageName -g $aibRG
-
 # Build the image
 az image builder run -n $imageName -g $aibRG
 

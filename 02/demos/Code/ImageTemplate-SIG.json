@@ -60,14 +60,14 @@
     ],
     "distribute": [
       {
-        "type": "ManagedImage",
-        "imageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/images/aibImageJSON",
-        "location": "eastus2",
-        "runOutputName": "aibImageJSON",
+        "type": "SharedImage",
+        "runOutputName": "aibImageCascaded",
         "artifactTags": {
           "source": "azVmImageBuilder",
           "baseosimg": "windows2019"
-        }
+        },
+        "galleryImageId": null,
+        "replicationRegions": null
       }
     ]
   }

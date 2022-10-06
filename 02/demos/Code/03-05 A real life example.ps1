@@ -13,6 +13,13 @@ $imageId="/subscriptions/$subscription/resourceGroups/$aibRG/providers/Microsoft
 # Set Azure subscription
 az account set -s $subscription
 
+# Register providers / check provider state
+Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network |
+  Where-Object RegistrationState -ne Registered |
+    Register-AzResourceProvider
+# OR you can run Invoke-AIBProviderCheck
+
+
 # Create resource group
 $RGScope=(az group create -n $aibRG -l $location --query id -o tsv)
 
