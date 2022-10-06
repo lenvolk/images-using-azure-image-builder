@@ -9,7 +9,7 @@
   "identity": {
     "type": "UserAssigned",
     "userAssignedIdentities": {
-      "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib79493811163": {}
+      "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib69524233721": {}
     }
   },
   "properties": {
@@ -61,13 +61,17 @@
     "distribute": [
       {
         "type": "SharedImage",
-        "runOutputName": "aibImageCascaded",
+        "runOutputName": "aibImageSIG",
         "artifactTags": {
           "source": "azVmImageBuilder",
           "baseosimg": "windows2019"
         },
-        "galleryImageId": null,
-        "replicationRegions": null
+        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/aibImageSIG",
+        "replicationRegions": [
+          "eastus2",
+          "eastus",
+          "westeurope"
+        ]
       }
     ]
   }
