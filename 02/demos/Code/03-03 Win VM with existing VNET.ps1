@@ -66,11 +66,34 @@ $vmProfile = [pscustomobject]@{
         vnetConfig=[pscustomobject]@{subnetId=$SubnetId}
 }
 
+# Get Existing Shared Image Gallery 
+$sigName="aibSig"
+# az sig create -g $aibRG --gallery-name $sigName
+
+# Create Imagedefinition
+$sig_publisher="myPublisher1"
+$sig_offer="myOffer1"
+$sig_sku="mySku1"
+
+$SigDef=(az sig image-definition create -g $aibRG --gallery-name $sigName `
+   --gallery-image-definition $imageName `
+   --publisher $sig_publisher --offer $sig_offer --sku $sig_sku `
+   --os-type Windows --query id -o tsv)
+
+$SIGLocations=$location,"eastus","westeurope"
+
 # Build JSON
+
 $TemplateJSON = Get-Content 'ImageTemplate.json' -raw | ConvertFrom-Json
+$dist=$TemplateJSON.properties.distribute[0]
+$dist.Type = "SharedImage"
+$dist.runOutputName = $imageName
+$dist.PSObject.Properties.Remove('imageId')
+$dist.PSObject.Properties.Remove('location')
+$dist | Add-Member -NotePropertyName galleryImageId -NotePropertyValue $SigDef
+$dist | Add-Member -NotePropertyName replicationRegions -NotePropertyValue $SIGLocations
 $TemplateJSON.identity.userAssignedIdentities = [pscustomobject]@{$imgBuilderId=[pscustomobject]@{}}
-$TemplateJSON.properties.distribute[0].runOutputName = $imageName
-$TemplateJSON.properties.distribute[0].imageId = $imageId
+$TemplateJSON.properties.distribute[0]=$dist
 # Add vmProfile
 $TemplateJSON.properties | Add-Member -NotePropertyName vmProfile -NotePropertyValue $vmProfile
 # To save time, let's reduce the customizations to the first step

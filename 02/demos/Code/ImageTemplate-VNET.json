@@ -31,14 +31,18 @@
     ],
     "distribute": [
       {
-        "type": "ManagedImage",
-        "imageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/images/aibImageVNET",
-        "location": "eastus2",
+        "type": "SharedImage",
         "runOutputName": "aibImageVNET",
         "artifactTags": {
           "source": "azVmImageBuilder",
           "baseosimg": "windows2019"
-        }
+        },
+        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/aibImageVNET",
+        "replicationRegions": [
+          "eastus2",
+          "eastus",
+          "westeurope"
+        ]
       }
     ],
     "vmProfile": {
