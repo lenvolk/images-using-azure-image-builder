@@ -18,6 +18,12 @@ $imageRoleDefName="Azure Image Builder Image Def"+(Get-Random -Minimum 100000000
 # Create resource group
 $RGScope=(az group create -n $aibRG -l $location --query id -o tsv)
 
+# Get existing Identity
+# $identityName=((az identity list -g $aibRG) | ConvertFrom-Json).name
+# $Identity=(az identity show -n $identityName -g $aibRG) | ConvertFrom-Json
+# $imgBuilderCliId=$Identity.clientId
+# $imgBuilderId=$Identity.id
+
 # Create Identity
 $Identity=(az identity create -g $aibRG -n $identityName) | ConvertFrom-Json
 $imgBuilderCliId=$Identity.clientId

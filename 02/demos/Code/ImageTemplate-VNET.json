@@ -1,7 +1,7 @@
 {
   "type": "Microsoft.VirtualMachineImages/imageTemplates",
   "apiVersion": "2020-02-14",
-  "location": "westus2",
+  "location": "eastus2",
   "dependsOn": [],
   "tags": {
     "imagebuilderTemplate": "windows2019"
@@ -9,7 +9,7 @@
   "identity": {
     "type": "UserAssigned",
     "userAssignedIdentities": {
-      "/subscriptions/25de1ca2-09a3-42e0-97cc-5fffbc53286f/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib51096721747": {}
+      "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib69524233721": {}
     }
   },
   "properties": {
@@ -32,15 +32,21 @@
     "distribute": [
       {
         "type": "ManagedImage",
-        "imageId": "/subscriptions/25de1ca2-09a3-42e0-97cc-5fffbc53286f/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/images/aibImageJSON",
-        "location": "westus2",
-        "runOutputName": "aibImageJSON",
+        "imageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/images/aibImageVNET",
+        "location": "eastus2",
+        "runOutputName": "aibImageVNET",
         "artifactTags": {
           "source": "azVmImageBuilder",
           "baseosimg": "windows2019"
         }
       }
     ],
-    "vmProfile": null
+    "vmProfile": {
+      "osDiskSizeGB": 150,
+      "vmSize": "Standard_D2_v2",
+      "vnetConfig": {
+        "subnetId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Network/virtualNetworks/aibVNet/subnets/aibSubnet"
+      }
+    }
   }
 }
