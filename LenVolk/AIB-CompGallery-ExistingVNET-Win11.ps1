@@ -83,6 +83,8 @@ $SigDef=(az sig image-definition create -g $aibRG --gallery-name $sigName `
 
 $SIGLocations=$location,"eastus","westeurope"
 
+#Ref of the template https://learn.microsoft.com/en-us/azure/templates/microsoft.virtualmachineimages/2020-02-14/imagetemplates?pivots=deployment-language-bicep
+
 # Build JSON
 
 $TemplateJSON = Get-Content 'ImageTemplate.json.dist' -raw | ConvertFrom-Json
