@@ -4,7 +4,7 @@
   "location": "eastus2",
   "dependsOn": [],
   "tags": {
-    "ImagebuilderTemplate": "Win11",
+    "ImagebuilderTemplate": "ChocoWin11",
     "Demo": "LenVolk"
   },
   "identity": {
@@ -63,12 +63,12 @@
     "distribute": [
       {
         "type": "SharedImage",
-        "runOutputName": "aibDataClient",
+        "runOutputName": "ChocoWin11",
         "artifactTags": {
           "source": "azVmImageBuilder",
-          "baseosimg": "windows2019"
+          "baseosimg": "windows11"
         },
-        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/aibDataClient",
+        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/ChocoWin11",
         "replicationRegions": [
           "eastus2",
           "eastus",

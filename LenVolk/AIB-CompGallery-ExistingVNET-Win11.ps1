@@ -105,7 +105,7 @@ $TemplateJSON.properties | Add-Member -NotePropertyName vmProfile -NotePropertyV
 # $TemplateJSON.properties.customize = @($TemplateJSON.properties.customize[0])
 $TemplateJSON | ConvertTo-Json -Depth 4 | Out-File "AIB-ChocoWin11.json" -Encoding ascii
 
-code AIB-Choco.json
+code AIB-ChocoWin11.json
 
 $TemplateJSON.properties.vmProfile.vmSize
 
