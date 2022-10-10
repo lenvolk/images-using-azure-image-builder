@@ -51,6 +51,16 @@
         ]
       },
       {
+        "type": "PowerShell",
+        "name": "GetAzCopy",
+        "inline": [
+          "New-Item -Type Directory -Path 'c:\\' -Name temp -erroraction silentlycontinue",
+          "invoke-webrequest -uri 'https://aka.ms/downloadazcopy-v10-windows' -OutFile 'c:\\temp\\azcopy.zip'",
+          "Expand-Archive 'c:\\temp\\azcopy.zip' 'c:\\temp'",
+          "copy-item 'C:\\temp\\azcopy_windows_amd64_*\\azcopy.exe\\' -Destination 'c:\\temp'"
+        ]
+      },
+      {
         "type": "WindowsUpdate",
         "searchCriteria": "IsInstalled=0",
         "filters": [
@@ -58,6 +68,29 @@
           "include:$true"
         ],
         "updateLimit": 50
+      },
+      {
+        "type": "PowerShell",
+        "name": "CreateBuildPath",
+        "runElevated": false,
+        "scriptUri": "https://bookmark.ws/AIB_SampleScript"
+      },
+      {
+        "type": "WindowsRestart",
+        "restartCheckCommand": "echo we-rebooted (Get-Date)  > c:\\ImageBuilder\\reboot.txt",
+        "restartTimeout": "5m"
+      },
+      {
+        "type": "PowerShell",
+        "name": "AVD_Opt",
+        "inline": [
+          "New-Item -Type Directory -Path 'c:\\' -Name temp -erroraction silentlycontinue",
+          "invoke-webrequest -uri 'https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/refs/heads/main.zip' -OutFile 'c:\\temp\\avdopt.zip'",
+          "Expand-Archive 'c:\\temp\\avdopt.zip' 'c:\\temp' -Force",
+          "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force",
+          "Set-Location -Path C:\\temp\\Virtual-Desktop-Optimization-Tool-main",
+          ".\\Windows_VDOT.ps1 -Optimizations All -Verbose -AcceptEula"
+        ]
       }
     ],
     "distribute": [
