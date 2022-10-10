@@ -4,8 +4,7 @@
   "location": "eastus2",
   "dependsOn": [],
   "tags": {
-    "ImagebuilderTemplate": "ChocoWin11",
-    "Demo": "LenVolk"
+    "imagebuilderTemplate": "ChocoWin11"
   },
   "identity": {
     "type": "UserAssigned",
@@ -47,7 +46,8 @@
           "choco install python -y --no-progress -r",
           "choco install sqlserver-cmdlineutils -y --no-progress -r",
           "choco install sql-server-management-studio -y --no-progress -r",
-          "choco install grep -y --no-progress -r"
+          "choco install grep -y --no-progress -r",
+          "choco install googlechrome -y --no-progress -r"
         ]
       },
       {
@@ -63,12 +63,12 @@
     "distribute": [
       {
         "type": "SharedImage",
-        "runOutputName": "ChocoWin11",
+        "runOutputName": "ChocoWin11O365",
         "artifactTags": {
           "source": "azVmImageBuilder",
-          "baseosimg": "windows11"
+          "baseosimg": "windows2019"
         },
-        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/ChocoWin11",
+        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/ChocoWin11O365",
         "replicationRegions": [
           "eastus2",
           "eastus",

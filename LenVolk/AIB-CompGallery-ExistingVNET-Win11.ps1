@@ -1,9 +1,11 @@
+# OS Support https://learn.microsoft.com/en-us/azure/virtual-machines/image-builder-overview?tabs=azure-powershell#os-support
+
 # Creating a VM Image in an existing VNet
 # Set Subscription, RG Name etc.
 . '.\00 Variables.ps1'
 
 # Set Image Name
-$imageName="ChocoWin11"
+$imageName="ChocoWin11O365"
 
 # Build addl. resource Names 
 $identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
@@ -58,7 +60,6 @@ $SubnetId=(az network vnet subnet show --resource-group $aibRG --vnet-name $VNET
             --query id -o tsv)
 
 # Build VM Profile
-# Could also change proxyVmSize from default Standard A1_v2
 $vmProfile = [pscustomobject]@{
         osDiskSizeGB=150
         vmSize="Standard_D4s_v3"
@@ -70,9 +71,9 @@ $sigName="aibSig"
 # az sig create -g $aibRG --gallery-name $sigName
 
 # Create Imagedefinition
-$sig_publisher="myPublisher3"
-$sig_offer="myOffer3"
-$sig_sku="mySku3"
+$sig_publisher="myPublisher4"
+$sig_offer="myOffer4"
+$sig_sku="mySku4"
 
 $SigDef=(az sig image-definition create -g $aibRG --gallery-name $sigName `
    --gallery-image-definition $imageName `
@@ -86,10 +87,15 @@ $SIGLocations=$location,"eastus","westeurope"
 #Ref of the template https://learn.microsoft.com/en-us/azure/templates/microsoft.virtualmachineimages/2020-02-14/imagetemplates?pivots=deployment-language-bicep
 # Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365   #windows-10
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
+
 # Build JSON
 
 $TemplateJSON = Get-Content 'ImageTemplate.json.dist' -raw | ConvertFrom-Json
 $TemplateJSON.location=$location
+$TemplateJSON.tags.ImagebuilderTemplate="ChocoWin11"
+$TemplateJSON.properties.source.publisher = "microsoftwindowsdesktop"
+$TemplateJSON.properties.source.offer = "office-365"
+$TemplateJSON.properties.source.sku = "win11-22h2-avd-m365"
 $dist=$TemplateJSON.properties.distribute[0]
 $dist.Type = "SharedImage"
 $dist.runOutputName = $imageName
