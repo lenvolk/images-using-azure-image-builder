@@ -134,7 +134,7 @@ az vm show --resource-group $aibRG --name $imageName --query storageProfile.osDi
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
 mstsc /v:$VMIP /w:1024 /h:768
 
-# Download Logfile from Website
+# Download Logfile from AIB SA
 # Point to logfile
 $Logfile="C:\Users\PSDemo\Downloads\Customization.Log"
 
