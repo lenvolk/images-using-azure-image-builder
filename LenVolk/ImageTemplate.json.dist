@@ -1,0 +1,80 @@
+{
+    "type": "Microsoft.VirtualMachineImages/imageTemplates",
+    "apiVersion": "2020-02-14",
+    "location": "<region>",
+    "dependsOn": [],
+    "tags": {
+        "imagebuilderTemplate": "windows2019"
+            },
+        "identity": {
+            "type": "UserAssigned",
+                    "userAssignedIdentities": {
+                    "<imgBuilderId>": {}
+                        
+                }
+                },
+    "properties": {
+
+        "buildTimeoutInMinutes" : 100,
+  
+        "source": {
+            "type": "PlatformImage",
+                "publisher": "MicrosoftWindowsServer",
+                "offer": "WindowsServer",
+                "sku": "2019-Datacenter",
+                "version": "latest"
+            
+        },
+        "customize": [
+			{
+				"type": "PowerShell",
+				"name": "Install Choco",
+				"runElevated": true,
+				"inline": [
+				"Set-ExecutionPolicy Bypass -Scope Process -Force",
+				"[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072",
+				"iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+				]
+			},
+			{
+                "type": "PowerShell",
+                "name": "Tools",
+                "runElevated": true,
+				"validExitCodes": [ 
+					"0",
+					"3010"
+				],
+                "inline": [
+					"choco install azure-data-studio -y --no-progress -r",
+					"choco install kubernetes-cli -y --no-progress -r",
+					"choco install python -y --no-progress -r",
+					"choco install sqlserver-cmdlineutils -y --no-progress -r",
+					"choco install sql-server-management-studio -y --no-progress -r",
+					"choco install grep -y --no-progress -r"
+                ]
+            },
+            {
+                "type": "WindowsUpdate",
+                "searchCriteria": "IsInstalled=0",
+                "filters": [
+                    "exclude:$_.Title -like '*Preview*'",
+                    "include:$true"
+                ],
+                "updateLimit": 50
+            }
+        ],
+        "distribute": 
+            [
+                {   "type":"ManagedImage",
+                    "imageId": "/subscriptions/<subscriptionID>/resourceGroups/<rgName>/providers/Microsoft.Compute/images/<imageName>",
+                    "location": "<region>",
+                    "runOutputName": "<runOutputName>",
+                    "artifactTags": {
+                        "source": "azVmImageBuilder",
+                        "baseosimg": "windows2019"
+                    }
+                }
+            ]
+        }
+}
+
