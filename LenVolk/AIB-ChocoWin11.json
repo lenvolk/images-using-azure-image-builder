@@ -4,7 +4,8 @@
   "location": "eastus2",
   "dependsOn": [],
   "tags": {
-    "imagebuilderTemplate": "windows2019"
+    "ImagebuilderTemplate": "Win11",
+    "Demo": "LenVolk"
   },
   "identity": {
     "type": "UserAssigned",
@@ -19,8 +20,7 @@
       "publisher": "microsoftwindowsdesktop",
       "offer": "office-365",
       "sku": "win11-22h2-avd-m365",
-      "version": "latest",
-      "VM generation": "V2"
+      "version": "latest"
     },
     "customize": [
       {
