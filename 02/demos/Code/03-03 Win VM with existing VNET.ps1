@@ -10,7 +10,6 @@ $identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
 $imageRoleDefName="Azure Image Builder Image Def"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
 # Existing Role
 # $imageRoleDefName="Azure Image Builder Image Def1236734744"
-$imageId="/subscriptions/$subscription/resourceGroups/$aibRG/providers/Microsoft.Compute/images/$imageName"
 
 # Set Azure subscription
 az account set -s $subscription
@@ -113,7 +112,7 @@ az image builder run -n $imageName -g $aibRG
 # Create VM
 $VMIP=(az vm create --resource-group $aibRG --name $imageName `
         --admin-username $VM_User --admin-password $WinVM_Password `
-        --image $imageId --location $location --public-ip-sku Standard `
+        --image $SigDef/versions/latest --location $location --public-ip-sku Standard `
         --tags 'demo=0303' `
         --query publicIpAddress -o tsv)
 
