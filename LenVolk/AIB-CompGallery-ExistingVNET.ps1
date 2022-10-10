@@ -124,7 +124,7 @@ az image builder run -n $imageName -g $aibRG
 $VMIP=(az vm create --resource-group $aibRG --name $imageName `
         --admin-username $VM_User --admin-password $WinVM_Password `
         --image $imageId --location $location --public-ip-sku Standard `
-        --tags 'demo=0303' `
+        --tags 'demo=LenVolk' `
         --query publicIpAddress -o tsv)
 
 # Get disk size
@@ -132,7 +132,30 @@ az vm show --resource-group $aibRG --name $imageName --query storageProfile.osDi
 
 # Connect to VM
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
-mstsc /v:$VMIP /w:800 /h:600
+mstsc /v:$VMIP /w:1024 /h:768
+
+# Download Logfile from Website
+# Point to logfile
+$Logfile="C:\Users\PSDemo\Downloads\Customization.Log"
+
+# Check out logfile
+code $Logfile
+
+# It's pretty big...
+grep "PACKER OUT" $Logfile | grep : > Log_Clean.log
+
+# Check out again
+code Log_Clean.log
+
+# Clean up a bit more
+get-content Log_Clean.log | foreach {
+   $items = $_.split(":")
+   echo $_.replace($items[0],'')
+} > Log_Clean_2.log
+
+# Check out again
+code Log_Clean_2.log
+
 
 
 # Delete VMs
@@ -142,7 +165,7 @@ foreach($VM in $VMs) {
 }
  
 # Delete other resources
-$Resources=(az resource list --tag 'demo=0303' | ConvertFrom-Json)
+$Resources=(az resource list --tag 'demo=LenVolk' | ConvertFrom-Json)
 foreach($res in $Resources) {
     az resource delete -n $res.name -g $aibRG --resource-type $res.type
 }
