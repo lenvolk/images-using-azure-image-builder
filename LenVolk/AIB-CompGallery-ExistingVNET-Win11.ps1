@@ -85,6 +85,7 @@ $SIGLocations=$location,"eastus","westeurope"
 
 #Ref of the template https://learn.microsoft.com/en-us/azure/templates/microsoft.virtualmachineimages/2020-02-14/imagetemplates?pivots=deployment-language-bicep
 # Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365   #windows-10
+# az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 # Build JSON
 
 $TemplateJSON = Get-Content 'ImageTemplate.json.dist' -raw | ConvertFrom-Json
