@@ -84,19 +84,16 @@
         "type": "PowerShell",
         "name": "AVD_Opt",
         "runElevated": true,
-        "runAsSystem": true,
         "inline": [
-          "New-Item -Type Directory -Path 'c:\\' -Name temp -erroraction silentlycontinue",
           "invoke-webrequest -uri 'https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/refs/heads/main.zip' -OutFile 'c:\\temp\\avdopt.zip'",
           "Expand-Archive 'c:\\temp\\avdopt.zip' -DestinationPath 'c:\\temp' -Force",
-          "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force",
           "Set-Location -Path C:\\temp\\Virtual-Desktop-Optimization-Tool-main",
-          ".\\Windows_VDOT.ps1 -Optimizations All -Verbose -AcceptEula"
+          ".\\Windows_VDOT.ps1 -Optimizations AppxPackages -AcceptEula -Verbose"
         ]
       },
       {
         "type": "WindowsRestart",
-        "restartCheckCommand": "echo we_rebooted_after_optimization_tool (Get-Date)  > c:\\ImageBuilder\\reboot.txt",
+        "restartCheckCommand": "echo we_rebooted_after_optimization_tool > c:\\ImageBuilder\\reboot.txt",
         "restartTimeout": "10m"
       },
       {

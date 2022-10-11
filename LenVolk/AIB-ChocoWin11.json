@@ -54,7 +54,6 @@
         "type": "PowerShell",
         "name": "GetAzCopy",
         "runElevated": true,
-        "runAsSystem": true,
         "inline": [
           "New-Item -Type Directory -Path 'c:\\' -Name temp -erroraction silentlycontinue",
           "invoke-webrequest -uri 'https://aka.ms/downloadazcopy-v10-windows' -OutFile 'c:\\temp\\azcopy.zip'",
@@ -87,37 +86,17 @@
         "type": "PowerShell",
         "name": "installFsLogix",
         "runElevated": true,
-        "runAsSystem": true,
         "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/avd_fslogix.ps1"
       },
       {
         "type": "PowerShell",
         "name": "RegEdit",
         "runElevated": true,
-        "runAsSystem": true,
         "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/regedit.ps1"
       },
       {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted_after_AVD_Optimization  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "10m"
-      },
-      {
-        "type": "PowerShell",
-        "name": "AVD_Opt",
-        "runElevated": true,
-        "runAsSystem": true,
-        "inline": [
-          "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force",
-          "invoke-webrequest -uri 'https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/refs/heads/main.zip' -OutFile 'c:\\temp\\avdopt.zip'",
-          "Expand-Archive 'c:\\temp\\avdopt.zip' -DestinationPath 'c:\\temp' -Force",
-          "Set-Location -Path C:\\temp\\Virtual-Desktop-Optimization-Tool-main",
-          ".\\Windows_VDOT.ps1 -Optimizations AppxPackages -AcceptEula -Verbose"
-        ]
-      },
-      {
-        "type": "WindowsRestart",
-        "restartCheckCommand": "echo we_rebooted_after_optimization_tool > c:\\ImageBuilder\\reboot.txt",
         "restartTimeout": "10m"
       }
     ],
