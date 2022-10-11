@@ -1,7 +1,7 @@
 ﻿# OS Optimizations for AVD
 Write-Host 'AIB Customization: OS Optimizations for AVD'
 
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
 
 
 $drive = 'C:\'
