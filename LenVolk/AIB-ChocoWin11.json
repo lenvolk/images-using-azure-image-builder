@@ -89,6 +89,27 @@
         "runElevated": true,
         "runAsSystem": true,
         "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/avd_fslogix.ps1"
+      },
+      {
+        "type": "PowerShell",
+        "name": "RegEdit",
+        "runElevated": true,
+        "runAsSystem": true,
+        "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/regedit.ps1"
+      },
+      {
+        "type": "PowerShell",
+        "name": "AVD_Opt",
+        "runElevated": true,
+        "runAsSystem": true,
+        "inline": [
+          "New-Item -Type Directory -Path 'c:\\' -Name temp -erroraction silentlycontinue",
+          "invoke-webrequest -uri 'https://github.com/The-Virtual-Desktop-Team/Virtual-Desktop-Optimization-Tool/archive/refs/heads/main.zip' -OutFile 'c:\\temp\\avdopt.zip'",
+          "Expand-Archive 'c:\\temp\\avdopt.zip' -DestinationPath 'c:\\temp' -Force",
+          "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force",
+          "Set-Location -Path C:\\temp\\Virtual-Desktop-Optimization-Tool-main",
+          ".\\Windows_VDOT.ps1 -Optimizations All -Verbose -AcceptEula"
+        ]
       }
     ],
     "distribute": [
@@ -97,7 +118,7 @@
         "runOutputName": "ChocoWin11O365",
         "artifactTags": {
           "source": "azVmImageBuilder",
-          "baseosimg": "windows2019"
+          "baseosimg": "Win11O365"
         },
         "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/ChocoWin11O365",
         "replicationRegions": [
