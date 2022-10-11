@@ -1,5 +1,5 @@
-# If done via custom extention
-# .\\wvd_fslogix.ps1 -ProfilePath "\\lvolkfiles.file.core.windows.net\garbage" - LocalWVDpath "C:\installers\FsLogix\x64\Release" -Verbose 
+# # If done via custom extention
+# # .\\wvd_fslogix.ps1 -ProfilePath "\\lvolkfiles.file.core.windows.net\garbage" - LocalWVDpath "C:\installers\FsLogix\x64\Release" -Verbose 
 
 ##########################################
 #    Log Function                        #
@@ -34,7 +34,7 @@ Expand-Archive `
     -Verbose
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-cd "$LocalWVDpath\FSLogix\x64\Release"
+Set-Location -Path "$LocalWVDpath\FSLogix\x64\Release"
 
 $fslogixsetup = "FSLogixAppsSetup.exe", "FSLogixAppsRuleEditorSetup.exe"
 
@@ -117,31 +117,3 @@ catch {
     write-log "Error adding profile settings registry KEY: $ErrorMessage"
     Write-Output "***** Error adding profile settings registry KEY: $ErrorMessage"
 }
-
-
-
-
-
-
-
-
-write-host 'AIB Customization: Downloading FsLogix'
-New-Item -Path C:\\ -Name fslogix -ItemType Directory -ErrorAction SilentlyContinue
-$LocalPath = 'C:\\fslogix'
-$WVDflogixURL = 'https://raw.githubusercontent.com/DeanCefola/Azure-WVD/master/PowerShell/FSLogixSetup.ps1'
-$WVDFslogixInstaller = 'FSLogixSetup.ps1'
-$outputPath = $LocalPath + '\' + $WVDFslogixInstaller
-Invoke-WebRequest -Uri $WVDflogixURL -OutFile $outputPath
-set-Location $LocalPath
-
-$fsLogixURL="https://aka.ms/fslogix_download"
-$installerFile="fslogix_download.zip"
-
-Invoke-WebRequest $fsLogixURL -OutFile $LocalPath\$installerFile
-Expand-Archive $LocalPath\$installerFile -DestinationPath $LocalPath
-write-host 'AIB Customization: Download Fslogix installer finished'
-
-write-host 'AIB Customization: Start Fslogix installer'
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force -Verbose
-.\\FSLogixSetup.ps1 -ProfilePath \\wvdSMB\wvd -Verbose 
-write-host 'AIB Customization: Finished Fslogix installer' 
