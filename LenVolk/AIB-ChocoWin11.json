@@ -77,7 +77,7 @@
       },
       {
         "type": "WindowsRestart",
-        "restartCheckCommand": "echo we-rebooted (Get-Date)  > c:\\ImageBuilder\\reboot.txt",
+        "restartCheckCommand": "echo we_rebooted (Get-Date)  > c:\\ImageBuilder\\reboot.txt",
         "restartTimeout": "5m"
       },
       {
@@ -91,6 +91,18 @@
           "Set-Location -Path C:\\temp\\Virtual-Desktop-Optimization-Tool-main",
           ".\\Windows_VDOT.ps1 -Optimizations All -Verbose -AcceptEula"
         ]
+      },
+      {
+        "type": "WindowsRestart",
+        "restartCheckCommand": "echo we_rebooted_after_optimization_tool (Get-Date)  > c:\\ImageBuilder\\reboot.txt",
+        "restartTimeout": "10m"
+      },
+      {
+        "type": "PowerShell",
+        "name": "installFsLogix",
+        "runElevated": true,
+        "runAsSystem": true,
+        "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/avd_fslogix.ps1"
       }
     ],
     "distribute": [
