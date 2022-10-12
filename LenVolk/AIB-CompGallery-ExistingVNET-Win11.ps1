@@ -5,7 +5,7 @@
 . '.\00 Variables.ps1'
 
 # Set Image Name
-$imageName="ChocoWin11O365"
+$imageName="ChocoWin11m365"
 
 # Build addl. resource Names 
 $identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
