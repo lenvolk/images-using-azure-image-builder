@@ -70,7 +70,7 @@
       {
         "type": "PowerShell",
         "name": "Sleep for a min",
-        "runElevated": "true",
+        "runElevated": "false",
         "inline": [
           "Write-Host Sleep for a min",
           "Start-Sleep -Seconds 60"
