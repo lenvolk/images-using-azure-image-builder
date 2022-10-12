@@ -103,7 +103,17 @@
           "include:$true"
         ],
         "updateLimit": 50
-      },      {
+      }, 
+      {
+        "type": "PowerShell",
+        "name": "Sleep for a min",
+        "runElevated": "false",
+        "inline": [
+          "Write-Host Sleep for a min",
+          "Start-Sleep -Seconds 60"
+        ]
+      },     
+      {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted_after_WinUpdates  > c:\\ImageBuilder\\reboot.txt",
         "restartTimeout": "10m"
