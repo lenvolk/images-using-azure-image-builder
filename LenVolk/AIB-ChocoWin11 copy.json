@@ -68,15 +68,6 @@
         "scriptUri": "https://bookmark.ws/AIB_SampleScript"
       },
       {
-        "type": "PowerShell",
-        "name": "Sleep for a min",
-        "runElevated": "true",
-        "inline": [
-          "Write-Host Sleep for a min",
-          "Start-Sleep -Seconds 60"
-        ]
-      },
-      {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted after sleep for a min  > c:\\ImageBuilder\\reboot.txt",
         "restartTimeout": "5m"
