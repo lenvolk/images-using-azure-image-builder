@@ -56,8 +56,7 @@ az network vnet create --resource-group $aibRG --address-prefixes 10.150.0.0/24 
 az network vnet subnet update --name $SubnetName --resource-group $aibRG --vnet-name $VNETName `
                               --disable-private-link-service-network-policies true 
 # Retrieve the ID of that Subnet
-$SubnetId=(az network vnet subnet show --resource-group $aibRG --vnet-name $VNETName --name=$SubnetName `
-            --query id -o tsv)
+$SubnetId=(az network vnet subnet show --resource-group $aibRG --vnet-name $VNETName --name=$SubnetName --query id -o tsv)
 
 # Build VM Profile
 $vmProfile = [pscustomobject]@{
