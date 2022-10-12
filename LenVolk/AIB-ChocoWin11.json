@@ -49,34 +49,6 @@
           "choco install grep -y --no-progress -r",
           "choco install googlechrome -y --no-progress -r"
         ]
-      },
-      {
-        "type": "PowerShell",
-        "name": "GetAzCopy",
-        "runElevated": true,
-        "inline": [
-          "New-Item -Type Directory -Path 'c:\\' -Name temp -erroraction silentlycontinue",
-          "invoke-webrequest -uri 'https://aka.ms/downloadazcopy-v10-windows' -OutFile 'c:\\temp\\azcopy.zip'",
-          "Expand-Archive 'c:\\temp\\azcopy.zip' 'c:\\temp'",
-          "copy-item 'C:\\temp\\azcopy_windows_amd64_*\\azcopy.exe\\' -Destination 'c:\\temp'"
-        ]
-      },
-      {
-        "type": "PowerShell",
-        "name": "CreateBuildPath",
-        "runElevated": false,
-        "scriptUri": "https://bookmark.ws/AIB_SampleScript"
-      },
-      {
-        "type": "WindowsRestart",
-        "restartCheckCommand": "echo we_rebooted after sleep for a min  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "5m"
-      },
-      {
-        "type": "PowerShell",
-        "name": "installFsLogix",
-        "runElevated": true,
-        "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/avd_fslogix.ps1"
       }
     ],
     "distribute": [
