@@ -86,23 +86,6 @@
         "name": "installFsLogix",
         "runElevated": true,
         "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/avd_fslogix.ps1"
-      },
-      {
-        "type": "PowerShell",
-        "name": "RegEdit",
-        "runElevated": true,
-        "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/regedit.ps1"
-      },
-      {
-        "type": "PowerShell",
-        "name": "AVD_Opt",
-        "runElevated": true,
-        "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Optimize_OS_for_AVD.ps1"
-      },
-      {
-        "type": "WindowsRestart",
-        "restartCheckCommand": "echo we_rebooted_after_AVD_Optimization  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "10m"
       }
     ],
     "distribute": [
