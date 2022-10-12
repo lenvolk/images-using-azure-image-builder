@@ -128,6 +128,8 @@ az image builder create -g $aibRG -n $imageName --image-template AIB-ChocoWin11.
 # Build the image
 az image builder run -n $imageName -g $aibRG
 
+# Check last status
+az image builder show --name $imageName --resource-group $aibRG --query lastRunStatus -o table
 
 # Create VM
 $VMIP=( az vm create --resource-group $aibRG --name $imageName `
