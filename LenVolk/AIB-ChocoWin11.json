@@ -76,6 +76,12 @@
         "name": "installFsLogix",
         "runElevated": true,
         "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/avd_fslogix.ps1"
+      },
+      {
+        "type": "PowerShell",
+        "name": "RegEdit",
+        "runElevated": true,
+        "scriptUri": "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/regedit.ps1"
       }
     ],
     "distribute": [
