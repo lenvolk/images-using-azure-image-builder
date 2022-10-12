@@ -61,7 +61,7 @@ $SubnetId=(az network vnet subnet show --resource-group $aibRG --vnet-name $VNET
 # Build VM Profile
 $vmProfile = [pscustomobject]@{
         osDiskSizeGB=150
-        vmSize="Standard_D4s_v3"
+        vmSize="Standard_D8s_v3"
         vnetConfig=[pscustomobject]@{subnetId=$SubnetId}
 }
 
