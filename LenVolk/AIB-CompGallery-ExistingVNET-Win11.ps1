@@ -5,7 +5,7 @@
 . '.\00 Variables.ps1'
 
 # Set Image Name
-$imageName="ChocoWin11m365"
+$imageName="ChocoWin11m365v1"
 
 # Build addl. resource Names 
 $identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
@@ -70,9 +70,9 @@ $sigName="aibSig"
 # az sig create -g $aibRG --gallery-name $sigName
 
 # Create Imagedefinition
-$sig_publisher="myPublisher4"
-$sig_offer="myOffer4"
-$sig_sku="mySku4"
+$sig_publisher="myPublisher5"
+$sig_offer="myOffer5"
+$sig_sku="mySku5"
 
 $SigDef=(az sig image-definition create -g $aibRG --gallery-name $sigName `
    --gallery-image-definition $imageName `
