@@ -46,7 +46,8 @@
           "choco install python -y --no-progress -r",
           "choco install sqlserver-cmdlineutils -y --no-progress -r",
           "choco install sql-server-management-studio -y --no-progress -r",
-          "choco install grep -y --no-progress -r"
+          "choco install grep -y --no-progress -r",
+          "choco install googlechrome -y --no-progress -r"
         ]
       },
       {
