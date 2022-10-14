@@ -15,7 +15,7 @@
                 },
     "properties": {
 
-        "buildTimeoutInMinutes" : 100,
+        "buildTimeoutInMinutes" : 180,
   
         "source": {
             "type": "PlatformImage",
@@ -97,7 +97,7 @@
       {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted_after_AVD_Optimization  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "10m"
+        "restartTimeout": "20m"
       },
       {
         "type": "PowerShell",
@@ -120,7 +120,7 @@
       {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted_after_WinUpdates  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "30m"
+        "restartTimeout": "40m"
       }
     ],
         "distribute": 
