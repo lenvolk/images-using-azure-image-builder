@@ -13,7 +13,7 @@
     }
   },
   "properties": {
-    "buildTimeoutInMinutes": 100,
+    "buildTimeoutInMinutes": 180,
     "source": {
       "type": "PlatformImage",
       "publisher": "microsoftwindowsdesktop",
@@ -71,7 +71,7 @@
       {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted after sleep for a min  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "10m"
+        "restartTimeout": "30m"
       },
       {
         "type": "PowerShell",
@@ -94,7 +94,7 @@
       {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted_after_AVD_Optimization  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "10m"
+        "restartTimeout": "20m"
       },
       {
         "type": "PowerShell",

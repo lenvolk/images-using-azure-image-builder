@@ -108,11 +108,7 @@ try {
         -Type DWord `
         -Value 1
 # https://learn.microsoft.com/en-us/fslogix/concepts-vhd-disk-compaction
-    Set-ItemProperty `
-        -Path HKLM\SOFTWARE\FSLogix\Apps `
-        -Name "VHDCompactDisk" `
-        -Type "DWORD" `
-        -Value "1"
+    New-Item -Path "HKLM:\SOFTWARE\FSLOGIX\Apps\VHDCompactDisk" -Value 1 -Force -ItemType DWORD
 
     Write-Output  "Done with FSLogix User Profile Settings"
 
