@@ -1,0 +1,1 @@
+New-ItemProperty -Path HKLM:\SOFTWARE\FSLogix\Profiles -Name VHDLocations -PropertyType Multistring -Value "\\lvolklab01.file.core.windows.net\labshare\Profiles" -Force -Confirm:$false

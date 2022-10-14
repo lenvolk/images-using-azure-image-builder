@@ -16,3 +16,8 @@
 
 (https://github.com/danielsollondon/azvmimagebuilder/tree/master/solutions/14_Building_Images_WVD)
 
+----
+## AAD Joined VM
+(https://learn.microsoft.com/en-us/azure/architecture/example-scenario/wvd/azure-virtual-desktop-azure-active-directory-join)
+
+(https://rozemuller.com/how-to-join-azure-ad-automated/)
