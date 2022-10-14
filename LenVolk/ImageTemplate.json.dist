@@ -4,7 +4,7 @@
     "location": "<region>",
     "dependsOn": [],
     "tags": {
-        "imagebuilderTemplate": "windows2019"
+        "imagebuilderTemplate": "AVDGoldenImage"
             },
         "identity": {
             "type": "UserAssigned",
@@ -25,7 +25,7 @@
                 "version": "latest"
             
         },
-    "customize": [
+"customize": [
       {
         "type": "PowerShell",
         "name": "Install Choco",
@@ -100,6 +100,15 @@
         "restartTimeout": "10m"
       },
       {
+        "type": "PowerShell",
+        "name": "Sleep for a min",
+        "runElevated": "false",
+        "inline": [
+          "Write-Host Sleep for a min",
+          "Start-Sleep -Seconds 60"
+        ]
+      },
+      {
         "type": "WindowsUpdate",
         "searchCriteria": "IsInstalled=0",
         "filters": [
@@ -109,18 +118,9 @@
         "updateLimit": 50
       }, 
       {
-        "type": "PowerShell",
-        "name": "Sleep for a min",
-        "runElevated": "false",
-        "inline": [
-          "Write-Host Sleep for a min",
-          "Start-Sleep -Seconds 60"
-        ]
-      },     
-      {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted_after_WinUpdates  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "10m"
+        "restartTimeout": "30m"
       }
     ],
         "distribute": 
@@ -131,7 +131,7 @@
                     "runOutputName": "<runOutputName>",
                     "artifactTags": {
                         "source": "azVmImageBuilder",
-                        "baseosimg": "windows2019"
+                        "baseosimg": "windows"
                     }
                 }
             ]

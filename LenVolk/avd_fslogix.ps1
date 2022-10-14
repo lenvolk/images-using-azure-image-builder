@@ -107,6 +107,12 @@ try {
         -Name DeleteLocalProfileWhenVHDShouldApply `
         -Type DWord `
         -Value 1
+# https://learn.microsoft.com/en-us/fslogix/concepts-vhd-disk-compaction
+    Set-ItemProperty `
+        -Path HKLM\SOFTWARE\FSLogix\Apps `
+        -Name "VHDCompactDisk" `
+        -Type "DWORD" `
+        -Value "1"
 
     Write-Output  "Done with FSLogix User Profile Settings"
 

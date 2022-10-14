@@ -1,3 +1,11 @@
+# Register providers / check provider state
+# Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network |
+#   Where-Object RegistrationState -ne Registered |
+#     Register-AzResourceProvider
+# OR you can run Invoke-AIBProviderCheck
+
+
+
 # Ref https://powers-hell.com/2020/09/20/preparing-custom-image-templates-with-azure-image-builder-powershell/
 
 # Install-Module Az.ImageBuilder.Tools

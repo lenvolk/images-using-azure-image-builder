@@ -4,16 +4,16 @@
   "location": "eastus2",
   "dependsOn": [],
   "tags": {
-    "imagebuilderTemplate": "ChocoWin11m365v1"
+    "imagebuilderTemplate": "ChocoWin11"
   },
   "identity": {
     "type": "UserAssigned",
     "userAssignedIdentities": {
-      "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib69524233721": {}
+      "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourcegroups/imageBuilderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aib52961358651": {}
     }
   },
   "properties": {
-    "buildTimeoutInMinutes": 180,
+    "buildTimeoutInMinutes": 100,
     "source": {
       "type": "PlatformImage",
       "publisher": "microsoftwindowsdesktop",
@@ -47,7 +47,8 @@
           "choco install sqlserver-cmdlineutils -y --no-progress -r",
           "choco install sql-server-management-studio -y --no-progress -r",
           "choco install grep -y --no-progress -r",
-          "choco install googlechrome -y --no-progress -r"
+          "choco install googlechrome -y --no-progress -r",
+          "choco install powershell-core -y --no-progress -r"
         ]
       },
       {
@@ -70,7 +71,7 @@
       {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted after sleep for a min  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "5m"
+        "restartTimeout": "10m"
       },
       {
         "type": "PowerShell",
@@ -112,22 +113,22 @@
           "include:$true"
         ],
         "updateLimit": 50
-      }, 
+      },
       {
         "type": "WindowsRestart",
         "restartCheckCommand": "echo we_rebooted_after_WinUpdates  > c:\\ImageBuilder\\reboot.txt",
-        "restartTimeout": "30m"
+        "restartTimeout": "40m"
       }
     ],
     "distribute": [
       {
         "type": "SharedImage",
-        "runOutputName": "ChocoWin11m365v1",
+        "runOutputName": "ChocoWin11m365",
         "artifactTags": {
           "source": "azVmImageBuilder",
-          "baseosimg": "ChocoWin11m365v1"
+          "baseosimg": "windows11m365"
         },
-        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/ChocoWin11m365v1",
+        "galleryImageId": "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/imageBuilderRG/providers/Microsoft.Compute/galleries/aibSig/images/ChocoWin11m365",
         "replicationRegions": [
           "eastus2",
           "eastus",

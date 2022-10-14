@@ -5,7 +5,7 @@
 . '.\00 Variables.ps1'
 
 # Set Image Name
-$imageName="ChocoWin11m365v1"
+$imageName="ChocoWin11m365"
 
 # Build addl. resource Names 
 $identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
@@ -65,14 +65,14 @@ $vmProfile = [pscustomobject]@{
         vnetConfig=[pscustomobject]@{subnetId=$SubnetId}
 }
 
-# Get Existing Shared Image Gallery 
+# Create Shared Image Gallery 
 $sigName="aibSig"
-# az sig create -g $aibRG --gallery-name $sigName
+az sig create -g $aibRG --gallery-name $sigName
 
 # Create Imagedefinition
-$sig_publisher="myPublisher5"
-$sig_offer="myOffer5"
-$sig_sku="mySku5"
+$sig_publisher="myPublisher"
+$sig_offer="myOffer"
+$sig_sku="mySku"
 
 $SigDef=(az sig image-definition create -g $aibRG --gallery-name $sigName `
    --gallery-image-definition $imageName `
@@ -102,6 +102,7 @@ $dist.PSObject.Properties.Remove('imageId')
 $dist.PSObject.Properties.Remove('location')
 $dist | Add-Member -NotePropertyName galleryImageId -NotePropertyValue $SigDef
 $dist | Add-Member -NotePropertyName replicationRegions -NotePropertyValue $SIGLocations
+$dist.artifactTags.baseosimg = "windows11m365"
 $TemplateJSON.identity.userAssignedIdentities = [pscustomobject]@{$imgBuilderId=[pscustomobject]@{}}
 $TemplateJSON.properties.distribute[0]=$dist
 # Add vmProfile
@@ -110,6 +111,7 @@ $TemplateJSON.properties | Add-Member -NotePropertyName vmProfile -NotePropertyV
 # $TemplateJSON.properties.customize = @($TemplateJSON.properties.customize[0])
 $TemplateJSON | ConvertTo-Json -Depth 4 | Out-File "AIB-ChocoWin11.json" -Encoding ascii
 
+# Validation:
 code AIB-ChocoWin11.json
 
 $TemplateJSON.properties.vmProfile.vmSize
@@ -180,3 +182,5 @@ $Resources=(az resource list --tag 'demo=LenVolk' | ConvertFrom-Json)
 foreach($res in $Resources) {
     az resource delete -n $res.name -g $aibRG --resource-type $res.type
 }
+
+az group delete -g $aibRG --yes
