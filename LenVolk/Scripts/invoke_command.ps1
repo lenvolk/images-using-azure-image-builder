@@ -25,6 +25,6 @@ $RunningVMs | ForEach-Object -Parallel {
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
-        -Parameter @{ResourceGroup = $_.ResourceGroupName;VmName = $_.Name;location = $location} `
+        -Parameter @{ResourceGroup = "lab1hprg";location = "eastus"} `
         -ScriptPath '.\AADextention.ps1'
 }

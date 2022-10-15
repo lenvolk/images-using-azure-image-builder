@@ -1,11 +1,10 @@
 
 Param (
     [string]$ResourceGroup,
-    [string]$VmName,
     [string]$location
 )
 
-
+$VmName = $env:computername | Select-Object
 
 mkdir -Path c:\ImageBuilder -name $VmName -erroraction silentlycontinue
 $VmName  >> c:\ImageBuilder\Tst.txt
