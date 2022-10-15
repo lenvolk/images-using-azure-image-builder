@@ -1,7 +1,7 @@
 
-$ResourceGroup = "lab1hprg"
+$ResourceGroup = "imageBuilderRG"
 $hostPool = "Lab1HP"
-$location = "eastus"
+$location = "eastus2"
 
 # $RegistrationToken = New-AzWvdRegistrationInfo -ResourceGroupName $ResourceGroup -HostPoolName $hostPool -ExpirationTime $((get-date).ToUniversalTime().AddDays(1).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
 # $RegistrationToken = Get-AzWvdRegistrationInfo -ResourceGroupName $ResourceGroup -HostPoolName $hostPool
@@ -20,6 +20,7 @@ $RunningVMs | ForEach-Object -Parallel {
 
 # AAD Join
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+# (Get-Command ./AADextention.ps1).Parameters
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
@@ -28,3 +29,4 @@ $RunningVMs | ForEach-Object -Parallel {
         -Parameter @{ResourceGroup = "lab1hprg";location = "eastus"} `
         -ScriptPath '.\AADextention.ps1'
 }
+
