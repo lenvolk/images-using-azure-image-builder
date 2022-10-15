@@ -1,10 +1,4 @@
 
-param (
-    [string]$ResourceGroup,
-    [string]$hostPool,
-    [string]$location  
-)
-
 $ResourceGroup = "lab1hprg"
 $hostPool = "Lab1HP"
 $location = "eastus"
@@ -30,7 +24,7 @@ $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
-        -CommandId RunPowerShellScript `
-        -Parameter @{arg1 = "$_.ResourceGroupName";arg2 = "$_.Name";arg3 = "$location"} `
-        -ScriptPath ./AADextention.ps1
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{ResourceGroup = $_.ResourceGroupName;VmName = $_.Name;location = $location} `
+        -ScriptPath '.\AADextention.ps1'
 }
