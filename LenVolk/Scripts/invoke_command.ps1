@@ -18,7 +18,7 @@ $RunningVMs | ForEach-Object -Parallel {
         -ScriptPath ./fslogix_regkey.ps1
 }
 
-# AAD Join
+# Testing passing parameters to the VM's PS script
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 # (Get-Command ./AADextention.ps1).Parameters
 $RunningVMs | ForEach-Object -Parallel {
@@ -27,6 +27,6 @@ $RunningVMs | ForEach-Object -Parallel {
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
         -Parameter @{ResourceGroup = "lab1hprg";location = "eastus"} `
-        -ScriptPath '.\AADextention.ps1'
+        -ScriptPath '.\param_invoke.ps1'
 }
 
