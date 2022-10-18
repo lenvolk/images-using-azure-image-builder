@@ -4,18 +4,15 @@ $ResourceGroup = "imageBuilderRG"
 $location = "eastus2"
 
 
-$domainJoinName = "AADLoginForWindows"
-$domainJoinType = "AADLoginForWindows"
-$domainJoinPublisher = "Microsoft.Azure.ActiveDirectory"
-$domainJoinVersion   = "1.0"
-
-$RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
-
-
 # system-assigned managed identity
-$vm = Get-AzVM -ResourceGroupName $ResourceGroup -Name $vmName
-Update-AzVM -ResourceGroupName $ResourceGroup -VM $vm -IdentityType SystemAssigned
-# Update-AzVm -ResourceGroupName myResourceGroup -VM $vm -IdentityType None  # to remove identity
+$RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+$RunningVMs | ForEach-Object -Parallel {
+    Update-AzVM `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VM $_ `
+        -IdentityType SystemAssigned
+}
+# Update-AzVm -ResourceGroupName $ResourceGroup -VM $vm -IdentityType None  # to remove identity
 
 # Azure AD Join domain extension
 $domainJoinName = "AADLoginForWindows"
@@ -23,21 +20,20 @@ $domainJoinType = "AADLoginForWindows"
 $domainJoinPublisher = "Microsoft.Azure.ActiveDirectory"
 $domainJoinVersion   = "1.0"
 
-Set-AzVMExtension -VMName $vmName -ResourceGroupName $ResourceGroup -Location $location -TypeHandlerVersion $domainJoinVersion -Publisher $domainJoinPublisher -ExtensionType $domainJoinType -Name $domainJoinName
+$RunningVMs | ForEach-Object -Parallel {
+    Set-AzVMExtension `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -Location $_.Location `
+        -TypeHandlerVersion $using:domainJoinVersion `
+        -Publisher $using:domainJoinPublisher `
+        -ExtensionType $using:domainJoinType `
+        -Name $using:domainJoinName
+}
 
-az role assignment create --assignee $imgBuilderCliId --role $imageRoleDefName --scope $RGScope
+$GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
+$RoleName = (Get-AzRoleDefinition -Name "Virtual Machine User Login").name
 
-
-
-
-# (Get-Command ./BGInfo.ps1).Parameters
-# $RunningVMs | ForEach-Object -Parallel {
-#     Set-AzVMExtension `
-#         -VMName $_.Name `
-#         -ResourceGroupName $_.ResourceGroupName
-#         -Name "AADLoginForWindows" `
-#         -Location $_.Location `
-#         -Publisher "Microsoft.Azure.ActiveDirectory" `
-#         -Type "AADLoginForWindows" `
-#         -TypeHandlerVersion "1.0"
-# }
+New-AzRoleAssignment -ObjectId $GroupId `
+-RoleDefinitionName $RoleName `
+-ResourceGroupName $ResourceGroup

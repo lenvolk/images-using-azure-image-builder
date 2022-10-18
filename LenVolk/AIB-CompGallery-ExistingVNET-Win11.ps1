@@ -142,7 +142,7 @@ $ImageID = (AzGalleryImageversion -ResourceGroupName $aibRG -GalleryName $sigNam
 $VMIP=( az vm create --resource-group $aibRG --name $imageName `
                     --admin-username $VM_User --admin-password $WinVM_Password `
                     --image $ImageID --location $location --public-ip-sku Standard `
-                    --size 'Standard B2ms' --tags 'demo=LenVolk' `
+                    --size 'Standard_B2ms' --tags 'demo=LenVolk' `
                     --query publicIpAddress -o tsv)
 
 # Get disk size
