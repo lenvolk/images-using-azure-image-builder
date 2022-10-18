@@ -92,4 +92,6 @@ $agent_deploy_status = Start-Process `
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "AVD Agent Install Complete"
 Wait-Event -Timeout 5
 
-Restart-Service -Name RDAgentBootLoader
+# Restart-Service -Name RDAgentBootLoader
+# restart-service -name rdagent
+Restart-Computer
