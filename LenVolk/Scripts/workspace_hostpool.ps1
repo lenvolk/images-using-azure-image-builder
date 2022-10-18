@@ -64,7 +64,7 @@ Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading AVD Boot Loader"
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Bootloader"
 $bootloader_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
-    -ArgumentList "/i $AVDBootInstaller", `
+    -ArgumentList "/i $LocalAVDpath\$AVDBootInstaller", `
         "/quiet", `
         "/passive", `
         "/qn", `
@@ -81,7 +81,7 @@ Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Agent"
 Write-Output "Installing RD Infra Agent on VM $AgentInstaller`n"
 $agent_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
-    -ArgumentList "/i $AVDAgentInstaller", `
+    -ArgumentList "/i $LocalAVDpath\$AVDAgentInstaller", `
         "/quiet", `
         "/qn", `
         "/norestart", `
