@@ -12,7 +12,8 @@ $RunningVMs | ForEach-Object -Parallel {
         -VM $_ `
         -IdentityType SystemAssigned
 }
-# Update-AzVm -ResourceGroupName $ResourceGroup -VM $vm -IdentityType None  # to remove identity
+# To remove identity
+# Update-AzVm -ResourceGroupName $ResourceGroup -VM $vm -IdentityType None 
 
 # Azure AD Join domain extension
 $domainJoinName = "AADLoginForWindows"
@@ -31,6 +32,7 @@ $RunningVMs | ForEach-Object -Parallel {
         -Name $using:domainJoinName
 }
 
+# To Add RBAC to RG
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
 $RoleName = (Get-AzRoleDefinition -Name "Virtual Machine User Login").name
 
