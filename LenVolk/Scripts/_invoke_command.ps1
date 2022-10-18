@@ -40,7 +40,7 @@ $HPName = "AADJoined"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RegistrationToken = New-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName -ExpirationTime $((get-date).ToUniversalTime().AddHours(3).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
 # $RegistrationToken = Get-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName
-$RunFilePath = '.\workspace_hostpool.ps1'
+$RunFilePath = '.\hostpool_vms.ps1'
 #((Get-Content -path $RunFilePath -Raw) -replace '<__param1__>', $RegistrationToken.Token) | Set-Content -Path $RunFilePath
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
@@ -48,5 +48,5 @@ $RunningVMs | ForEach-Object -Parallel {
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
         -Parameter @{HPRegToken = $using:RegistrationToken} `
-        -ScriptPath '.\workspace_hostpool.ps1'
+        -ScriptPath '.\hostpool_vms.ps1'
 }
