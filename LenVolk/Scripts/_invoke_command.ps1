@@ -39,7 +39,7 @@ $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.Po
 $RegistrationToken = New-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName -ExpirationTime $((get-date).ToUniversalTime().AddHours(3).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
 # $RegistrationToken = Get-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName
 $RunFilePath = '.\workspace_hostpool.ps1'
-((Get-Content -path $RunFilePath -Raw) -replace '<__param1__>', $RegistrationToken) | Set-Content -Path $RunFilePath
+((Get-Content -path $RunFilePath -Raw) -replace '<__param1__>', $RegistrationToken.Token) | Set-Content -Path $RunFilePath
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
