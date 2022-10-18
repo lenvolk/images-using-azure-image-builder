@@ -30,3 +30,9 @@ $RunningVMs | ForEach-Object -Parallel {
         -ScriptPath '.\param_invoke.ps1'
 }
 
+
+# Adding AVD agents to VMs
+$HPRG = "AADJoinedAVD"
+$HPName = "AADJoined"
+$RegistrationToken = New-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName -ExpirationTime $((get-date).ToUniversalTime().AddHours(3).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
+# $RegistrationToken = Get-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName

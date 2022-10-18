@@ -133,10 +133,15 @@ az image builder run -n $imageName -g $aibRG
 # Check last status
 az image builder show --name $imageName --resource-group $aibRG --query lastRunStatus -o table
 
+# Verify the image version  $SigDef/versions/latest
+$ImageID = (AzGalleryImageversion -ResourceGroupName $aibRG -GalleryName $sigName `
+-GalleryImageDefinitionName $imageName).id | Sort-Object -bottom 1
+
+
 # Create VM
 $VMIP=( az vm create --resource-group $aibRG --name $imageName `
                     --admin-username $VM_User --admin-password $WinVM_Password `
-                    --image $SigDef/versions/latest --location $location --public-ip-sku Standard `
+                    --image $ImageID --location $location --public-ip-sku Standard `
                     --tags 'demo=LenVolk' `
                     --query publicIpAddress -o tsv)
 
@@ -145,7 +150,7 @@ az vm show --resource-group $aibRG --name $imageName --query storageProfile.osDi
 
 # Connect to VM
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
-mstsc /v:$VMIP /w:1024 /h:768
+mstsc /v:$VMIP /w:1440 /h:900
 
 # Download Logfile from AIB SA
 # Point to logfile
