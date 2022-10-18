@@ -19,6 +19,8 @@ $RunningVMs | ForEach-Object -Parallel {
 }
 
 # Testing passing parameters to the VM's PS script
+$ResourceGroup = "lab1hprg"
+$location = "eastus"
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 # (Get-Command ./AADextention.ps1).Parameters
 $RunningVMs | ForEach-Object -Parallel {
@@ -26,7 +28,7 @@ $RunningVMs | ForEach-Object -Parallel {
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
-        -Parameter @{ResourceGroup = "lab1hprg";location = "eastus"} `
+        -Parameter @{ResourceGroup = $using:ResourceGroup;location = $using:location} `
         -ScriptPath '.\param_invoke.ps1'
 }
 
@@ -39,11 +41,12 @@ $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.Po
 $RegistrationToken = New-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName -ExpirationTime $((get-date).ToUniversalTime().AddHours(3).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
 # $RegistrationToken = Get-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName
 $RunFilePath = '.\workspace_hostpool.ps1'
-((Get-Content -path $RunFilePath -Raw) -replace '<__param1__>', $RegistrationToken.Token) | Set-Content -Path $RunFilePath
+#((Get-Content -path $RunFilePath -Raw) -replace '<__param1__>', $RegistrationToken.Token) | Set-Content -Path $RunFilePath
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
+        -Parameter @{HPRegToken = $using:RegistrationToken} `
         -ScriptPath '.\workspace_hostpool.ps1'
 }

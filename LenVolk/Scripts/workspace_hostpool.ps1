@@ -5,6 +5,12 @@
 # $VmName = $env:computername | Select-Object
 # mkdir -Path c:\ImageBuilder -name $VmName -erroraction silentlycontinue
 # $HPRegToken | Out-File -FilePath c:\ImageBuilder\$VmName\$VmName.txt -Append
+
+Param (
+    [string]$HPRegToken
+)
+
+
 ######################
 #    AVD Variables   #
 ######################
@@ -13,7 +19,7 @@ $AVDAgentURI             = 'https://query.prod.cms.rt.microsoft.com/cms/api/am/b
 $AVDBootURI              = 'https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RWrxrH'
 $AVDAgentInstaller       = 'AVD-Agent.msi'
 $AVDBootInstaller        = 'AVD-Bootloader.msi'
-$HPRegToken              = '<__param1__>'
+#$HPRegToken              = '<__param1__>'
 ####################################
 #    Test/Create Temp Directory    #
 ####################################
