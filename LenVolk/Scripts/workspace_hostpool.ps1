@@ -2,20 +2,23 @@
 # Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name IsRegistered -Value 1 
 # Restart-Service -Name RDAgentBootLoader
 
+# $VmName = $env:computername | Select-Object
+# mkdir -Path c:\ImageBuilder -name $VmName -erroraction silentlycontinue
+# $HPRegToken | Out-File -FilePath c:\ImageBuilder\$VmName\$VmName.txt -Append
 ######################
-#    WVD Variables   #
+#    AVD Variables   #
 ######################
-$LocalWVDpath            = "c:\temp\avd\"
-$WVDBootURI              = 'https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RWrxrH'
-$WVDAgentURI             = 'https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RWrmXv'
-$WVDAgentInstaller       = 'WVD-Agent.msi'
-$WVDBootInstaller        = 'WVD-Bootloader.msi'
-$RegistrationToken       = ''
+$LocalAVDpath            = "c:\temp\avd\"
+$AVDAgentURI             = 'https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RWrmXv'
+$AVDBootURI              = 'https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RWrxrH'
+$AVDAgentInstaller       = 'AVD-Agent.msi'
+$AVDBootInstaller        = 'AVD-Bootloader.msi'
+$HPRegToken              = '<__param1__>'
 ####################################
 #    Test/Create Temp Directory    #
 ####################################
 if((Test-Path c:\temp) -eq $false) {
-    Add-Content -LiteralPath C:\New-WVDSessionHost.log "Create C:\temp Directory"
+    Add-Content -LiteralPath C:\New-AVDSessionHost.log "Create C:\temp Directory"
     Write-Host `
         -ForegroundColor Cyan `
         -BackgroundColor Black `
@@ -23,69 +26,70 @@ if((Test-Path c:\temp) -eq $false) {
     New-Item -Path c:\temp -ItemType Directory
 }
 else {
-    Add-Content -LiteralPath C:\New-WVDSessionHost.log "C:\temp Already Exists"
+    Add-Content -LiteralPath C:\New-AVDSessionHost.log "C:\temp Already Exists"
     Write-Host `
         -ForegroundColor Yellow `
         -BackgroundColor Black `
         "temp directory already exists"
 }
-if((Test-Path $LocalWVDpath) -eq $false) {
-    Add-Content -LiteralPath C:\New-WVDSessionHost.log "Create C:\temp\WVD Directory"
+if((Test-Path $LocalAVDpath) -eq $false) {
+    Add-Content -LiteralPath C:\New-AVDSessionHost.log "Create C:\temp\AVD Directory"
     Write-Host `
         -ForegroundColor Cyan `
         -BackgroundColor Black `
-        "creating c:\temp\wvd directory"
-    New-Item -Path $LocalWVDpath -ItemType Directory
+        "creating c:\temp\AVD directory"
+    New-Item -Path $LocalAVDpath -ItemType Directory
 }
 else {
-    Add-Content -LiteralPath C:\New-WVDSessionHost.log "C:\temp\WVD Already Exists"
+    Add-Content -LiteralPath C:\New-AVDSessionHost.log "C:\temp\AVD Already Exists"
     Write-Host `
         -ForegroundColor Yellow `
         -BackgroundColor Black `
-        "c:\temp\wvd directory already exists"
+        "c:\temp\AVD directory already exists"
 }
 
 
 #################################
-#    Download WVD Componants    #
+#    Download AVD Componants    #
 #################################
-Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading WVD Boot Loader"
-    Invoke-WebRequest -Uri $WVDBootURI -OutFile "$LocalWVDpath$WVDBootInstaller"
-Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading WVD Agent"
-    Invoke-WebRequest -Uri $WVDAgentURI -OutFile "$LocalWVDpath$WVDAgentInstaller"
+Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading AVD Agent"
+    Invoke-WebRequest -Uri $AVDAgentURI -OutFile "$LocalAVDpath$AVDAgentInstaller"
+Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading AVD Boot Loader"
+    Invoke-WebRequest -Uri $AVDBootURI -OutFile "$LocalAVDpath$AVDBootInstaller"
 
 ################################
-#    Install WVD Componants    #
+#    Install AVD Componants    #
 ################################
-Add-Content -LiteralPath C:\New-WVDSessionHost.log "Installing WVD Bootloader"
+# https://learn.microsoft.com/en-us/azure/virtual-desktop/create-host-pools-powershell?tabs=azure-powershell#update-the-agent
+Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Bootloader"
 $bootloader_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
-    -ArgumentList "/i $WVDBootInstaller", `
+    -ArgumentList "/i $AVDBootInstaller", `
         "/quiet", `
+        "/passive", `
         "/qn", `
         "/norestart", `
-        "/passive", `
-        "/l* $LocalWVDpath\AgentBootLoaderInstall.txt" `
+        "/l* $LocalAVDpath\AgentBootLoaderInstall.txt" `
     -Wait `
     -Passthru
 $sts = $bootloader_deploy_status.ExitCode
-Add-Content -LiteralPath C:\New-WVDSessionHost.log "Installing WVD Bootloader Complete"
+Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Bootloader Complete"
 Write-Output "Installing RDAgentBootLoader on VM Complete. Exit code=$sts`n"
 Wait-Event -Timeout 5
-Add-Content -LiteralPath C:\New-WVDSessionHost.log "Installing WVD Agent"
-Write-Output "Installing RD Infra Agent on VM $AgentInstaller`n"
+Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Agent"
 #
+Write-Output "Installing RD Infra Agent on VM $AgentInstaller`n"
 $agent_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
-    -ArgumentList "/i $WVDAgentInstaller", `
+    -ArgumentList "/i $AVDAgentInstaller", `
         "/quiet", `
         "/qn", `
         "/norestart", `
         "/passive", `
-        "REGISTRATIONTOKEN=$RegistrationToken", "/l* $LocalWVDpath\AgentInstall.txt" `
+        "REGISTRATIONTOKEN=$HPRegToken", "/l* $LocalAVDpath\AgentInstall.txt" `
     -Wait `
     -Passthru
-Add-Content -LiteralPath C:\New-WVDSessionHost.log "WVD Agent Install Complete"
+Add-Content -LiteralPath C:\New-AVDSessionHost.log "AVD Agent Install Complete"
 Wait-Event -Timeout 5
 
 #Restart-Service -Name RDAgentBootLoader

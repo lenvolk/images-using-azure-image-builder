@@ -14,7 +14,7 @@ $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
-        -CommandId RunPowerShellScript `
+        -CommandId 'RunPowerShellScript' `
         -ScriptPath ./fslogix_regkey.ps1
 }
 
@@ -32,7 +32,18 @@ $RunningVMs | ForEach-Object -Parallel {
 
 
 # Adding AVD agents to VMs
+$VMRG = "imageBuilderRG"
 $HPRG = "AADJoinedAVD"
 $HPName = "AADJoined"
+$RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RegistrationToken = New-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName -ExpirationTime $((get-date).ToUniversalTime().AddHours(3).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
 # $RegistrationToken = Get-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName
+$RunFilePath = '.\workspace_hostpool.ps1'
+((Get-Content -path $RunFilePath -Raw) -replace '<__param1__>', $RegistrationToken) | Set-Content -Path $RunFilePath
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -ScriptPath '.\workspace_hostpool.ps1'
+}
