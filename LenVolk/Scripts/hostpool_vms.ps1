@@ -1,4 +1,5 @@
-# Restart-Service -Name RDAgentBootLoader
+# T-Shooting
+# https://learn.microsoft.com/en-us/azure/virtual-desktop/troubleshoot-agent?WT.mc_id=Portal-Microsoft_Azure_WVD
 
 # $VmName = $env:computername | Select-Object
 # mkdir -Path c:\ImageBuilder -name $VmName -erroraction silentlycontinue
