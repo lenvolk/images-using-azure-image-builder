@@ -148,7 +148,7 @@ $VMIP=( az vm create --resource-group $aibRG --name $imageName `
 # Get disk size
 az vm show --resource-group $aibRG --name $imageName --query storageProfile.osDisk.diskSizeGb
 
-# Connect to VM
+# Connect to VM $VMIP= "20.110.82.149"
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
 mstsc /v:$VMIP /w:1440 /h:900
 

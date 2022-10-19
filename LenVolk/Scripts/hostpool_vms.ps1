@@ -106,10 +106,28 @@ $agent_deploy_status = Start-Process `
     -Passthru
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "AVD Agent Install Complete"
 Wait-Event -Timeout 5
+
+##############################
+#    Enable Azure AD Join    #
+##############################
+# Add-Content -LiteralPath C:\New-AVDessionHost.log "Enable Azure AD Join"
+# Push-Location 
+# Set-Location HKLM:\SOFTWARE\Microsoft
+# New-Item `
+#     -Path HKLM:\SOFTWARE\Microsoft `
+#     -Name RDInfraAgent `
+#     -Force
+# New-Item `
+#     -Path HKLM:\Software\Microsoft\RDInfraAgent `
+#     -Name AADJPrivate `
+#     -Force
+# Pop-Location
+
+
 ###
 
-Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name RegistrationToken -Value "$HPRegToken"
-Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name IsRegistered -Value 1 
+# Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name RegistrationToken -Value "$HPRegToken"
+# Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name IsRegistered -Value 1 
 
 # Restart-Service -Name RDAgentBootLoader
 # restart-service -name rdagent

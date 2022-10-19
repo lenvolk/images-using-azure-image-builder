@@ -110,8 +110,8 @@ RegistrationToken = $HPRegToken
 #################################
 Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading WVD Boot Loader"
     Invoke-WebRequest -Uri $WVDBootURI -OutFile "$LocalWVDpath$WVDBootInstaller"
-Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading FSLogix"
-    Invoke-WebRequest -Uri $FSLogixURI -OutFile "$LocalWVDpath$FSInstaller"
+# Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading FSLogix"
+#     Invoke-WebRequest -Uri $FSLogixURI -OutFile "$LocalWVDpath$FSInstaller"
 Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading WVD Agent"
     Invoke-WebRequest -Uri $WVDAgentURI -OutFile "$LocalWVDpath$WVDAgentInstaller"
 
@@ -125,7 +125,7 @@ Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading WVD Agent"
 #     -DestinationPath "$LocalWVDpath\FSLogix" `
 #     -Force `
 #     -Verbose
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+# [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 # cd $LocalWVDpath 
 # Add-Content -LiteralPath C:\New-WVDSessionHost.log "UnZip FXLogix Complete"
 
@@ -133,78 +133,78 @@ Add-Content -LiteralPath C:\New-WVDSessionHost.log "Downloading WVD Agent"
 ##############################
 #    OS Specific Settings    #
 ##############################
-$OS = (Get-WmiObject win32_operatingsystem).name
-If(($OS) -match 'server') {
-    Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows Server OS Detected"
-    write-host -ForegroundColor Cyan -BackgroundColor Black "Windows Server OS Detected"
-    If(((Get-WindowsFeature -Name RDS-RD-Server).installstate) -eq 'Installed') {
-        "Session Host Role is already installed"
-    }
-    Else {
-        "Installing Session Host Role"
-        Install-WindowsFeature `
-            -Name RDS-RD-Server `
-            -Verbose `
-            -LogPath "$LocalWVDpath\RdsServerRoleInstall.txt"
-    }
-    $AdminsKey = "SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
-    $UsersKey = "SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
-    $BaseKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey("LocalMachine","Default")
-    $SubKey = $BaseKey.OpenSubkey($AdminsKey,$true)
-    $SubKey.SetValue("IsInstalled",0,[Microsoft.Win32.RegistryValueKind]::DWORD)
-    $SubKey = $BaseKey.OpenSubKey($UsersKey,$true)
-    $SubKey.SetValue("IsInstalled",0,[Microsoft.Win32.RegistryValueKind]::DWORD)    
-}
-Else {
-    Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows Client OS Detected"
-    write-host -ForegroundColor Cyan -BackgroundColor Black "Windows Client OS Detected"
-    if(($OS) -match 'Windows 10') {
-        write-host `
-            -ForegroundColor Yellow `
-            -BackgroundColor Black  `
-            "Windows 10 detected...skipping to next step"
-        Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows 10 Detected...skipping to next step"     
-    }    
-    else {
-        $OSArch = (Get-WmiObject win32_operatingsystem).OSArchitecture
-        If(($OSArch) -match '64-bit') {
-            write-host `
-                -ForegroundColor Magenta  `
-                -BackgroundColor Black `
-                "Windows 7 x64 detected"
-            Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows 7 x64 Detected"
+# $OS = (Get-WmiObject win32_operatingsystem).name
+# If(($OS) -match 'server') {
+#     Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows Server OS Detected"
+#     write-host -ForegroundColor Cyan -BackgroundColor Black "Windows Server OS Detected"
+#     If(((Get-WindowsFeature -Name RDS-RD-Server).installstate) -eq 'Installed') {
+#         "Session Host Role is already installed"
+#     }
+#     Else {
+#         "Installing Session Host Role"
+#         Install-WindowsFeature `
+#             -Name RDS-RD-Server `
+#             -Verbose `
+#             -LogPath "$LocalWVDpath\RdsServerRoleInstall.txt"
+#     }
+#     $AdminsKey = "SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
+#     $UsersKey = "SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
+#     $BaseKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey("LocalMachine","Default")
+#     $SubKey = $BaseKey.OpenSubkey($AdminsKey,$true)
+#     $SubKey.SetValue("IsInstalled",0,[Microsoft.Win32.RegistryValueKind]::DWORD)
+#     $SubKey = $BaseKey.OpenSubKey($UsersKey,$true)
+#     $SubKey.SetValue("IsInstalled",0,[Microsoft.Win32.RegistryValueKind]::DWORD)    
+# }
+# Else {
+#     Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows Client OS Detected"
+#     write-host -ForegroundColor Cyan -BackgroundColor Black "Windows Client OS Detected"
+#     if(($OS) -match 'Windows 10') {
+#         write-host `
+#             -ForegroundColor Yellow `
+#             -BackgroundColor Black  `
+#             "Windows 10 detected...skipping to next step"
+#         Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows 10 Detected...skipping to next step"     
+#     }    
+#     else {
+#         $OSArch = (Get-WmiObject win32_operatingsystem).OSArchitecture
+#         If(($OSArch) -match '64-bit') {
+#             write-host `
+#                 -ForegroundColor Magenta  `
+#                 -BackgroundColor Black `
+#                 "Windows 7 x64 detected"
+#             Add-Content -LiteralPath C:\New-WVDSessionHost.log "Windows 7 x64 Detected"
 
 
-            #################################
-            #    Begin Win7x64 downloads    #
-            #################################
-            $Win7x64_WinUpdateRequest = [System.Net.WebRequest]::Create($Win7x64_UpdateURI)
-            $Win7x64_WMI5Request      = [System.Net.WebRequest]::Create($Win7x64_WMI5URI)            
-            $Win7x64_WVDAgentRequest  = [System.Net.WebRequest]::Create($Win7x64_WVDAgentURI)
-            $Win7x64_WVDBootRequest   = [System.Net.WebRequest]::Create($Win7x64_WVDBootMgrURI)
+#             #################################
+#             #    Begin Win7x64 downloads    #
+#             #################################
+#             $Win7x64_WinUpdateRequest = [System.Net.WebRequest]::Create($Win7x64_UpdateURI)
+#             $Win7x64_WMI5Request      = [System.Net.WebRequest]::Create($Win7x64_WMI5URI)            
+#             $Win7x64_WVDAgentRequest  = [System.Net.WebRequest]::Create($Win7x64_WVDAgentURI)
+#             $Win7x64_WVDBootRequest   = [System.Net.WebRequest]::Create($Win7x64_WVDBootMgrURI)
 
 
-            ################################
-            #    Begin Win7x64 Installs    #
-            ################################
-            write-host `
-                -ForegroundColor Magenta `
-                -BackgroundColor Black `
-                "...installing Update KB2592687 for x64"
-            Expand-Archive `
-                -LiteralPath "C:\temp\wvd\$Win7x64_WMI5Installer" `
-                -DestinationPath "$LocalWVDpath\Win7Wmi5x64" `
-                -Force `
-                -Verbose
-            $packageName = 'Win7AndW2K8R2-KB3191566-x64.msu'
-            $packagePath = 'C:\temp\wvd\Win7Wmi5x64'
-            $wusaExe = "$env:windir\system32\wusa.exe"
-            $wusaParameters += @("/quiet", "/promptrestart")
-            $wusaParameterString = $wusaParameters -join " "
-            & $wusaExe $wusaParameterString
-        }        
-    }
-}
+#             ################################
+#             #    Begin Win7x64 Installs    #
+#             ################################
+#             write-host `
+#                 -ForegroundColor Magenta `
+#                 -BackgroundColor Black `
+#                 "...installing Update KB2592687 for x64"
+#             Expand-Archive `
+#                 -LiteralPath "C:\temp\wvd\$Win7x64_WMI5Installer" `
+#                 -DestinationPath "$LocalWVDpath\Win7Wmi5x64" `
+#                 -Force `
+#                 -Verbose
+#             $packageName = 'Win7AndW2K8R2-KB3191566-x64.msu'
+#             $packagePath = 'C:\temp\wvd\Win7Wmi5x64'
+#             $wusaExe = "$env:windir\system32\wusa.exe"
+#             $wusaParameters += @("/quiet", "/promptrestart")
+#             $wusaParameterString = $wusaParameters -join " "
+#             & $wusaExe $wusaParameterString
+#         }        
+#     }
+# }
 
 
 ################################
