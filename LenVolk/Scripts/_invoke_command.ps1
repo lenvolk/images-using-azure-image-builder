@@ -48,5 +48,5 @@ $RunningVMs | ForEach-Object -Parallel {
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
         -Parameter @{HPRegToken = $using:RegistrationToken} `
-        -ScriptPath '.\hostpool_vms.ps1'
+        -ScriptPath '.\hostpool_vmsDC.ps1'
 }
