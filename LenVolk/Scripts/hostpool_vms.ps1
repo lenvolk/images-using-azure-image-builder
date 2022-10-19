@@ -1,5 +1,3 @@
-# Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name RegistrationToken -Value "<Reg Token>"
-# Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name IsRegistered -Value 1 
 # Restart-Service -Name RDAgentBootLoader
 
 # $VmName = $env:computername | Select-Object
@@ -23,6 +21,13 @@ $AVDBootInstaller        = 'AVD-Bootloader.msi'
 ####################################
 #    Test/Create Temp Directory    #
 ####################################
+New-Item -Path c:\ -Name New-AVDSessionHost.log -ItemType File
+Add-Content `
+-LiteralPath C:\New-AVDSessionHost.log `
+"
+RegistrationToken = $HPRegToken
+"
+
 if((Test-Path c:\temp) -eq $false) {
     Add-Content -LiteralPath C:\New-AVDSessionHost.log "Create C:\temp Directory"
     Write-Host `
@@ -58,6 +63,8 @@ else {
 #################################
 #    Download AVD Componants    #
 #################################
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading AVD Agent"
     Invoke-WebRequest -Uri $AVDAgentURI -OutFile "$LocalAVDpath$AVDAgentInstaller"
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading AVD Boot Loader"
@@ -67,6 +74,8 @@ Add-Content -LiteralPath C:\New-AVDSessionHost.log "Downloading AVD Boot Loader"
 #    Install AVD Componants    #
 ################################
 # https://learn.microsoft.com/en-us/azure/virtual-desktop/create-host-pools-powershell?tabs=azure-powershell#update-the-agent
+
+###
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Bootloader"
 $bootloader_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
@@ -82,8 +91,8 @@ $sts = $bootloader_deploy_status.ExitCode
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Bootloader Complete"
 Write-Output "Installing RDAgentBootLoader on VM Complete. Exit code=$sts`n"
 Wait-Event -Timeout 5
+###
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "Installing AVD Agent"
-#
 Write-Output "Installing RD Infra Agent on VM $AgentInstaller`n"
 $agent_deploy_status = Start-Process `
     -FilePath "msiexec.exe" `
@@ -97,7 +106,12 @@ $agent_deploy_status = Start-Process `
     -Passthru
 Add-Content -LiteralPath C:\New-AVDSessionHost.log "AVD Agent Install Complete"
 Wait-Event -Timeout 5
+###
+
+Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name RegistrationToken -Value "$HPRegToken"
+Set-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent -Name IsRegistered -Value 1 
 
 # Restart-Service -Name RDAgentBootLoader
 # restart-service -name rdagent
-Restart-Computer
+Add-Content -LiteralPath C:\New-AVDSessionHost.log "Process Complete - REBOOT"
+Restart-Computer -Force 
