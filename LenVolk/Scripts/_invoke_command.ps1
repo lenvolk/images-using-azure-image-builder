@@ -15,7 +15,7 @@ $RunningVMs | ForEach-Object -Parallel {
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
-        -ScriptPath ./fslogix_regkey.ps1
+        -ScriptPath './fslogix_regkey.ps1'
 }
 
 # Testing passing parameters to the VM's PS script
