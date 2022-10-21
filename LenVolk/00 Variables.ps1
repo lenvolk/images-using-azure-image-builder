@@ -1,7 +1,12 @@
+# $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+# Connect-AzAccount -Subscription $subscription
+# Disconnect-AzAccount
+
+
 # Register providers / check provider state
 # Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network |
 #   Where-Object RegistrationState -ne Registered |
-#     Register-AzResourceProvider
+#   Register-AzResourceProvider
 # OR you can run Invoke-AIBProviderCheck
 
 
@@ -12,11 +17,6 @@
 # Install-Module -Name Az.ImageBuilder -RequiredVersion 0.1.2
 # PS 7 
 # iex "&amp; { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
-
-
-# $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
-# Connect-AzAccount -Subscription $subscription
-# Disconnect-AzAccount
 
 
 $aibRG = "imageBuilderRG"
