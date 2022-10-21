@@ -1,3 +1,7 @@
+# !!!  AAD SA join !!! 
+# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts-preview
+# !!!
+
 # Download AzFilesHybrid
 # https://github.com/Azure-Samples/azure-files-samples/releases
 

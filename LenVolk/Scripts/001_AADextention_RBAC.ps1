@@ -4,7 +4,10 @@ $ResourceGroup = "imageBuilderRG"
 $location = "eastus2"
 
 
-# system-assigned managed identity
+
+###################################
+# System-assigned managed identity
+###################################
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RunningVMs | ForEach-Object -Parallel {
     Update-AzVM `
@@ -15,7 +18,10 @@ $RunningVMs | ForEach-Object -Parallel {
 # To remove identity
 # Update-AzVm -ResourceGroupName $ResourceGroup -VM $vm -IdentityType None 
 
+# 
+################################
 # Azure AD Join domain extension
+################################
 $domainJoinName = "AADLoginForWindows"
 $domainJoinType = "AADLoginForWindows"
 $domainJoinPublisher = "Microsoft.Azure.ActiveDirectory"
@@ -32,7 +38,10 @@ $RunningVMs | ForEach-Object -Parallel {
         -Name $using:domainJoinName
 }
 
-# To Add RBAC to RG
+
+################################
+#    To Add RBAC to RG         #
+################################
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
 $RoleName = (Get-AzRoleDefinition -Name "Virtual Machine User Login").name
 

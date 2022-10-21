@@ -3,16 +3,20 @@
 # Disconnect-AzAccount
 
 
-# Register providers / check provider state
+# Register AIB providers / check provider state
 # Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network |
 #   Where-Object RegistrationState -ne Registered |
 #   Register-AzResourceProvider
 # OR you can run Invoke-AIBProviderCheck
 
 
-
-# Ref https://powers-hell.com/2020/09/20/preparing-custom-image-templates-with-azure-image-builder-powershell/
-
+# Azure Az module
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+# Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
+#
+# Azure CLI
+# $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+#
 # Install-Module Az.ImageBuilder.Tools
 # Install-Module -Name Az.ImageBuilder -RequiredVersion 0.1.2
 # PS 7 
