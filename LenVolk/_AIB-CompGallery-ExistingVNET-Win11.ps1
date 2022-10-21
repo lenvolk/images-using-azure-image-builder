@@ -4,11 +4,14 @@
 # Set Subscription, RG Name etc.
 . '.\00 Variables.ps1'
 
-# Set Image Name
+
+#######################################
+#              Set Names              #
+#######################################
+$identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
+
 $imageName="ChocoWin11m365"
 
-# Build addl. resource Names 
-$identityName="aib"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
 $imageRoleDefName="Azure Image Builder Image Def"+(Get-Random -Minimum 100000000 -Maximum 99999999999)
 # Existing Role
 # $imageRoleDefName="Azure Image Builder Image Def1236734744"
@@ -16,7 +19,10 @@ $imageRoleDefName="Azure Image Builder Image Def"+(Get-Random -Minimum 100000000
 # Set Azure subscription
 az account set -s $subscription
 
-# Create resource group
+#######################################
+#         Create resource group       #
+#######################################
+
 $RGScope=(az group create -n $aibRG -l $location --query id -o tsv)
 
 # Get existing Identity
@@ -25,12 +31,18 @@ $RGScope=(az group create -n $aibRG -l $location --query id -o tsv)
 # $imgBuilderCliId=$Identity.clientId
 # $imgBuilderId=$Identity.id
 
-# Create Identity
+#######################################
+#         Create Identity             #
+#######################################
+
 $Identity=(az identity create -g $aibRG -n $identityName) | ConvertFrom-Json
 $imgBuilderCliId=$Identity.clientId
 $imgBuilderId=$Identity.id
 
-# Get role definition, modify, create and assign
+#######################################
+# Get role definition, modify assign  #
+#######################################
+# 
 $AzureRoleAIB = Get-Content 'AzureRoleAIB.json.dist' -raw | ConvertFrom-Json
 $AzureRoleAIB.Name=$imageRoleDefName
 $AzureRoleAIB.AssignableScopes[0]=$RGScope
@@ -47,7 +59,9 @@ az role definition create --role-definition ./AzureRoleAIB.json
 
 az role assignment create --assignee $imgBuilderCliId --role $imageRoleDefName --scope $RGScope
 
-# Create VNET and Subnet
+#######################################
+#     Create VNET and Subnet          #
+#######################################
 $VNETName="aibVNet"
 $SubnetName="aibSubnet"
 az network vnet create --resource-group $aibRG --address-prefixes 10.150.0.0/24 --name $VNETName `
@@ -58,18 +72,26 @@ az network vnet subnet update --name $SubnetName --resource-group $aibRG --vnet-
 # Retrieve the ID of that Subnet
 $SubnetId=(az network vnet subnet show --resource-group $aibRG --vnet-name $VNETName --name=$SubnetName --query id -o tsv)
 
-# Build VM Profile
+#######################################
+#     Build VM Profile                #
+#######################################
 $vmProfile = [pscustomobject]@{
         osDiskSizeGB=150
         vmSize="Standard_D8s_v3"
         vnetConfig=[pscustomobject]@{subnetId=$SubnetId}
 }
 
-# Create Shared Image Gallery 
+#######################################
+#     Create Shared Image Gallery     #
+#######################################
+#  
 $sigName="aibSig"
 az sig create -g $aibRG --gallery-name $sigName
 
-# Create Imagedefinition
+#######################################
+#   Create Imagedefinition            #
+#######################################
+
 $sig_publisher="myPublisher"
 $sig_offer="myOffer"
 $sig_sku="mySku"
@@ -83,11 +105,15 @@ $SigDef=(az sig image-definition create -g $aibRG --gallery-name $sigName `
 
 $SIGLocations=$location,"eastus","westeurope"
 
+#######################################
+#              Build JSON             #
+#######################################
+
 #Ref of the template https://learn.microsoft.com/en-us/azure/templates/microsoft.virtualmachineimages/2020-02-14/imagetemplates?pivots=deployment-language-bicep
 # Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365   #windows-10
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 
-# Build JSON
+
 
 $TemplateJSON = Get-Content 'ImageTemplate.json.dist' -raw | ConvertFrom-Json
 $TemplateJSON.location=$location
@@ -123,7 +149,10 @@ $TemplateJSON.properties.customize[1].inline
 $TemplateJSON.properties.customize[1].validExitCodes
 
 
-# Delete and re-create template
+#######################################
+#    Delete and re-create template    #
+#######################################
+
 # az image builder delete -g $aibRG -n $imageName 
 az image builder create -g $aibRG -n $imageName --image-template AIB-ChocoWin11.json
 
@@ -137,7 +166,9 @@ az image builder show --name $imageName --resource-group $aibRG --query lastRunS
 $ImageID = (AzGalleryImageversion -ResourceGroupName $aibRG -GalleryName $sigName `
 -GalleryImageDefinitionName $imageName).id | Sort-Object -bottom 1
 
-
+#######################################
+#         Test VMs creation           #
+#######################################
 # Create VM $VMIP = "20.122.68.74"
 $VMIP=( az vm create --resource-group $aibRG --name $imageName `
                     --admin-username $VM_User --admin-password $WinVM_Password `
@@ -145,12 +176,27 @@ $VMIP=( az vm create --resource-group $aibRG --name $imageName `
                     --size 'Standard_B2ms' --tags 'demo=LenVolk' `
                     --query publicIpAddress -o tsv)
 
+# To test VM creation by regions
+# foreach($loc in $SIGLocations) {
+#         az vm create --resource-group $aibRG --name $imageName `
+#                     --admin-username $VM_User --admin-password $WinVM_Password `
+#                     --image $ImageID --location $location --public-ip-sku Standard `
+#                     --size 'Standard_B2ms' --tags 'demo=LenVolk' `
+#                     --query publicIpAddress -o tsv } 
+
+# Check out VMs
+az vm list -g $aibRG -o table
+
 # Get disk size
 az vm show --resource-group $aibRG --name $imageName --query storageProfile.osDisk.diskSizeGb
 
 # Connect to VM $VMIP= "20.110.82.149"
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
 mstsc /v:$VMIP /w:1440 /h:900
+
+#######################################
+#            AIB Logs                 #
+#######################################
 
 # Download Logfile from AIB SA
 # Point to logfile
@@ -175,7 +221,9 @@ get-content Log_Clean.log | foreach {
 code Log_Clean_2.log
 
 
-
+#######################################
+#         Clean UP                    #
+#######################################
 # Delete VMs
 $VMs=(az vm list -g $aibRG | ConvertFrom-Json)
 foreach($VM in $VMs) {
