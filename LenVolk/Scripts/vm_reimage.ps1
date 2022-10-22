@@ -3,6 +3,11 @@ param (
     [string]$ImageId
 )
 
+# $VMresourceGroup ="IMAGEBUILDERRG"
+# $VMname = "ChocoWin11m365"
+# $current_vm = Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VMname
+# $current_vm.StorageProfile.ImageReference.Id
+
 function Reimage-Vms {
     param (
         $vms
@@ -10,7 +15,7 @@ function Reimage-Vms {
     $vms | ForEach-Object -Parallel {
         try {
             $current_vm = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.Name
-            $current_vm.StorageProfile.ImageReference.Id = "/subscriptions/xxxxxxx/resourceGroups/xxxxx/providers/Microsoft.Compute/galleries/xxxxxx/images/win10ms/versions/0.3.1"
+            $current_vm.StorageProfile.ImageReference.Id = $ImageId
             Update-AzVm -ResourceGroupName $_.ResourceGroupName -VM $current_vm
         }
         catch {

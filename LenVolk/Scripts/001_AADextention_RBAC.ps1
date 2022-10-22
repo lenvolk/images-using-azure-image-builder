@@ -49,7 +49,7 @@ New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
 -ResourceGroupName $ResourceGroup
 
-# For SA domain join SMB
+# For SA domain joined SMB RBAC
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
 $RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Contributor").name
 
@@ -60,8 +60,8 @@ New-AzRoleAssignment -ObjectId $GroupId `
 # OR
 # https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-assign-permissions?tabs=azure-powershell#share-level-permissions-for-all-authenticated-identities
 
-$defaultPermission = "StorageFileDataSmbShareContributor" # Set the default permission of your choice
+# $defaultPermission = "StorageFileDataSmbShareContributor" # Set the default permission of your choice
 
-$account = Set-AzStorageAccount -ResourceGroupName $ResourceGroup -AccountName "imagesapilot" -DefaultSharePermission $defaultPermission
+# $account = Set-AzStorageAccount -ResourceGroupName $ResourceGroup -AccountName "imagesapilot" -DefaultSharePermission $defaultPermission
 
-$account.AzureFilesIdentityBasedAuth
+# $account.AzureFilesIdentityBasedAuth
