@@ -1,0 +1,19 @@
+{
+	"managed_image_rg": "poc-common-rg",
+	"sa_name": "imageartifactsa01",
+	"ProfilePath": "wvdpocprofilesa.file.core.windows.net\\wvdnonpersistent",
+	"RedirXML": "wvdpocprofilesa.file.core.windows.net\\wvdnonpersistent",
+	"LocalWVDpath": "C:\\\\installers\\FsLogix\\x64\\Release",
+	"managed_image_name": "win10-v18nfe",
+	"vmss_vm_size": "Standard_d4s_v3",
+	"src_img_pub": "MicrosoftWindowsDesktop",
+	"scr_img_offer": "Windows-10",
+	"scr_img_sku": "20h1-evd",
+	"dst_sig_rg": "poc-common-rg",
+	"dst_sig_name": "poccommonsig",
+	"dst_sig_image": "win10ms",
+	"dst_sig_version": "0.3.2",
+	"virtual_network_resource_group_name": "image-artifact-rg",
+	"virtual_network_name": "packer-vnet",
+	"virtual_network_subnet_name": "imagesubnet"
+}
