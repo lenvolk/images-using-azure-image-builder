@@ -16,16 +16,15 @@ $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.Po
 $AutomationAccount = "automation"
 $AutomationRG = "automation"
 
-   $RunningVMs | ForEach-Object -Parallel {
-        Register-AzAutomationDscNode `
-           -AzureVMName $_.Name `
-           -AzureVMLocation $_.Location `
-           -NodeConfigurationName "file.localhost" `
-           -ConfigurationMode "ApplyAndAutocorrect" `
-           -AutomationAccountName $using:AutomationAccount `
-           -ResourceGroupName $using:AutomationRG -Verbose
-   }
-
+$RunningVMs | ForEach-Object -Parallel {
+    Register-AzAutomationDscNode `
+        -AzureVMName $_.Name `
+        -AzureVMLocation $_.Location `
+        -NodeConfigurationName "file.localhost" `
+        -ConfigurationMode "ApplyAndAutocorrect" `
+        -AutomationAccountName $using:AutomationAccount `
+        -ResourceGroupName $using:AutomationRG -Verbose
+}
 
 # $avdDscSettings = @{
 #     Name               = "Microsoft.PowerShell.DSC"
