@@ -39,9 +39,6 @@ Get-AzAutomationDscNodeConfiguration `
 $VMRG = "lab1hprg"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 
-$AutomationAccount = "automation"
-$AutomationRG = "automation"
-
 $RunningVMs | ForEach-Object -Parallel {
     Register-AzAutomationDscNode `
         -AzureVMName $_.Name `
