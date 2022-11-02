@@ -26,9 +26,7 @@ $AVDBootInstaller        = 'AVD-Bootloader.msi'
 New-Item -Path c:\ -Name New-AVDSessionHost.log -ItemType File
 Add-Content `
 -LiteralPath C:\New-AVDSessionHost.log `
-"
-RegistrationToken = $HPRegToken
-"
+"RegistrationToken = $HPRegToken"
 
 if((Test-Path c:\temp) -eq $false) {
     Add-Content -LiteralPath C:\New-AVDSessionHost.log "Create C:\temp Directory"
