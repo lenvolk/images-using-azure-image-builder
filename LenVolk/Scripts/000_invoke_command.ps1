@@ -38,17 +38,19 @@ $RunningVMs | ForEach-Object -Parallel {
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
         -Parameter @{ProfilePath = $using:ProfilePath} `
-        -ScriptPath './avd_fslogix.ps1'
+        -ScriptPath './fslogix_install.ps1'
 }
 
 ################################
 # Adjusting Fslogix RegKey     #
 ################################
+$ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles\profiles"
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
+        -Parameter @{ProfilePath = $using:ProfilePath} `
         -ScriptPath './fslogix_regkey.ps1'
 }
 
