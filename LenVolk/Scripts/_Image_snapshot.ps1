@@ -69,7 +69,7 @@
     Create an image and add it to an Azure Compute Gallery:
     .\SnapImage.ps1 -refVmName "<ComputerName>" -refVmRg '<RGName>' -galDeploy -galName '<Azure Compute Gallery>' -galDefName '<Image Definition>'
     #LenVolk
-    .\_Image_snapshot.ps1 -refVmName "GoldenWin11" -refVmRg 'AVDPILOT' -galDeploy -galName 'LabSIG' -galrg 'SIGRG' -galDefName 'avd-win11'
+    .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galDeploy -galName 'aibSig' -galrg 'imageBuilderRG' -galDefName 'ChocoWin11m365'
 #>
 
 
