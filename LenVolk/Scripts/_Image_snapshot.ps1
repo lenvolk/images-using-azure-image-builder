@@ -64,10 +64,10 @@
 
 .EXAMPLE
     Create an image and add it to the source computers resource group:
-    .\SnapImage.ps1 -refVmName "<ComputerName>" -refVmRg '<RGName>' $vnetRG 'IMAGEBUILDERRG' -vnetName 'aibVNet' - subnetName 'aibSubnet'
+    .\SnapImage.ps1 -refVmName "<ComputerName>" -refVmRg '<RGName>' -vnetRG 'IMAGEBUILDERRG' -vnetName 'aibVNet' -subnetName 'aibSubnet'
 
     Create an image and add it to an Azure Compute Gallery:
-    .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galDeploy -galName 'aibSig' -galrg 'IMAGEBUILDERRG' -galDefName 'ChocoWin11m365' $vnetRG 'IMAGEBUILDERRG' -vnetName 'aibVNet' - subnetName 'aibSubnet'
+    .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galName 'aibSig' -galDefName 'ChocoWin11m365' -vnetName 'aibVNet' -subnetName 'aibSubnet'
 #>
 
 
@@ -75,9 +75,7 @@
 # $refVmName = 'ChocoWin11m365' 
 # $refVmRg = 'IMAGEBUILDERRG' 
 # $galName = 'aibSig' 
-# $galrg = 'IMAGEBUILDERRG' 
 # $galDefName = 'ChocoWin11m365'
-# $vnetRG = 'IMAGEBUILDERRG' 
 # $vnetName = 'aibVNet' 
 # $subnetName = 'aibSubnet'
 # $cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1'
@@ -92,12 +90,10 @@ param (
     [Parameter(Mandatory = $false)][string]$cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1',
     [Parameter(Mandatory = $false)][switch]$galDeploy = $true,
     [Parameter(Mandatory = $false)][string]$galName,
-    [Parameter(Mandatory = $false)][string]$galrg,
     [parameter(Mandatory = $false)][string]$galDefName,
     [parameter(Mandatory = $false)][string]$delSnap = $true,
     [Parameter(Mandatory = $true)][string]$vnetName,
     [Parameter(Mandatory = $true)][string]$subnetName,
-    [Parameter(Mandatory = $true)][string]$vnetRG,
     [Parameter(Mandatory = $false)][string]$DiskSizeInGB
 )
 
@@ -105,7 +101,7 @@ param (
 #Validate the Azure Compute Gallery settings were added correctly if used
 Try {
     if ($galDeploy -eq $true) {
-        $gallery = Get-AzGallery -ErrorAction Stop -Name $galName -ResourceGroupName $galrg
+        $gallery = Get-AzGallery -ErrorAction Stop -Name $galName -ResourceGroupName $refVmRg
         $galleryDef = Get-AzGalleryImageDefinition -ErrorAction Stop -ResourceGroupName $gallery.ResourceGroupName -GalleryName $galName -GalleryImageDefinitionName $galDefName
     }
 }
@@ -168,7 +164,7 @@ Catch {
     Break
 }
 
-$SubnetId=(az network vnet subnet show --resource-group $vnetRG --vnet-name $vnetName --name=$subnetName --query id -o tsv)
+$SubnetId=(az network vnet subnet show --resource-group $refVmRg --vnet-name $vnetName --name=$subnetName --query id -o tsv)
 
 ###
 Try {
@@ -337,26 +333,23 @@ foreach($res in $Resources) {
 #         Test VMs creation           #
 #######################################
 
-# $ImageID = (AzGalleryImageversion -ResourceGroupName $refVmRg -GalleryName $gallery.name `
-# -GalleryImageDefinitionName $galDefName).id | Sort-Object -Top 1
+# $VM_User = "aibadmin"
+# $WinVM_Password = "P@ssw0rdP@ssw0rd"
+# $securePassword = ConvertTo-SecureString $WinVM_Password -AsPlainText -Force
 
-$VM_User = "aibadmin"
-$WinVM_Password = "P@ssw0rdP@ssw0rd"
-$securePassword = ConvertTo-SecureString $WinVM_Password -AsPlainText -Force
+# $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM" `
+#                     --admin-username $VM_User --admin-password $WinVM_Password `
+#                     --image $GalImageVer.id --location $location --public-ip-sku Standard `
+#                     --size 'Standard_B2ms' --tags 'Name=LenVolkImage' `
+#                     --query publicIpAddress -o tsv)
 
-$VMIP=( az vm create --resource-group $refVmRg --name "pilotVM" `
-                    --admin-username $VM_User --admin-password $WinVM_Password `
-                    --image $GalImageVer.id --location $location --public-ip-sku Standard `
-                    --size 'Standard_B2ms' --tags 'Name=LenVolkImage' `
-                    --query publicIpAddress -o tsv)
+# # Connect to VM
+# cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
+# mstsc /v:$VMIP /w:1440 /h:900
 
-# Connect to VM
-cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
-mstsc /v:$VMIP /w:1440 /h:900
-
-# Delete
-az vm delete -n "pilotVM" -g $refVmRg --yes
-$Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
-foreach($res in $Resources) {
-    az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
-}
+# # Delete
+# az vm delete -n "pilotVM" -g $refVmRg --yes
+# $Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
+# foreach($res in $Resources) {
+#     az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
+# }
