@@ -47,15 +47,14 @@ $AzureRoleAIB = Get-Content 'AzureRoleAIB.json.dist' -raw | ConvertFrom-Json
 $AzureRoleAIB.Name=$imageRoleDefName
 $AzureRoleAIB.AssignableScopes[0]=$RGScope
 $AzureRoleAIB | ConvertTo-Json | Out-File "AzureRoleAIB.json"
+az role definition create --role-definition ./AzureRoleAIB.json
 
 # Adjust permissions - if required, add VNet RG or create separate role
 $AzureRoleAIB.Actions += "Microsoft.Network/virtualNetworks/read"
 # We will also need this - otherwise, we'll get a generic build error
 $AzureRoleAIB.Actions += "Microsoft.Network/virtualNetworks/subnets/join/action"
 $AzureRoleAIB | ConvertTo-Json | Out-File "AzureRoleAIB.json"
-
-az role definition create --role-definition ./AzureRoleAIB.json
-# az role definition update --role-definition ./AzureRoleAIB.json
+az role definition update --role-definition ./AzureRoleAIB.json
 
 az role assignment create --assignee $imgBuilderCliId --role $imageRoleDefName --scope $RGScope
 
@@ -71,15 +70,6 @@ az network vnet subnet update --name $SubnetName --resource-group $aibRG --vnet-
                               --disable-private-link-service-network-policies true 
 # Retrieve the ID of that Subnet
 $SubnetId=(az network vnet subnet show --resource-group $aibRG --vnet-name $VNETName --name=$SubnetName --query id -o tsv)
-
-#######################################
-#     Build VM Profile                #
-#######################################
-$vmProfile = [pscustomobject]@{
-        osDiskSizeGB=150
-        vmSize="Standard_D8s_v3"
-        vnetConfig=[pscustomobject]@{subnetId=$SubnetId}
-}
 
 #######################################
 #     Create Shared Image Gallery     #
@@ -106,11 +96,20 @@ $SigDef=(az sig image-definition create -g $aibRG --gallery-name $sigName `
 $SIGLocations=$location,"eastus","westeurope"
 
 #######################################
+#     Build VM Profile                #
+#######################################
+$vmProfile = [pscustomobject]@{
+    osDiskSizeGB=150
+    vmSize="Standard_D8s_v3"
+    vnetConfig=[pscustomobject]@{subnetId=$SubnetId}
+}
+
+#######################################
 #              Build JSON             #
 #######################################
 
 #Ref of the template https://learn.microsoft.com/en-us/azure/templates/microsoft.virtualmachineimages/2020-02-14/imagetemplates?pivots=deployment-language-bicep
-# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365   #windows-10
+# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 
 
