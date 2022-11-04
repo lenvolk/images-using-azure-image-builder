@@ -64,25 +64,41 @@
 
 .EXAMPLE
     Create an image and add it to the source computers resource group:
-    .\SnapImage.ps1 -refVmName "<ComputerName>" -refVmRg '<RGName>'   
+    .\SnapImage.ps1 -refVmName "<ComputerName>" -refVmRg '<RGName>' $vnetRG 'IMAGEBUILDERRG' -vnetName 'aibVNet' - subnetName 'aibSubnet'
 
     Create an image and add it to an Azure Compute Gallery:
-    .\SnapImage.ps1 -refVmName "<ComputerName>" -refVmRg '<RGName>' -galDeploy -galName '<Azure Compute Gallery>' -galDefName '<Image Definition>'
-    #LenVolk
-    .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galDeploy -galName 'aibSig' -galrg 'imageBuilderRG' -galDefName 'ChocoWin11m365'
+    .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galDeploy -galName 'aibSig' -galrg 'IMAGEBUILDERRG' -galDefName 'ChocoWin11m365' $vnetRG 'IMAGEBUILDERRG' -vnetName 'aibVNet' - subnetName 'aibSubnet'
 #>
 
+
+# Testing
+# $refVmName = 'ChocoWin11m365' 
+# $refVmRg = 'IMAGEBUILDERRG' 
+# $galName = 'aibSig' 
+# $galrg = 'IMAGEBUILDERRG' 
+# $galDefName = 'ChocoWin11m365'
+# $vnetRG = 'IMAGEBUILDERRG' 
+# $vnetName = 'aibVNet' 
+# $subnetName = 'aibSubnet'
+# $cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1'
+# $galDeploy = $true
+# $delSnap = $true
+# $DiskSizeInGB = '150'
 
 [CmdletBinding()]
 param (
     [Parameter(Mandatory = $true)][string]$refVmName,
     [Parameter(Mandatory = $true)][string]$refVmRg,
-    [Parameter(Mandatory = $false)][string]$cseURI = 'https://raw.githubusercontent.com/tsrob50/WVD-Public/master/SysprepCSE.ps1',
+    [Parameter(Mandatory = $false)][string]$cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1',
     [Parameter(Mandatory = $false)][switch]$galDeploy = $true,
     [Parameter(Mandatory = $false)][string]$galName,
     [Parameter(Mandatory = $false)][string]$galrg,
     [parameter(Mandatory = $false)][string]$galDefName,
-    [parameter(Mandatory = $false)][string]$delSnap = $true
+    [parameter(Mandatory = $false)][string]$delSnap = $true,
+    [Parameter(Mandatory = $true)][string]$vnetName,
+    [Parameter(Mandatory = $true)][string]$subnetName,
+    [Parameter(Mandatory = $true)][string]$vnetRG,
+    [Parameter(Mandatory = $false)][string]$DiskSizeInGB
 )
 
 
@@ -124,7 +140,8 @@ $location = (Get-AzResourceGroup -Name $refVmRg).Location
 try {
     Write-Host "Creating a snapshot of $refVmName"
     $vm = Get-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $refVmName
-    $snapshotConfig = New-AzSnapshotConfig -ErrorAction Stop -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $vm.Location -CreateOption copy -SkuName Standard_LRS
+    $snapshotConfig = New-AzSnapshotConfig -ErrorAction Stop -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $vm.Location -CreateOption copy -SkuName Standard_LRS -Tag @{Name="LenVolkImage";Image="Pilot"}
+    #$snapshot = Update-AzSnapshot -ErrorAction Stop -Snapshot $snapshotConfig -SnapshotName "$refVmName$date" -ResourceGroupName $refVmRg
     $snapshot = New-AzSnapshot -ErrorAction Stop -Snapshot $snapshotConfig -SnapshotName "$refVmName$date" -ResourceGroupName $refVmRg
 }
 catch {
@@ -132,23 +149,7 @@ catch {
     Write-Error ('Error creating snapshot from reference computer ' + $ErrorMessage)
     Break
 }
-#For testing
-#Get the snapshot $snapshot = Get-AzSnapshot -ResourceGroupName $refVmRg
-#endregion
 
-#region Create a resource group for the reference VM
-Try {
-    Write-Host "Creating the capture Resource Group"
-    $capVmRg = New-AzResourceGroup -Name ($refVmName + $date + "_ImageRG") -Location $location
-}
-Catch {
-    $ErrorMessage = $_.Exception.message
-    Write-Error ('Error creating the resource group ' + $ErrorMessage)
-    Break
-}
-#endregion
-
-#region Create a VM from the snapshot
 #Create the managed disk from the Snapshot
 Try {
     $osDiskConfig = @{
@@ -156,78 +157,28 @@ Try {
         Location         = $location
         CreateOption     = 'copy'
         SourceResourceID = $snapshot.Id
+        Tag              = @{Name="LenVolkImage";Image="Pilot"}
     }
     write-host "creating the OS disk form the snapshot"
-    $osDisk = New-AzDisk -ErrorAction Stop -DiskName 'TempOSDisk' -ResourceGroupName $capVmRg.ResourceGroupName -disk (New-AzDiskConfig @osDiskConfig)
+    $osDisk = New-AzDisk -ErrorAction Stop -DiskName 'TempOSDisk' -ResourceGroupName $refVmRg -disk (New-AzDiskConfig @osDiskConfig)
 }
 Catch {
     $ErrorMessage = $_.Exception.message
     Write-Error ('Error creating the managed disk ' + $ErrorMessage)
     Break
 }
-#Create a new VNet 
-Try {
-    Write-Host "Creating the VNet and Subnet"
-    $singleSubnet = New-AzVirtualNetworkSubnetConfig -ErrorAction Stop -Name ('tempSubnet' + $date) -AddressPrefix '10.0.0.0/24' 
-    $vnetConfig = @{
-        ErrorAction       = 'Stop'
-        Name              = ('tempSubnet' + $date) 
-        ResourceGroupName = $capVmRg.ResourceGroupName
-        Location          = $location
-        AddressPrefix     = "10.0.0.0/16"
-        Subnet            = $singleSubnet
-    }
-    $vnet = New-AzVirtualNetwork @vnetConfig 
-}
-Catch {
-    $ErrorMessage = $_.Exception.message
-    Write-Error ('Error creating the temp VNet ' + $ErrorMessage)
-    Break
-}
-#Create the NSG
-Try {
-    $nsgRuleConfig = @{
-        Name                     = 'myRdpRule'
-        ErrorAction              = 'Stop'
-        Description              = 'Allow RDP'
-        Access                   = 'allow'  
-        Protocol                 = 'Tcp'
-        Direction                = 'Inbound'
-        Priority                 = '110'
-        SourceAddressPrefix      = 'Internet'
-        SourcePortRange          = '*'
-        DestinationAddressPrefix = '*'
-        DestinationPortRange     = '3389'
-    }
-    write-host "Creating the NSG"
-    $rdpRule = New-AzNetworkSecurityRuleConfig @nsgRuleConfig
-    $nsg = New-AzNetworkSecurityGroup -ErrorAction Stop -ResourceGroupName $capVmRg.ResourceGroupName -Location $location -Name 'tempNSG' -SecurityRules $rdpRule
-}
-Catch {
-    $ErrorMessage = $_.Exception.message
-    Write-Error ('Error creating the NSG ' + $ErrorMessage)
-    Break
-}
-#Create the public IP address
-Try {
-    Write-Host "Creating the public IP address"
-    $pip = New-AzPublicIpAddress -ErrorAction Stop -Name 'tempPip' -ResourceGroupName $capVmRg.ResourceGroupName -Location $location -AllocationMethod Dynamic
-}
-Catch {
-    $ErrorMessage = $_.Exception.message
-    Write-Error ('Error creating the public IP address ' + $ErrorMessage)
-    Break
-}
-#Create the NIC
+
+$SubnetId=(az network vnet subnet show --resource-group $vnetRG --vnet-name $vnetName --name=$subnetName --query id -o tsv)
+
+###
 Try {
     $nicConfig = @{
         ErrorAction            = 'Stop'
         Name                   = 'tempNic'
-        ResourceGroupName      = $capVmRg.ResourceGroupName
+        ResourceGroupName      = $refVmRg
         Location               = $location
-        SubnetId               = $vnet.Subnets[0].Id
-        PublicIpAddressId      = $pip.Id
-        NetworkSecurityGroupId = $nsg.Id
+        SubnetId               = $SubnetId
+        Tag                    = @{Name="LenVolkImage";Image="Pilot"}
     }
     Write-Host "Creating the NIC"
     $nic = New-AzNetworkInterface @nicConfig
@@ -237,15 +188,15 @@ Catch {
     Write-Error ('Error creating the NIC ' + $ErrorMessage)
     Break
 }
-#Create and start the VM the VM
+#Create and start the VM
 Try {
     Write-Host "Creating the temporary capture VM, this will take a couple minutes"
     $capVmName = ('tempVM' + $date) 
     $CapVmConfig = New-AzVMConfig -ErrorAction Stop -VMName $CapVmName -VMSize $vm.HardwareProfile.VmSize
     $capVm = Add-AzVMNetworkInterface -ErrorAction Stop -vm $CapVmConfig -id $nic.Id
-    $capVm = Set-AzVMOSDisk -vm $CapVm -ManagedDiskId $osDisk.id -StorageAccountType Standard_LRS -DiskSizeInGB 128 -CreateOption Attach -Windows
+    $capVm = Set-AzVMOSDisk -vm $CapVm -ManagedDiskId $osDisk.id -StorageAccountType Standard_LRS -DiskSizeInGB $DiskSizeInGB -CreateOption Attach -Windows
     $capVM = Set-AzVMBootDiagnostic -vm $CapVm -disable
-    $capVm = new-azVM -ResourceGroupName $capVmRg.ResourceGroupName -Location $location -vm $capVm -DisableBginfoExtension
+    $capVm = new-azVM -ResourceGroupName $refVmRg -Location $location -vm $capVm -DisableBginfoExtension -Tag @{Name="LenVolkImage";Image="Pilot"}
 }
 Catch {
     $ErrorMessage = $_.Exception.message
@@ -260,7 +211,7 @@ $displayStatus = ""
 $count = 0
 while ($displayStatus -notlike "VM running") { 
     Write-Host "Waiting for the VM display status to change to VM running"
-    $displayStatus = (get-azvm -Name $capVmName -ResourceGroupName $capVmRg.ResourceGroupName -Status).Statuses[1].DisplayStatus
+    $displayStatus = (get-azvm -Name $capVmName -ResourceGroupName $refVmRg -Status).Statuses[1].DisplayStatus
     write-output "starting 30 second sleep"
     start-sleep -Seconds 30
     $count += 1
@@ -274,11 +225,11 @@ try {
     $cseSettings = @{
         ErrorAction       = 'Stop'
         FileUri           = $cseURI 
-        ResourceGroupName = $capVmRg.ResourceGroupName
+        ResourceGroupName = $refVmRg
         VMName            = $CapVmName 
         Name              = "Sysprep" 
         location          = $location 
-        Run               = './SysprepCSE.ps1'
+        Run               = './Sysprep.ps1'
     }
     Write-Host "Running the Sysprep custom script extension"
     Set-AzVMCustomScriptExtension @cseSettings | Out-Null
@@ -288,13 +239,7 @@ Catch {
     Write-Error ('Error running the Sysprep Custom Script Extension ' + $ErrorMessage)
     Break
 }
-<# For testing
-$status = Get-AzVMDiagnosticsExtension -ResourceGroupName $capVmRg.ResourceGroupName -VMName $capVmName -name "Sysprep" -status
-$status.SubStatuses.message
-#>
-#endregion
 
-#region Capture VM image
 #Deallocate the VM
 #Wait for Sysprep to finish, shuts down the VM once finished
 $displayStatus = ""
@@ -302,7 +247,7 @@ $count = 0
 Try {
     while ($displayStatus -notlike "VM stopped") {
         Write-Host "Waiting for the VM display status to change to VM stopped"
-        $displayStatus = (get-azvm -ErrorAction Stop -Name $capVmName -ResourceGroupName $capVmRg.ResourceGroupName -Status).Statuses[1].DisplayStatus
+        $displayStatus = (get-azvm -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg -Status).Statuses[1].DisplayStatus
         write-output "starting 15 second sleep"
         start-sleep -Seconds 15
         $count += 1
@@ -312,8 +257,8 @@ Try {
         }
     }
     Write-Host "Deallocating the VM and setting to Generalized"
-    Stop-AzVM -ErrorAction Stop -ResourceGroupName $capVmRg.ResourceGroupName -Name $capVmName -Force | Out-Null
-    Set-AzVM -ErrorAction Stop -ResourceGroupName $capVmRg.ResourceGroupName -Name $capVmName -Generalized | Out-Null
+    Stop-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $capVmName -Force | Out-Null
+    Set-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $capVmName -Generalized | Out-Null
 }
 Catch {
     $ErrorMessage = $_.Exception.message
@@ -321,16 +266,14 @@ Catch {
     Break
 }
 #Create the image from the VM
-#Place the image in the reference computer Resource Group if $galDeploy is set to $false
-#Place in temporary capture Resource Group if $galDeploy is set to $true
 Try {
     Write-Host "Capturing the VM image"
-    $capVM = Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $capVmRg.ResourceGroupName
-    $vmGen = (Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $capVmRg.ResourceGroupName -Status).HyperVGeneration
-    $image = New-AzImageConfig -ErrorAction Stop -Location $location -SourceVirtualMachineId $capVm.Id -HyperVGeneration $vmGen
+    $capVM = Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg
+    $vmGen = (Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg -Status).HyperVGeneration
+    $image = New-AzImageConfig -ErrorAction Stop -Location $location -SourceVirtualMachineId $capVm.Id -HyperVGeneration $vmGen -Tag @{Name="LenVolkImage";Image="Pilot"}
     if ($galDeploy -eq $true) {
         Write-Host "Azure Compute Gallery used, saving image to the capture VM Resource Group"
-        $image = New-AzImage -Image $image -ImageName $imageName -ResourceGroupName $capVmRg.ResourceGroupName
+        $image = New-AzImage -Image $image -ImageName $imageName -ResourceGroupName $refVmRg
     }
     elseif ($galDeploy -eq $false) {
         Write-Host "Azure Compute Gallery not used, saving image to the reference VM Resource Group"
@@ -367,30 +310,53 @@ Catch {
     Write-Error ('Error adding the image to the Azure Compute Gallery ' + $ErrorMessage)
     Break
 }
-#endregion
 
 
-#region Remove the capture computer RG
-Try {
-    Write-Host "Removing the capture Resource Group $($capVmRg.ResourceGroupName)"
-    Remove-AzResourceGroup -ErrorAction Stop -Name $capVmRg.ResourceGroupName -Force | Out-Null
-}
-Catch {
-    $ErrorMessage = $_.Exception.message
-    Write-Error ('Error removing resource group ' + $ErrorMessage)
-    Break
-}
+
 #Remove the snapshot (Optional)
 #Removes reference computer snapshot if $delSnap is set to $true
-if ($delSnap -eq $true) {
-    Try {
-        Write-Host "Removing the snapshot $($snapshot.Name)"
-        Remove-AzSnapshot -ErrorAction Stop -ResourceGroupName $refVmRg -SnapshotName $snapshot.Name -Force | Out-Null
-    }
-    Catch {
-        $ErrorMessage = $_.Exception.message
-        Write-Error ('Error removing the snapshot ' + $ErrorMessage)
-        Break
-    }
+# if ($delSnap -eq $true) {
+#     Try {
+#         Write-Host "Removing the snapshot $($snapshot.Name)"
+#         Remove-AzSnapshot -ErrorAction Stop -ResourceGroupName $refVmRg -SnapshotName $snapshot.Name -Force | Out-Null
+#     }
+#     Catch {
+#         $ErrorMessage = $_.Exception.message
+#         Write-Error ('Error removing the snapshot ' + $ErrorMessage)
+#         Break
+#     }
+# }
+
+$Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
+foreach($res in $Resources) {
+    az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
 }
-#endregion
+
+
+#######################################
+#         Test VMs creation           #
+#######################################
+
+# $ImageID = (AzGalleryImageversion -ResourceGroupName $refVmRg -GalleryName $gallery.name `
+# -GalleryImageDefinitionName $galDefName).id | Sort-Object -Top 1
+
+$VM_User = "aibadmin"
+$WinVM_Password = "P@ssw0rdP@ssw0rd"
+$securePassword = ConvertTo-SecureString $WinVM_Password -AsPlainText -Force
+
+$VMIP=( az vm create --resource-group $refVmRg --name "pilotVM" `
+                    --admin-username $VM_User --admin-password $WinVM_Password `
+                    --image $GalImageVer.id --location $location --public-ip-sku Standard `
+                    --size 'Standard_B2ms' --tags 'Name=LenVolkImage' `
+                    --query publicIpAddress -o tsv)
+
+# Connect to VM
+cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
+mstsc /v:$VMIP /w:1440 /h:900
+
+# Delete
+az vm delete -n "pilotVM" -g $refVmRg --yes
+$Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
+foreach($res in $Resources) {
+    az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
+}
