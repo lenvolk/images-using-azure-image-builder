@@ -73,3 +73,5 @@ $RunningVMs | ForEach-Object -Parallel {
         -Parameter @{HPRegToken = $using:RegistrationToken} `
         -ScriptPath '.\hostpool_vms.ps1'
 }
+
+

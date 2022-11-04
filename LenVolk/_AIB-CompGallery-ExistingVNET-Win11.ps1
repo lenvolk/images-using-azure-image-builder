@@ -168,7 +168,7 @@ $ImageID = (AzGalleryImageversion -ResourceGroupName $aibRG -GalleryName $sigNam
 #######################################
 #         Test VMs creation           #
 #######################################
-# Create VM $VMIP = "20.122.68.74"
+# Create VM $VMIP = "172.176.88.87"
 $VMIP=( az vm create --resource-group $aibRG --name $imageName `
                     --admin-username $VM_User --admin-password $WinVM_Password `
                     --image $ImageID --location $location --public-ip-sku Standard `
