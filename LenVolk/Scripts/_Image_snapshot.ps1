@@ -199,7 +199,6 @@ Catch {
     Write-Error ('Error creating the VM ' + $ErrorMessage)
     Break
 }
-#endregion
 
 #region Sysprep the new capture VM (capVm)
 #Wait for VM to be ready, display status = VM running
@@ -323,10 +322,10 @@ Catch {
 #     }
 # }
 
-$Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
-foreach($res in $Resources) {
-    az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
-}
+# $Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
+# foreach($res in $Resources) {
+#     az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
+# }
 
 
 #######################################
