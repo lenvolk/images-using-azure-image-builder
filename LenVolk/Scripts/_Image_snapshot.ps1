@@ -185,6 +185,7 @@ Catch {
     Write-Error ('Error creating the NIC ' + $ErrorMessage)
     Break
 }
+# at this point shut down the original VM
 #Create and start the VM
 Try {
     Write-Host "Creating the temporary capture VM, this will take a couple minutes"
