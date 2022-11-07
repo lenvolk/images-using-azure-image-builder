@@ -71,8 +71,8 @@
 #>
 
 
-# Testing
-# $refVmName = 'ChocoWin11m365' 
+# Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
+# $refVmName = 'PilotWin11' 
 # $refVmRg = 'IMAGEBUILDERRG' 
 # $galName = 'aibSig' 
 # $galDefName = 'ChocoWin11m365'
@@ -92,6 +92,7 @@ param (
     [Parameter(Mandatory = $false)][string]$galName,
     [parameter(Mandatory = $false)][string]$galDefName,
     [parameter(Mandatory = $false)][string]$delSnap = $true,
+    [parameter(Mandatory = $false)][string]$deltempvm = $true,
     [Parameter(Mandatory = $true)][string]$vnetName,
     [Parameter(Mandatory = $true)][string]$subnetName,
     [Parameter(Mandatory = $false)][string]$DiskSizeInGB
@@ -310,21 +311,37 @@ Catch {
 
 #Remove the snapshot (Optional)
 #Removes reference computer snapshot if $delSnap is set to $true
-# if ($delSnap -eq $true) {
-#     Try {
-#         Write-Host "Removing the snapshot $($snapshot.Name)"
-#         Remove-AzSnapshot -ErrorAction Stop -ResourceGroupName $refVmRg -SnapshotName $snapshot.Name -Force | Out-Null
-#     }
-#     Catch {
-#         $ErrorMessage = $_.Exception.message
-#         Write-Error ('Error removing the snapshot ' + $ErrorMessage)
-#         Break
-#     }
-# }
+if ($delSnap -eq $true) {
+    Try {
+        Write-Host "Removing the snapshot $($snapshot.Name)"
+        Remove-AzSnapshot -ErrorAction Stop -ResourceGroupName $refVmRg -SnapshotName $snapshot.Name -Force | Out-Null
+    }
+    Catch {
+        $ErrorMessage = $_.Exception.message
+        Write-Error ('Error removing the snapshot ' + $ErrorMessage)
+        Break
+    }
+}
+
+#Remove TempVM
+if ($deltempvm -eq $true) {
+    Try {
+        Write-Host "Removing testVM $($capVmName)"
+        Remove-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $capVmName -Force | Out-Null
+        Remove-AzDisk -ErrorAction Stop -ResourceGroupName $refVmRg -DiskName $osDisk.name -Force | Out-Null
+        Remove-AzNetworkInterface -ErrorAction Stop -ResourceGroupName $refVmRg -Name $nic.name -Force | Out-Null
+    }
+    Catch {
+        $ErrorMessage = $_.Exception.message
+        Write-Error ('Error deleting tempvm ' + $ErrorMessage)
+        Break
+    }
+}
 
 # $Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
 # foreach($res in $Resources) {
-#     az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
+#     #az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
+#     Write-Host "Now deleting $res.name"
 # }
 
 
@@ -332,19 +349,20 @@ Catch {
 #         Test VMs creation           #
 #######################################
 
-# $VM_User = "aibadmin"
-# $WinVM_Password = "P@ssw0rdP@ssw0rd"
-# $securePassword = ConvertTo-SecureString $WinVM_Password -AsPlainText -Force
+$VM_User = "aibadmin"
+$WinVM_Password = "P@ssw0rdP@ssw0rd"
 
-# $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM" `
-#                     --admin-username $VM_User --admin-password $WinVM_Password `
-#                     --image $GalImageVer.id --location $location --public-ip-sku Standard `
-#                     --size 'Standard_B2ms' --tags 'Name=LenVolkImage' `
-#                     --query publicIpAddress -o tsv)
+$VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
+                    --admin-username $VM_User --admin-password $WinVM_Password `
+                    --image $GalImageVer.id --location $location --public-ip-sku Standard `
+                    --size 'Standard_B2ms' --tags 'Name=LenVolkImage' `
+                    --vnet-name $vnetName `
+                    --subnet $subnetName `
+                    --query publicIpAddress -o tsv)
 
-# # Connect to VM
-# cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
-# mstsc /v:$VMIP /w:1440 /h:900
+# Connect to VM
+cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
+mstsc /v:$VMIP /w:1440 /h:900
 
 # # Delete
 # az vm delete -n "pilotVM" -g $refVmRg --yes
