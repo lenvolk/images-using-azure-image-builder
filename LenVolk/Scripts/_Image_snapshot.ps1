@@ -137,7 +137,7 @@ $location = (Get-AzResourceGroup -Name $refVmRg).Location
 try {
     Write-Host "Creating a snapshot of $refVmName"
     $vm = Get-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $refVmName
-    $snapshotConfig = New-AzSnapshotConfig -ErrorAction Stop -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $vm.Location -CreateOption copy -SkuName Standard_LRS -Tag @{Name="LenVolkImage";Image="Pilot"}
+    $snapshotConfig = New-AzSnapshotConfig -ErrorAction Stop -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $vm.Location -CreateOption copy -SkuName Standard_LRS -Tag @{Name="PilotImage";Image="Pilot"}
     #$snapshot = Update-AzSnapshot -ErrorAction Stop -Snapshot $snapshotConfig -SnapshotName "$refVmName$date" -ResourceGroupName $refVmRg
     $snapshot = New-AzSnapshot -ErrorAction Stop -Snapshot $snapshotConfig -SnapshotName "$refVmName$date" -ResourceGroupName $refVmRg
 }
@@ -154,7 +154,7 @@ Try {
         Location         = $location
         CreateOption     = 'copy'
         SourceResourceID = $snapshot.Id
-        Tag              = @{Name="LenVolkImage";Image="Pilot"}
+        Tag              = @{Name="PilotImage";Image="Pilot"}
     }
     write-host "creating the OS disk form the snapshot"
     $osDisk = New-AzDisk -ErrorAction Stop -DiskName 'TempOSDisk' -ResourceGroupName $refVmRg -disk (New-AzDiskConfig @osDiskConfig)
@@ -175,7 +175,7 @@ Try {
         ResourceGroupName      = $refVmRg
         Location               = $location
         SubnetId               = $SubnetId
-        Tag                    = @{Name="LenVolkImage";Image="Pilot"}
+        Tag                    = @{Name="PilotImage";Image="Pilot"}
     }
     Write-Host "Creating the NIC"
     $nic = New-AzNetworkInterface @nicConfig
@@ -193,7 +193,7 @@ Try {
     $capVm = Add-AzVMNetworkInterface -ErrorAction Stop -vm $CapVmConfig -id $nic.Id
     $capVm = Set-AzVMOSDisk -vm $CapVm -ManagedDiskId $osDisk.id -StorageAccountType Standard_LRS -DiskSizeInGB $DiskSizeInGB -CreateOption Attach -Windows
     $capVM = Set-AzVMBootDiagnostic -vm $CapVm -disable
-    $capVm = new-azVM -ResourceGroupName $refVmRg -Location $location -vm $capVm -DisableBginfoExtension -Tag @{Name="LenVolkImage";Image="Pilot"}
+    $capVm = new-azVM -ResourceGroupName $refVmRg -Location $location -vm $capVm -DisableBginfoExtension -Tag @{Name="PilotImage";Image="Pilot"}
 }
 Catch {
     $ErrorMessage = $_.Exception.message
@@ -266,7 +266,7 @@ Try {
     Write-Host "Capturing the VM image"
     $capVM = Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg
     $vmGen = (Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg -Status).HyperVGeneration
-    $image = New-AzImageConfig -ErrorAction Stop -Location $location -SourceVirtualMachineId $capVm.Id -HyperVGeneration $vmGen -Tag @{Name="LenVolkImage";Image="Pilot"}
+    $image = New-AzImageConfig -ErrorAction Stop -Location $location -SourceVirtualMachineId $capVm.Id -HyperVGeneration $vmGen -Tag @{Name="PilotImage";Image="Pilot"}
     if ($galDeploy -eq $true) {
         Write-Host "Azure Compute Gallery used, saving image to the capture VM Resource Group"
         $image = New-AzImage -Image $image -ImageName $imageName -ResourceGroupName $refVmRg
@@ -338,7 +338,7 @@ if ($deltempvm -eq $true) {
     }
 }
 
-# $Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
+# $Resources=(az resource list --tag 'Name=PilotImage' | ConvertFrom-Json)
 # foreach($res in $Resources) {
 #     #az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
 #     Write-Host "Now deleting $res.name"
@@ -355,7 +355,7 @@ $WinVM_Password = "P@ssw0rdP@ssw0rd"
 $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
                     --admin-username $VM_User --admin-password $WinVM_Password `
                     --image $GalImageVer.id --location $location --public-ip-sku Standard `
-                    --size 'Standard_B2ms' --tags 'Name=LenVolkImage' `
+                    --size 'Standard_B2ms' --tags 'Name=PilotImage' `
                     --vnet-name $vnetName `
                     --subnet $subnetName `
                     --query publicIpAddress -o tsv)
@@ -366,7 +366,7 @@ mstsc /v:$VMIP /w:1440 /h:900
 
 # # Delete
 # az vm delete -n "pilotVM" -g $refVmRg --yes
-# $Resources=(az resource list --tag 'Name=LenVolkImage' | ConvertFrom-Json)
+# $Resources=(az resource list --tag 'Name=PilotImage' | ConvertFrom-Json)
 # foreach($res in $Resources) {
 #     az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
 # }
