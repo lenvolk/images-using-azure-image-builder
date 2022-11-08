@@ -133,6 +133,9 @@ $location = (Get-AzResourceGroup -Name $refVmRg).Location
 
 ##### Start Script #####
 
+#To avoid any confusions (since refVM is in the same RG as tempVM) let's shutdown reference VM - don't really have to do it
+Stop-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $refVmName  -Force | Out-Null
+
 #region Create Snapshot of reference VM
 try {
     Write-Host "Creating a snapshot of $refVmName"
