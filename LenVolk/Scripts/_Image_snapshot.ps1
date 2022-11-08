@@ -98,8 +98,9 @@ param (
     [Parameter(Mandatory = $false)][string]$DiskSizeInGB
 )
 
-
+##########################################################################
 #Validate the Azure Compute Gallery settings were added correctly if used
+##########################################################################
 Try {
     if ($galDeploy -eq $true) {
         $gallery = Get-AzGallery -ErrorAction Stop -Name $galName -ResourceGroupName $refVmRg
@@ -111,31 +112,32 @@ Catch {
     Write-Error ('Error with Azure Compute Gallery Settings ' + $ErrorMessage)
     Break
 }
-
+##########################################################################
 #Set the date, used as unique ID for artifacts and image version
+##########################################################################
 $date = (get-date -Format yyyyMMddHHmm)
-
+##########################################################################
 #Set the image name, modify as needed
 #Default based off reference computer name and date
 $imageName = ($refVmName + 'Image' + $date)
-
+##########################################################################
 #Set the image version (Name)
 #Used if adding the image to an Azure Compute Gallery
 #Format is 0.yyyyMM.ddHHmm date format for the version to keep unique and increment each new image version
 $imageVersion = '0.' + $date.Substring(0, 6) + '.' + $date.Substring(6, 6)
-
+##########################################################################
 #Disable breaking change warning message
 Set-Item -Path Env:\SuppressAzurePowerShellBreakingChangeWarnings -Value $true
-
+##########################################################################
 #Set the location, based on the reference computer resource group location
 $location = (Get-AzResourceGroup -Name $refVmRg).Location
-
+##########################################################################
 
 ##### Start Script #####
-
+##########################################################################
 #To avoid any confusions (since refVM is in the same RG as tempVM) let's shutdown reference VM - don't really have to do it
 Stop-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $refVmName  -Force | Out-Null
-
+##########################################################################
 #region Create Snapshot of reference VM
 try {
     Write-Host "Creating a snapshot of $refVmName"
@@ -149,7 +151,7 @@ catch {
     Write-Error ('Error creating snapshot from reference computer ' + $ErrorMessage)
     Break
 }
-
+##########################################################################
 #Create the managed disk from the Snapshot
 Try {
     $osDiskConfig = @{
@@ -167,10 +169,10 @@ Catch {
     Write-Error ('Error creating the managed disk ' + $ErrorMessage)
     Break
 }
-
+##########################################################################
 $SubnetId=(az network vnet subnet show --resource-group $refVmRg --vnet-name $vnetName --name=$subnetName --query id -o tsv)
-
-###
+##########################################################################
+#Create NIC for tempVM
 Try {
     $nicConfig = @{
         ErrorAction            = 'Stop'
@@ -188,8 +190,8 @@ Catch {
     Write-Error ('Error creating the NIC ' + $ErrorMessage)
     Break
 }
-# at this point shut down the original VM
-#Create and start the VM
+##########################################################################
+#Create and start the tempVM
 Try {
     Write-Host "Creating the temporary capture VM, this will take a couple minutes"
     $capVmName = ('tempVM' + $date) 
@@ -204,9 +206,8 @@ Catch {
     Write-Error ('Error creating the VM ' + $ErrorMessage)
     Break
 }
-
-#region Sysprep the new capture VM (capVm)
-#Wait for VM to be ready, display status = VM running
+##########################################################################
+#Wait for tempVM to be ready, display status "VM running"
 $displayStatus = ""
 $count = 0
 while ($displayStatus -notlike "VM running") { 
@@ -220,6 +221,7 @@ while ($displayStatus -notlike "VM running") {
         Exit
     }
 }
+##########################################################################
 #Run Sysprep from a Custom Script Extension 
 try {
     $cseSettings = @{
@@ -239,9 +241,9 @@ Catch {
     Write-Error ('Error running the Sysprep Custom Script Extension ' + $ErrorMessage)
     Break
 }
-
-#Deallocate the VM
-#Wait for Sysprep to finish, shuts down the VM once finished
+##########################################################################
+#Deallocate the tempVM
+#Wait for Sysprep to finish, status "VM stopped" the VM once finished
 $displayStatus = ""
 $count = 0
 Try {
@@ -265,7 +267,8 @@ Catch {
     Write-Error ('Error deallocating the VM ' + $ErrorMessage)
     Break
 }
-#Create the image from the VM
+##########################################################################
+#Create the image from the tempVM
 Try {
     Write-Host "Capturing the VM image"
     $capVM = Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg
@@ -288,6 +291,7 @@ Catch {
     Write-Error ('Error creating the image ' + $ErrorMessage)
     Break
 }
+##########################################################################
 #Add image to the Azure Compute Gallery if that option was selected
 Try {
     if ($galDeploy -eq $true) {
@@ -310,9 +314,9 @@ Catch {
     Write-Error ('Error adding the image to the Azure Compute Gallery ' + $ErrorMessage)
     Break
 }
-
-
-
+##########################################################################
+##########################################################################
+##########################################################################
 #Remove the snapshot (Optional)
 #Removes reference computer snapshot if $delSnap is set to $true
 if ($delSnap -eq $true) {
@@ -347,8 +351,6 @@ if ($deltempvm -eq $true) {
 #     #az resource delete -n $res.name -g $refVmRg --resource-type $res.type --verbose
 #     Write-Host "Now deleting $res.name"
 # }
-
-
 #######################################
 #         Test VMs creation           #
 #######################################
@@ -363,7 +365,7 @@ $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
                     --vnet-name $vnetName `
                     --subnet $subnetName `
                     --query publicIpAddress -o tsv)
-
+##########################################################################
 # Connect to VM
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
 mstsc /v:$VMIP /w:1440 /h:900
