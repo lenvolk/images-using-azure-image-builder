@@ -23,6 +23,8 @@
 # PS 7 
 # iex "&amp; { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
 
+# Install Azure CLI 
+# $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
 
 $aibRG = "imageBuilderRG"
 $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
