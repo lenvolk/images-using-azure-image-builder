@@ -33,6 +33,10 @@ $appgw=Get-AzApplicationGateway -Name appgw -ResourceGroupName $RGname
 Stop-AzApplicationGateway -ApplicationGateway $appgw
 # Start the Azure Application Gateway (optional)
 Start-AzApplicationGateway -ApplicationGateway $appgw
+# remove cert
+Get-AzApplicationGatewaySslCertificate -ApplicationGateway $appgw
+Remove-AzApplicationGatewaySslCertificate -ApplicationGateway $appgw -Name "lvolk"
+Set-AzApplicationGateway -ApplicationGateway $appgw
 
 $VMs="General","Images","Video"
 foreach($vm in $VMs) {
