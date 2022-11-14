@@ -37,6 +37,8 @@ Start-AzApplicationGateway -ApplicationGateway $appgw
 # Get-AzApplicationGatewaySslCertificate -ApplicationGateway $appgw
 # Remove-AzApplicationGatewaySslCertificate -ApplicationGateway $appgw -Name "lvolk"
 # Set-AzApplicationGateway -ApplicationGateway $appgw
+# Get-AzApplicationGatewayHttpListener -ApplicationGateway $appgw | Select-Object Name
+# Get-AzApplicationGatewayTrustedRootCertificate -ApplicationGateway $appgw
 
 $VMs="General","Images","Video"
 foreach($vm in $VMs) {
