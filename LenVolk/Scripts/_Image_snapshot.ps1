@@ -364,6 +364,7 @@ $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
                     --size 'Standard_B2ms' --tags 'Name=PilotImage' `
                     --vnet-name $vnetName `
                     --subnet $subnetName `
+                    --nsg '""' `
                     --query publicIpAddress -o tsv)
 ##########################################################################
 # Connect to VM
