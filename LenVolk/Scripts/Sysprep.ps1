@@ -8,11 +8,9 @@
     More info here: https://www.ciraltos.com/please-wait-for-the-windows-modules-installer/
 
 .NOTES
-    ## Script is offered as-is with no warranty, expressed or implied.  ##
-    ## Test it before you trust it!                                     ##
-    Author      : Travis Roberts, Ciraltos llc
-    Website     : www.ciraltos.com
-    Version     : 1.0.0.0 Initial Build 3/12/2022
+## https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-golden-image#other-recommendations
+## https://learn.microsoft.com/en-us/azure/virtual-machines/windows/upload-generalized-managed?toc=%252fazure%252fvirtual-machines%252fwindows%252ftoc.json#generalize-the-source-vm-by-using-sysprep   
+## (before running sysprep Delete the panther directory (C:\Windows\Panther))
 
 .LINK
 
@@ -31,6 +29,18 @@ function Write-Log {
     Param($message)
     Write-Output "$(get-date -format 'yyyyMMdd HH:mm:ss') $message" | Out-File -Encoding utf8 $logFile -Append
 }
+
+# Delete the panther directory (C:\Windows\Panther).
+
+try{
+    write-output "Deleting Panther foleder"
+    Remove-Item C:\Len\Volk -Recurse -Force -Verbose
+}
+catch {
+    $ErrorMessage = $_.Exception.message
+    write-log "Error Deleting Panther folder: $ErrorMessage"
+}
+
 #Run Sysprep
 try{
     write-output "Sysprep Starting"
