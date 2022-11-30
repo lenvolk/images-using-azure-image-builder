@@ -41,11 +41,26 @@ catch {
     write-log "Error Deleting Panther folder: $ErrorMessage"
 }
 
+# Removing AVD RegKey
+$CheckRegistry = Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent" -ErrorAction SilentlyContinue
+
+if ($CheckRegistry)
+{
+Remove-Item –Path "HKLM:\SOFTWARE\Microsoft\RDInfraAgent\" –Recurse -ErrorAction SilentlyContinue
+Remove-Item –Path "HKLM:\SOFTWARE\Microsoft\RDAgentBootLoader\" –Recurse -ErrorAction SilentlyContinue
+
+}
+else
+{
+    Write-Log -Message "VM was not registered with AVD Host Pool. Nothing to do"
+}
+
 #Run Sysprep
 try{
     write-output "Sysprep Starting"
     Start-Process -filepath 'c:\Windows\system32\sysprep\sysprep.exe' -ErrorAction Stop -ArgumentList '/generalize', '/oobe', '/mode:vm', '/shutdown'
 }
+
 catch {
     $ErrorMessage = $_.Exception.message
     write-log "Error running Sysprep: $ErrorMessage"
