@@ -34,7 +34,7 @@ function Write-Log {
 
 try{
     write-output "Deleting Panther foleder"
-    Remove-Item C:\Len\Volk -Recurse -Force -Verbose
+    Remove-Item C:\Windows\Panther -Recurse -Force -Verbose
 }
 catch {
     $ErrorMessage = $_.Exception.message
