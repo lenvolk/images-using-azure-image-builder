@@ -109,8 +109,8 @@ $vmProfile = [pscustomobject]@{
 #######################################
 
 #Ref of the template https://learn.microsoft.com/en-us/azure/templates/microsoft.virtualmachineimages/2020-02-14/imagetemplates?pivots=deployment-language-bicep
-# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus
-# Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'
+# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
+# Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 
 
