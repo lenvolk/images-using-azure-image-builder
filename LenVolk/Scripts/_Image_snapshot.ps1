@@ -69,7 +69,11 @@
     Create an image and add it to an Azure Compute Gallery:
     .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galName 'aibSig' -galDefName 'ChocoWin11m365' -vnetName 'aibVNet' -subnetName 'aibSubnet'
 #>
-
+##########################################################################
+# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
+# Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus
+# az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
+##########################################################################
 
 # Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
 # $refVmName = 'PilotWin11' 
