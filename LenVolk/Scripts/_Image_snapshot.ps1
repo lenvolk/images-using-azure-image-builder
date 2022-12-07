@@ -1,6 +1,7 @@
-# Add-AzAccount
-# Select the correct subscription
-# Get-AzSubscription -SubscriptionName "AzIntConsumption" | Select-AzSubscription
+# $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+# Connect-AzAccount -Subscription $subscription
+# Set-AzContext -Subscription "AzIntConsumption"
+# Disconnect-AzAccount
 
 # Reg: 
 # https://github.com/tsrob50/WVD-Public/blob/master/SnapImage.ps1
@@ -74,6 +75,11 @@
 # Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 ##########################################################################
+
+##########################################################################
+# Creating marketplace vm (go to the script and change variables)
+##########################################################################
+#.\MarketPlaceVM.ps1
 
 # Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
 # $refVmName = 'PilotWin11' 
@@ -358,7 +364,8 @@ if ($deltempvm -eq $true) {
 #######################################
 #         Test VMs creation           #
 #######################################
-
+$refVmRg = 'imageBuilderRG' 
+$location = (Get-AzResourceGroup -Name $refVmRg).Location
 $vnetName = 'aibVNet' 
 $subnetName = 'aibSubnet'
 
@@ -373,6 +380,7 @@ $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
                     --subnet $subnetName `
                     --nsg '""' `
                     --query publicIpAddress -o tsv)
+
 ##########################################################################
 # Connect to VM
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
