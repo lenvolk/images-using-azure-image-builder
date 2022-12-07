@@ -359,6 +359,9 @@ if ($deltempvm -eq $true) {
 #         Test VMs creation           #
 #######################################
 
+$vnetName = 'aibVNet' 
+$subnetName = 'aibSubnet'
+
 $VM_User = "aibadmin"
 $WinVM_Password = "P@ssw0rdP@ssw0rd"
 
