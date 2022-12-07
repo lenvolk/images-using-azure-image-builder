@@ -34,4 +34,6 @@ $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
 $VirtualMachine = Set-AzVMOSDisk -Windows -VM $VirtualMachine -CreateOption FromImage -DiskSizeInGB $DiskSizeGB
 $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName $ImagePublisher -Offer $ImageOffer -Skus $ImageSku -Version latest
 
-$newVm = New-AzVM -ResourceGroupName $rgName -Location $location -VM $VirtualMachine #-AsJob
+$job = $newVm = New-AzVM -ResourceGroupName $rgName -Location $location -VM $VirtualMachine -AsJob
+# View the status of the job
+# $job.State
