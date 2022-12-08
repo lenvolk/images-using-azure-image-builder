@@ -82,7 +82,7 @@
 #.\MarketPlaceVM.ps1
 
 # Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
-# $refVmName = 'PilotWin11' 
+# $refVmName = 'avd-win11-0' 
 # $refVmRg = 'IMAGEBUILDERRG' 
 # $galName = 'aibSig' 
 # $galDefName = 'ChocoWin11m365'
