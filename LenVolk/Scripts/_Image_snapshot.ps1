@@ -72,7 +72,7 @@
 #>
 ##########################################################################
 # Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
-# Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus
+# Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus   #!!! Only the -avd are multi-session
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 ##########################################################################
 
@@ -374,7 +374,7 @@ $WinVM_Password = "P@ssw0rdP@ssw0rd"
 
 $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
                     --admin-username $VM_User --admin-password $WinVM_Password `
-                    --image $GalImageVer.id --location $location --public-ip-sku Standard `
+                    --image 'MicrosoftWindowsDesktop:Windows-11:win11-22h2-avd:latest' --location $location --public-ip-sku Standard `
                     --size 'Standard_B2ms' --tags 'Name=PilotImage' `
                     --vnet-name $vnetName `
                     --subnet $subnetName `
