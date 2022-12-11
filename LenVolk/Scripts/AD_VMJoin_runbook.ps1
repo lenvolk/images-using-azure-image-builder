@@ -27,8 +27,5 @@ Invoke-AzVMRunCommand `
     -ResourceGroupName $_.ResourceGroupName `
     -VMName $_.Name `
     -CommandId 'RunPowerShellScript' `
-    -Parameter @{DomainName = $using:DomainName;
-                    OUPath  = $using:OUPath;
-                 credential = $using:djoincred} `
-    -ScriptPath './AD_VMjoin_script.ps1'
+    -ScriptString { Add-Computer -DomainName $DomainName -OUPath $OUPath -Credential $credential -Force }
 }

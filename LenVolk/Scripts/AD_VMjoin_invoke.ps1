@@ -12,15 +12,23 @@ $credential = Get-Credential lv@lvolk.com
 
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows"} 
 
+# $RunningVMs | ForEach-Object -Parallel {
+#     Invoke-AzVMRunCommand `
+#         -ResourceGroupName $_.ResourceGroupName `
+#         -VMName $_.Name `
+#         -CommandId 'RunPowerShellScript' `
+#         -Parameter @{DomainName = $using:DomainName;
+#                      OUPath = $using:OUPath;
+#                      credential = $using:credential} `
+#         -ScriptPath './AD_VMjoin_script.ps1'
+# }
+
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
-        -ResourceGroupName $_.ResourceGroupName `
-        -VMName $_.Name `
-        -CommandId 'RunPowerShellScript' `
-        -Parameter @{DomainName = $using:DomainName;
-                     OUPath = $using:OUPath;
-                     credential = $using:credential} `
-        -ScriptPath './AD_VMjoin_script.ps1'
+    -ResourceGroupName $_.ResourceGroupName `
+    -VMName $_.Name `
+    -CommandId 'RunPowerShellScript' `
+    -ScriptString { Add-Computer -DomainName $DomainName -OUPath $OUPath -Credential $credential -Force }
 }
 
 ###################################
