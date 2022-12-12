@@ -1,3 +1,11 @@
+### General Info
+[provision market place VM](https://github.com/lenvolk/images-using-azure-image-builder/blob/main/LenVolk/Scripts/MarketPlaceVM.ps1)
+
+[Add VMs to AD](https://github.com/lenvolk/images-using-azure-image-builder/blob/main/LenVolk/Scripts/AD_VMjoin_invoke.ps1)
+
+[Add VMs to a hostpool](https://github.com/lenvolk/images-using-azure-image-builder/blob/main/LenVolk/Scripts/000_invoke_command.ps1#L57-L75)
+
+[adjust fslogix profile](https://github.com/lenvolk/images-using-azure-image-builder/blob/main/LenVolk/Scripts/000_invoke_command.ps1#L29-L42)
 
 ----
 ## Images-using-azure-image-builder, sample of the pipeline 
