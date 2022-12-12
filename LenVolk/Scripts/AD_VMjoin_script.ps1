@@ -2,12 +2,12 @@
 # REF: https://learn.microsoft.com/en-us/powershell/module/az.compute/set-azvmaddomainextension?view=azps-9.2.0&viewFallbackFrom=azps-4.4.0
 # Logs: C:\WindowsAzure\Logs\Plugins
 #       C:\Packages\Plugins
-
+# From PS: net use \\dc1.lvolk.com\ipc$ /u:lvolk\lv <mypassword>
 
 # $VMRG = "imageBuilderRG"
 # $DomainName = "lvolk.com"
 # $OUPath = "OU=PoolHostPool,OU=AVD,DC=lvolk,DC=com"
-# $credential = Get-Credential lv@lvolk.com
+# $credential = Get-Credential lvolk\lv
 
 Param (
     [string]$DomainName,

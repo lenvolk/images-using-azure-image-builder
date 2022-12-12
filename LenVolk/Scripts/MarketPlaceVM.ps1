@@ -11,7 +11,7 @@ $VMLocalAdminSecurePassword = ConvertTo-SecureString $VMLocalPassword -AsPlainTe
 
 $rgName = "imageBuilderRG"
 $location = (Get-AzResourceGroup -Name $rgName).Location
-$VMName = "avd-win11-01"
+$VMName = "avd-win11-0"
 $VMSize = "Standard_B2ms"
 $ImageSku = "win11-22h2-avd"
 $ImageOffer = "Windows-11"
