@@ -14,9 +14,6 @@ $VMRG = 'imageBuilderRG'
 
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows"} 
 
-
-#Set-AzVMADDomainExtension -Name $extensionName -DomainName $DomainName -OUPath $OUPath  -VMName $VMName -Credential $credential -ResourceGroupName $ResourceGroupName -JoinOption 0x00000003 -Restart -Verbose
-
 $RunningVMs | ForEach-Object -Parallel {
     Set-AzVMADDomainExtension `
         -Name $using:extensionName `
