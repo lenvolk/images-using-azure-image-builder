@@ -3,19 +3,10 @@
 # Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
 # Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus | Where-Object { $_.Skus -like '*avd*'}  #!!! Only the -avd are multi-session
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
+# https://bradleyschacht.com/create-new-azure-vm-with-powershell/
 ##########################################################################
 
-############### Image Gallery ############################################
-# $aibRG = "imageBuilderRG"
-# $sigName = "aibSig"
-# $imageName = "ChocoWin11m365"
-# $ImageID = (AzGalleryImageversion -ResourceGroupName $aibRG `
-#             -GalleryName $sigName `
-#             -GalleryImageDefinitionName $imageName).id | Sort-Object -bottom 1
-##########################################################################
-
-
-$TotalVMs = 1
+$TotalVMs = 3
 
 $VMLocalAdminUser = "aibadmin"
 $VMLocalPassword = "P@ssw0rdP@ssw0rd"
@@ -47,12 +38,8 @@ for ($i = 1; $i -le $TotalVMs; $i++) {
     $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $Credential -ProvisionVMAgent -EnableAutoUpdate
     $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
     $VirtualMachine = Set-AzVMOSDisk -Windows -VM $VirtualMachine -CreateOption FromImage -DiskSizeInGB $DiskSizeGB
-    #if marketplace image
     $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName $ImagePublisher -Offer $ImageOffer -Skus $ImageSku -Version latest 
-    #If custom image
-    #$VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -Id $ImageID  
-    #
-    $job = $newVm = New-AzVM -ResourceGroupName $rgName -Location $location -VM $VirtualMachine -LicenseType "Windows_Client" -AsJob
+    $job = New-AzVM -ResourceGroupName $rgName -Location $location -VM $VirtualMachine -LicenseType "Windows_Client" -AsJob
 
 }
 
