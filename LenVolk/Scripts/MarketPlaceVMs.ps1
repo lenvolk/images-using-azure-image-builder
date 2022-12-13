@@ -5,7 +5,17 @@
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 ##########################################################################
 
-$TotalVMs = 3
+############### Image Gallery ############################################
+# $aibRG = "imageBuilderRG"
+# $sigName = "aibSig"
+# $imageName = "ChocoWin11m365"
+# $ImageID = (AzGalleryImageversion -ResourceGroupName $aibRG `
+#             -GalleryName $sigName `
+#             -GalleryImageDefinitionName $imageName).id | Sort-Object -bottom 1
+##########################################################################
+
+
+$TotalVMs = 1
 
 $VMLocalAdminUser = "aibadmin"
 $VMLocalPassword = "P@ssw0rdP@ssw0rd"
@@ -37,8 +47,11 @@ for ($i = 1; $i -le $TotalVMs; $i++) {
     $VirtualMachine = Set-AzVMOperatingSystem -VM $VirtualMachine -Windows -ComputerName $VMName -Credential $Credential -ProvisionVMAgent -EnableAutoUpdate
     $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $NIC.Id
     $VirtualMachine = Set-AzVMOSDisk -Windows -VM $VirtualMachine -CreateOption FromImage -DiskSizeInGB $DiskSizeGB
-    $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName $ImagePublisher -Offer $ImageOffer -Skus $ImageSku -Version latest
-
+    #if marketplace image
+    $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName $ImagePublisher -Offer $ImageOffer -Skus $ImageSku -Version latest 
+    #If custom image
+    #$VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -Id $ImageID  
+    #
     $job = $newVm = New-AzVM -ResourceGroupName $rgName -Location $location -VM $VirtualMachine -LicenseType "Windows_Client" -AsJob
 
 }

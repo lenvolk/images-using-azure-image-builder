@@ -374,7 +374,7 @@ $WinVM_Password = "P@ssw0rdP@ssw0rd"
 
 $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
                     --admin-username $VM_User --admin-password $WinVM_Password `
-                    --image 'MicrosoftWindowsDesktop:Windows-11:win11-22h2-avd:latest' --location $location --public-ip-sku Standard `
+                    --image $image --location $location --public-ip-sku Standard `
                     --size 'Standard_B2ms' --tags 'Name=PilotImage' `
                     --vnet-name $vnetName `
                     --subnet $subnetName `
