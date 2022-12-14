@@ -31,3 +31,6 @@
 (https://learn.microsoft.com/en-us/azure/architecture/example-scenario/wvd/azure-virtual-desktop-azure-active-directory-join)
 
 (https://rozemuller.com/how-to-join-azure-ad-automated/)
+
+## Bicep
+(https://github.com/fberson/Azure-Virtual-Desktop-as-a-gaming-console)
