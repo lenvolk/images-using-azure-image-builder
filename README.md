@@ -34,3 +34,6 @@
 
 ## Bicep
 (https://github.com/fberson/Azure-Virtual-Desktop-as-a-gaming-console)
+
+## AVD LZ
+(https://github.com/Azure/avdaccelerator)
