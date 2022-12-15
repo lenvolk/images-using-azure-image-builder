@@ -381,6 +381,17 @@ $VMIP=( az vm create --resource-group $refVmRg --name "pilotVM1" `
                     --nsg '""' `
                     --query publicIpAddress -o tsv)
 
+# $VMs = 5                    
+# for ($vmno = 1 ; $vmno -le $VMs ; $vmno++) {
+#     $VMname = "AVD-$Vnetno"
+#     az vm create --resource-group $refVmRg --name $VMname `
+#                     --admin-username $VM_User --admin-password $WinVM_Password `
+#                     --image $image --location $location `
+#                     --size 'Standard_B2ms' --tags 'Name=PilotImage' `
+#                     --vnet-name $vnetName `
+#                     --subnet $subnetName `
+#                     --nsg '""' `
+# }
 ##########################################################################
 # Connect to VM
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
