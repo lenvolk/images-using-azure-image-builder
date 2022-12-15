@@ -1,5 +1,5 @@
 ### General Info
-[01 provision market place VM](https://github.com/lenvolk/images-using-azure-image-builder/blob/main/LenVolk/Scripts/MarketPlaceVM.ps1)
+[01 provision market place VM](/blob/main/LenVolk/Scripts/MarketPlaceVMs.ps1)
 
 [02a Add VMs to AD](https://github.com/lenvolk/images-using-azure-image-builder/blob/main/LenVolk/Scripts/AD_VMjoin_invoke.ps1)
 
