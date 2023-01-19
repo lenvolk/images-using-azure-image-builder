@@ -49,6 +49,14 @@ New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
 -ResourceGroupName $ResourceGroup
 
+$GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
+$RoleName = (Get-AzRoleDefinition -Name "Desktop Virtualization Start VM on Connect").name
+
+New-AzRoleAssignment -ObjectId $GroupId `
+-RoleDefinitionName $RoleName `
+-ResourceGroupName $ResourceGroup
+
+
 # For SA domain joined SMB RBAC
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
 $RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Contributor").name
