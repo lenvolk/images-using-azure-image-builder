@@ -66,11 +66,12 @@ New-AzRoleAssignment -ObjectId $GroupId `
 
 # $account.AzureFilesIdentityBasedAuth
 
-#SA to AAD ref docs
-# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable?tabs=azure-portal#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts
-# $domainInformation = Get-ADDomain
-# $domainGuid = $domainInformation.ObjectGUID.ToString()
-# $domainName = $domainInformation.DnsRoot
-
+#!!!SA to AAD ref docs  (fslogix_regkey_AADSA.ps1)
 # https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
-# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-enable
+
+#Run from on-prem AD
+# $domainInformation = Get-ADDomain 
+# $domainGuid = $domainInformation.ObjectGUID.ToString() 
+# $domainName = $domainInformation.DnsRoot
+# add to the AAD joined VMs
+# reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters /v CloudKerberosTicketRetrievalEnabled /t REG_DWORD /d 1
