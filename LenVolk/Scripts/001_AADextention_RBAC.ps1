@@ -68,7 +68,7 @@ New-AzRoleAssignment -ObjectId $GroupId `
 
 #!!!SA to AAD ref docs  (fslogix_regkey_AADSA.ps1)
 # https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
-
+# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts-preview
 #Run from on-prem AD
 # $domainInformation = Get-ADDomain 
 # $domainGuid = $domainInformation.ObjectGUID.ToString() 
