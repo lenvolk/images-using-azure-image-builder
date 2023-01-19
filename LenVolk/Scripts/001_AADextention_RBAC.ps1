@@ -65,3 +65,7 @@ New-AzRoleAssignment -ObjectId $GroupId `
 # $account = Set-AzStorageAccount -ResourceGroupName $ResourceGroup -AccountName "imagesapilot" -DefaultSharePermission $defaultPermission
 
 # $account.AzureFilesIdentityBasedAuth
+
+#SA to AAD ref docs
+# https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
+# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-enable
