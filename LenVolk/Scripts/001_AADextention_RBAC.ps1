@@ -67,5 +67,10 @@ New-AzRoleAssignment -ObjectId $GroupId `
 # $account.AzureFilesIdentityBasedAuth
 
 #SA to AAD ref docs
+# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable?tabs=azure-portal#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts
+# $domainInformation = Get-ADDomain
+# $domainGuid = $domainInformation.ObjectGUID.ToString()
+# $domainName = $domainInformation.DnsRoot
+
 # https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
 # https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-enable
