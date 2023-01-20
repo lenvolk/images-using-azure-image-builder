@@ -1,4 +1,8 @@
 ### General Info
+
+[install Git](https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/Git-2.39.0.2-64-bit.exe)
+[install vscode](https://code.visualstudio.com/Download)
+
 [01 provision market place VM](/LenVolk/Scripts/MarketPlaceVMs.ps1)
 
 [02a Add VMs to AD](/LenVolk/Scripts/AD_VMjoin_invoke.ps1)

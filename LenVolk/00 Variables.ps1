@@ -1,3 +1,10 @@
+# install Git
+# https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/Git-2.39.0.2-64-bit.exe
+# install vscode
+# https://code.visualstudio.com/Download
+
+
+
 # PS 
 # $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
 # Connect-AzAccount -Subscription $subscription
