@@ -1,3 +1,8 @@
+#     Login to Azure first:
+#             $subscription = "<Azure Subscription>"
+#             Logout-AzAccount
+#             Login-AzAccount -Subscription $subscription 
+#             Select-AzSubscription -Subscription $subscription 
 
 
 $PathToCsv = "C:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVolk\Scripts\Tags\computers.csv"
