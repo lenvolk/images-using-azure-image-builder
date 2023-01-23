@@ -1,5 +1,5 @@
 #     Login to Azure first:
-#             $subscription = "<Azure Subscription>"
+#             $subscription = "ca5dfa45-eb4e-4612-9ebd-06f6fc3bc996"
 #             Logout-AzAccount
 #             Login-AzAccount -Subscription $subscription 
 #             Select-AzSubscription -Subscription $subscription 
@@ -10,6 +10,7 @@ $computers = Get-Content -Path $PathToCsv
 
 $tags = @{'PCI' = 'Yes'; 'Department'='Accounting'; 'Environment'='Dev'} 
 
+# For Azure VMs
 foreach ($vmName in $computers) { 
     # Write-Host ".... Assigning $tags to VM Name $computer "
     # Update-AzTag -Tag $tags -ResourceId "/subscriptions/<subID>/resourceGroups/<RGName>/providers/Microsoft.Compute/virtualMachines/$vmName" -Operation Merge -Verbose
@@ -22,7 +23,7 @@ foreach ($vmName in $computers) {
             Write-Output "> $vmName Disk $($vmAzure.StorageProfile.OsDisk.Name) updating Tags"
             Update-AzTag -ResourceId $vmAzure.StorageProfile.OsDisk.ManagedDisk.Id -Operation Merge -Tag $tags
         }
-        
+
         foreach ($nic in $vmAzure.NetworkProfile.NetworkInterfaces) {
             Write-Output "> $vmName NIC updating Tags"
             Update-AzTag -ResourceId $nic.Id -Operation Merge -Tag $tags
@@ -37,6 +38,25 @@ foreach ($vmName in $computers) {
         Write-Output "$vmName VM not found"
     }
 }
+
+# For Azure ARC
+# Install-Module Az.ConnectedMachine
+# Get-AzConnectedMachine | fl
+$RGName = "AzureARC"
+# $vmName = Get-AzConnectedMachine -Name "ArcBox-Win2K22" -ResourceGroup $RGName
+
+foreach ($ArcName in $computers) { 
+    $ArcMachine = Get-AzConnectedMachine -Name $ArcName -ResourceGroup $RGName
+    if ($ArcMachine.Name) {
+        Write-Output ""$ArcMachine.Name" VM updating Tags"
+        Update-AzTag -ResourceId $ArcMachine.Id -Operation Merge -Tag $tags
+    } 
+    else {
+        Write-Output ""$ArcMachine.Name" VM not found"
+    }
+}
+
+
 
 
 
