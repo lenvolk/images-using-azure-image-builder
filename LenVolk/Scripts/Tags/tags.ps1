@@ -17,13 +17,15 @@ foreach ($vmName in $computers) {
     if ($vmAzure) {
         Write-Output "$vmName VM updating Tags"
         Update-AzTag -ResourceId $vmAzure.Id -Operation Merge -Tag $tags
-        foreach ($nic in $vmAzure.NetworkProfile.NetworkInterfaces) {
-            Write-Output "> $vmName NIC updating Tags"
-            Update-AzTag -ResourceId $nic.Id -Operation Merge -Tag $tags
-        }
+
         if ($vmAzure.StorageProfile.OsDisk.ManagedDisk.Id) {
             Write-Output "> $vmName Disk $($vmAzure.StorageProfile.OsDisk.Name) updating Tags"
             Update-AzTag -ResourceId $vmAzure.StorageProfile.OsDisk.ManagedDisk.Id -Operation Merge -Tag $tags
+        }
+        
+        foreach ($nic in $vmAzure.NetworkProfile.NetworkInterfaces) {
+            Write-Output "> $vmName NIC updating Tags"
+            Update-AzTag -ResourceId $nic.Id -Operation Merge -Tag $tags
         }
         foreach ($disk in $vmAzure.StorageProfile.DataDisks) {
             Write-Output "> $vmName Disk $($disk.Name) updating Tags"
