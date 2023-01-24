@@ -5,6 +5,7 @@
 # $domainGuid = $domainInformation.ObjectGUID.ToString() 
 # $domainName = $domainInformation.DnsRoot
 #
+# $ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles\profiles"
 
 Param (
     [string]$ProfilePath
