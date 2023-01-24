@@ -50,7 +50,7 @@ New-AzRoleAssignment -ObjectId $GroupId `
 -ResourceGroupName $ResourceGroup
 
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
-$RoleName = (Get-AzRoleDefinition -Name "Desktop Virtualization Start VM on Connect").name
+$RoleName = (Get-AzRoleDefinition -Name "Desktop Virtualization Power On Contributor").name
 
 New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
