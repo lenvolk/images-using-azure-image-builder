@@ -65,6 +65,13 @@ New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
 -ResourceGroupName $ResourceGroup
 
+$GroupId = (Get-AzADGroup -DisplayName "SMBAdmins").id
+$RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Elevated Contributor").name
+
+New-AzRoleAssignment -ObjectId $GroupId `
+-RoleDefinitionName $RoleName `
+-ResourceGroupName $ResourceGroup
+
 # OR
 # https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-assign-permissions?tabs=azure-powershell#share-level-permissions-for-all-authenticated-identities
 
