@@ -44,6 +44,7 @@ $RunningVMs | ForEach-Object -Parallel {
 #######################################
 # Adjusting Fslogix RegKey for AAD SA #
 ######################################
+$RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles\profiles"
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
@@ -51,7 +52,7 @@ $RunningVMs | ForEach-Object -Parallel {
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
         -Parameter @{ProfilePath = $using:ProfilePath} `
-        -ScriptPath './fslogix_regkey_AADSA.ps1'
+        -ScriptPath './fslogix_install.ps1'
 }
 
 ################################

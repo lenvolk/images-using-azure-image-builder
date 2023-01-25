@@ -88,5 +88,5 @@ New-AzRoleAssignment -ObjectId $GroupId `
 # $domainInformation = Get-ADDomain 
 # $domainGuid = $domainInformation.ObjectGUID.ToString() 
 # $domainName = $domainInformation.DnsRoot
-# add to the AAD joined VMs
+#!!!!! add to the AAD joined VMs  !!!!!
 # reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters /v CloudKerberosTicketRetrievalEnabled /t REG_DWORD /d 1
