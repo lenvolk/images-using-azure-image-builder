@@ -38,6 +38,19 @@ $RunningVMs | ForEach-Object -Parallel {
         -Name $using:domainJoinName
 }
 
+################################
+# Azure AD VM update DNS Suffix
+################################
+$DnsSufix = "lvolk.com"
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{DnsSufix = $using:DnsSufix} `
+        -ScriptPath './DNS_suffix.ps1'
+}
+
 
 ################################
 #    To Add RBAC to RG         #
@@ -48,6 +61,14 @@ $RoleName = (Get-AzRoleDefinition -Name "Virtual Machine User Login").name
 New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
 -ResourceGroupName $ResourceGroup
+#
+$GroupId = (Get-AzADGroup -DisplayName "GlobAdmin").id
+$RoleName = (Get-AzRoleDefinition -Name "Virtual Machine Administrator Login").name
+
+New-AzRoleAssignment -ObjectId $GroupId `
+-RoleDefinitionName $RoleName `
+-ResourceGroupName $ResourceGroup
+#
 
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
 $RoleName = (Get-AzRoleDefinition -Name "Desktop Virtualization Power On Contributor").name
@@ -55,7 +76,7 @@ $RoleName = (Get-AzRoleDefinition -Name "Desktop Virtualization Power On Contrib
 New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
 -ResourceGroupName $ResourceGroup
-
+#
 
 # For SA domain joined SMB RBAC
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
@@ -64,7 +85,7 @@ $RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Contributor
 New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
 -ResourceGroupName $ResourceGroup
-
+#
 $GroupId = (Get-AzADGroup -DisplayName "SMBAdmins").id
 $RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Elevated Contributor").name
 
@@ -88,8 +109,6 @@ New-AzRoleAssignment -ObjectId $GroupId `
 # $domainInformation = Get-ADDomain 
 # $domainGuid = $domainInformation.ObjectGUID.ToString() 
 # $domainName = $domainInformation.DnsRoot
-tst
-
-
+# !!! at the AAD VM run reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters /v CloudKerberosTicketRetrievalEnabled /t REG_DWORD /d 1 /f
 # From AAD vm to SSO on-prem share 
 # https://learn.microsoft.com/en-us/azure/active-directory/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azure-ad-kerberos-powershell-module
