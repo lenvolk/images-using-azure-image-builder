@@ -1,5 +1,8 @@
 #REF https://eddiejackson.net/lab/2022/03/08/powershell-add-dns-suffix-to-ethernet-connections/
-
+# ncpa.cpl
+# Properties
+# Internet protocol version 4
+# Advanced / DNS
 #ipconfig /flushdns
 
 Param (
