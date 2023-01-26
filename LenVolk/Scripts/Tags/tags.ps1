@@ -1,6 +1,6 @@
 #     Login to Azure first:
 #             $subscription = "ca5dfa45-eb4e-4612-9ebd-06f6fc3bc996"
-#             Logout-AzAccount
+#             az logout
 #             Login-AzAccount -Subscription $subscription 
 #             Select-AzSubscription -Subscription $subscription 
 
@@ -43,8 +43,6 @@ foreach ($vmName in $computers) {
 # Install-Module Az.ConnectedMachine
 # Get-AzConnectedMachine | fl
 $RGName = "AzureARC"
-# $vmName = Get-AzConnectedMachine -Name "ArcBox-Win2K22" -ResourceGroup $RGName
-
 foreach ($ArcName in $computers) { 
     $ArcMachine = Get-AzConnectedMachine -Name $ArcName -ResourceGroup $RGName
     if ($ArcMachine.Name) {
@@ -52,7 +50,8 @@ foreach ($ArcName in $computers) {
         Update-AzTag -ResourceId $ArcMachine.Id -Operation Merge -Tag $tags
     } 
     else {
-        Write-Output ""$ArcMachine.Name" VM not found"
+        Write-Output "$ArcName VM not found"
+        Add-Content -Path C:\temp\arc-not-found.txt -Value "$ArcName VM not found"
     }
 }
 
