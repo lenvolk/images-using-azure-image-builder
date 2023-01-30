@@ -14,6 +14,7 @@
 #
 # AZ CLI
 ## az cloud set --name AzureUSGovernment
+## az cloud set --name AzureCloud
 # az login --only-show-errors -o table --query Dummy
 # $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
 # az account set -s $Subscription
