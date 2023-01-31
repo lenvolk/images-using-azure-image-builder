@@ -4,6 +4,8 @@
 
 [install vscode](https://code.visualstudio.com/Download)
 
+[Latency Test](https://www.azurespeed.com/Azure/Latency)
+
 [01 provision market place VM](/LenVolk/Scripts/MarketPlaceVMs.ps1)
 
 [02a Add VMs to AD](/LenVolk/Scripts/AD_VMjoin_invoke.ps1)
