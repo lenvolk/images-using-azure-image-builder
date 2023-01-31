@@ -6,7 +6,16 @@
 # Otherwise run this first:
 #
 # # Download and install chocolatey
+#
+# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v2.0.50727]
+#       "SystemDefaultTlsVersions" = dword:00000001
+#       "SchUseStrongCrypto" = dword:00000001
+# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319]
+#       "SystemDefaultTlsVersions" = dword:00000001
+#       "SchUseStrongCrypto" = dword:00000001
+#
 # [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
 # Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 # # Install VSCode and Azure CLI
 # choco install vscode -y
