@@ -15,3 +15,6 @@ $resources | ForEach-Object {
     $vmName = $_.Split("/")[8]
     Add-Content -Path .\dcrResources.txt -Value "$RGName $vmName"
 }
+
+# Check which LAW DCR is pointing to, from LAW run 
+# Heartbeat | where Category == "Azure Monitor Agent" | distinct Computer
