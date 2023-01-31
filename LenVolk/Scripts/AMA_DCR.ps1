@@ -1,4 +1,4 @@
-$SubscriptionId = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+$SubscriptionId = "xxxxxxxx-xxxx"
 Connect-AzAccount -Subscription $SubscriptionId
 Set-AzContext -Subscription $SubscriptionId
 # Disconnect-AzAccount
