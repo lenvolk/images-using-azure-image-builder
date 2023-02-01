@@ -18,3 +18,5 @@ $resources | ForEach-Object {
 
 # Check which LAW DCR is pointing to, from LAW run 
 # Heartbeat | where Category == "Azure Monitor Agent" | distinct Computer
+
+# report on LAW agent https://argonsys.com/microsoft-cloud/library/how-to-find-your-azure-log-analytics-agent-deployments-in-preparation-for-the-azure-monitor-agent/
