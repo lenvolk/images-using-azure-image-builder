@@ -2,7 +2,14 @@
 # Connect-AzAccount -Subscription $subscription
 # Set-AzContext -Subscription "AzIntConsumption"
 # Disconnect-AzAccount
-#
+
+# AZ CLI
+## az cloud set --name AzureUSGovernment
+## az cloud set --name AzureCloud
+# az login --only-show-errors -o table --query Dummy
+# $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+# az account set -s $Subscription
+# az logout
  
 # Create Report Array
 $report = @()
@@ -58,7 +65,7 @@ foreach ($nic in $nics) {
         If ($disk.Lun -eq 0)
         {
        $ReportDetails.DataDisk1Name = $vm.StorageProfile.DataDisks[$disk.Lun].Name 
-       $ReportDetails.DataDisk1Size =  $vm.StorageProfile.DataDisks[$disk.Lun].DiskSizeGB 
+       $ReportDetails.DataDisk1Size =  $vm.StorageProfile.DataDisks[0].DiskSizeGB 
        $ReportDetails.DataDisk1Caching =  $vm.StorageProfile.DataDisks[$disk.Lun].Caching 
        $ReportDetails.DataDisk1Tier = ((Get-AzDisk -ResourceGroupName $vm.ResourceGroupName -DiskName $vm.StorageProfile.DataDisks[$disk.Lun].Name).Tier | Out-String).Trim()
         }
