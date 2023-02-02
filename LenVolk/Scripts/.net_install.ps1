@@ -13,3 +13,5 @@ if ((Get-ItemProperty $WinstationsKey).PSObject.Properties.Name -contains $name)
 else {
     Write-Output "***** regkey name: $name not found, you can update .net"
 }
+
+Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3"
