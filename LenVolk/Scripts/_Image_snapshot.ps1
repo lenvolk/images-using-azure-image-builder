@@ -75,7 +75,7 @@
     .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galName 'aibSig' -galDefName 'ChocoWin11m365' -vnetName 'aibVNet' -subnetName 'aibSubnet'
 #>
 ##########################################################################
-# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
+# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win10*'}
 # Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus   #!!! Only the -avd are multi-session
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 ##########################################################################
@@ -86,7 +86,7 @@
 #.\MarketPlaceVM.ps1
 
 # Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
-# $refVmName = 'avd-win11-0' 
+# $refVmName = 'win10-22h2-avd-m365-g2' 
 # $refVmRg = 'IMAGEBUILDERRG' 
 # $galName = 'aibSig' 
 # $galDefName = 'ChocoWin11m365'

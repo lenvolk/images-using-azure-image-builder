@@ -33,8 +33,6 @@
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 # Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
 #
-# Azure CLI
-# $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
 #
 # Install-Module Az.ImageBuilder.Tools
 # Install-Module -Name Az.ImageBuilder -RequiredVersion 0.1.2
