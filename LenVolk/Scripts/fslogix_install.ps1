@@ -6,16 +6,16 @@ Param (
 )
 
 #########################################
-$LocalAVDpath            = "c:\tempavd"
-if((Test-Path $LocalAVDpath) -eq $false) {
-    New-Item -Path $LocalAVDpath -ItemType Directory
+$LocalWVDpath            = "c:\tempavd"
+if((Test-Path $LocalWVDpath) -eq $false) {
+    New-Item -Path $LocalWVDpath -ItemType Directory
 }
 
 
 ##########################################
 #    Log Function                        #
 ##########################################
-$logFile = "$LocalAVDpath" + (get-date -format 'yyyyMMdd') + '_fslogix_install.log'
+$logFile = "$LocalWVDpath" + (get-date -format 'yyyyMMdd') + '_fslogix_install.log'
 function Write-Log {
     Param($message)
     Write-Output "$(get-date -format 'yyyyMMdd HH:mm:ss') $message" | Out-File -Encoding utf8 $logFile -Append
@@ -24,25 +24,24 @@ function Write-Log {
 ######################
 #    WVD Variables   #
 ######################
-$LocalWVDpath            = "$LocalAVDpath"
 $FSLogixURI              = 'https://aka.ms/fslogix_download'
 $FSInstaller             = 'FSLogixAppsSetup.zip'
 
 #################################
 #    Download WVD Componants    #
 #################################
-Invoke-WebRequest -Uri $FSLogixURI -OutFile "$LocalWVDpath$FSInstaller"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+Invoke-WebRequest -Uri $FSLogixURI -OutFile "$LocalWVDpath\$FSInstaller"
 
 ##############################
 #    Prep for WVD Install    #
 ##############################
-
 Expand-Archive `
-    -LiteralPath "$LocalAVDpath\$FSInstaller" `
+    -LiteralPath "$LocalWVDpath\$FSInstaller" `
     -DestinationPath "$LocalWVDpath\FSLogix" `
     -Force `
     -Verbose
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 Set-Location -Path "$LocalWVDpath\FSLogix\x64\Release"
 
