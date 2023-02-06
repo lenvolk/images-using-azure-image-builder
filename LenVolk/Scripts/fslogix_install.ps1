@@ -5,10 +5,17 @@ Param (
     [string]$ProfilePath
 )
 
+#########################################
+$LocalAVDpath            = "c:\tempavd"
+if((Test-Path $LocalAVDpath) -eq $false) {
+    New-Item -Path $LocalAVDpath -ItemType Directory
+}
+
+
 ##########################################
 #    Log Function                        #
 ##########################################
-$logFile = "c:\temp\" + (get-date -format 'yyyyMMdd') + '_fslogix_install.log'
+$logFile = "$LocalAVDpath" + (get-date -format 'yyyyMMdd') + '_fslogix_install.log'
 function Write-Log {
     Param($message)
     Write-Output "$(get-date -format 'yyyyMMdd HH:mm:ss') $message" | Out-File -Encoding utf8 $logFile -Append
@@ -17,7 +24,7 @@ function Write-Log {
 ######################
 #    WVD Variables   #
 ######################
-$LocalWVDpath            = "c:\temp\"
+$LocalWVDpath            = "$LocalAVDpath"
 $FSLogixURI              = 'https://aka.ms/fslogix_download'
 $FSInstaller             = 'FSLogixAppsSetup.zip'
 
@@ -31,7 +38,7 @@ Invoke-WebRequest -Uri $FSLogixURI -OutFile "$LocalWVDpath$FSInstaller"
 ##############################
 
 Expand-Archive `
-    -LiteralPath "C:\temp\$FSInstaller" `
+    -LiteralPath "$LocalAVDpath\$FSInstaller" `
     -DestinationPath "$LocalWVDpath\FSLogix" `
     -Force `
     -Verbose
