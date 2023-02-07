@@ -170,11 +170,38 @@ New-NetFirewallRule -DisplayName 'Remote Desktop - Shortpath (UDP-In)' -Action A
 ### Hide Shutdown, Restart, Sleep and SwitchAccount
 Write-Host 'Hide Shutdown, Restart, Sleep and SwitchAccount'
 
+
 New-ItemProperty -ErrorAction Stop `
-    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideShutDown `
+    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideShutDown" `
     -Name "value" `
     -Type "Dword" `
-    -Value "1" 
+    -Value "1" `
+    -Force `
+    -Confirm:$false
+
+New-ItemProperty -ErrorAction Stop `
+    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideRestart" `
+    -Name "value" `
+    -Type "Dword" `
+    -Value "1" `
+    -Force `
+    -Confirm:$false
+
+New-ItemProperty -ErrorAction Stop `
+    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideSleep" `
+    -Name "value" `
+    -Type "Dword" `
+    -Value "1" `
+    -Force `
+    -Confirm:$false
+
+New-ItemProperty -ErrorAction Stop `
+    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideSwitchAccount" `
+    -Name "value" `
+    -Type "Dword" `
+    -Value "1" `
+    -Force `
+    -Confirm:$false
 
 
 
