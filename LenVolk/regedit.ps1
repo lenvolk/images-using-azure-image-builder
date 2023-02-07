@@ -179,13 +179,13 @@ New-ItemProperty -ErrorAction Stop `
     -Force `
     -Confirm:$false
 
-New-ItemProperty -ErrorAction Stop `
-    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideRestart" `
-    -Name "value" `
-    -Type "Dword" `
-    -Value "1" `
-    -Force `
-    -Confirm:$false
+# New-ItemProperty -ErrorAction Stop `
+#     -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideRestart" `
+#     -Name "value" `
+#     -Type "Dword" `
+#     -Value "1" `
+#     -Force `
+#     -Confirm:$false
 
 New-ItemProperty -ErrorAction Stop `
     -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideSleep" `
