@@ -38,6 +38,8 @@ $RunningVMs | ForEach-Object -Parallel {
         -Name $using:domainJoinName
 }
 
+# to validate run dsregcmd /status
+
 ################################
 # Azure AD VM update DNS Suffix
 ################################

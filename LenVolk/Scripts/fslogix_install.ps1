@@ -1,3 +1,6 @@
+# Ref: https://learn.microsoft.com/en-us/fslogix/reference-configuration-settings?tabs=odfc#app-services-settings
+#      https://learn.microsoft.com/en-us/fslogix/configure-office-container-tutorial
+
 # # If done via custom extention
 # # .\\avd_fslogix.ps1 -ProfilePath "\\lvolkfiles.file.core.windows.net\garbage" - LocalWVDpath "C:\installers\FsLogix\x64\Release" -Verbose 
 
@@ -116,10 +119,132 @@ try {
         -Name DeleteLocalProfileWhenVHDShouldApply `
         -Type DWord `
         -Value 1
-# https://learn.microsoft.com/en-us/fslogix/concepts-vhd-disk-compaction
-    New-Item -Path "HKLM:\SOFTWARE\FSLOGIX\Apps\VHDCompactDisk" -Value 1 -Force -ItemType DWORD
+    Set-ItemProperty `
+        -Path HKLM:\Software\FSLogix\Profiles `
+        -Name "ProfileType" `
+        -Type "Dword" `
+        -Value "3"
 
     Write-Output  "Done with FSLogix User Profile Settings"
+
+
+
+
+#######################################
+#    FSLogix Office Profile Settings    #
+#######################################
+
+    # Set the Teams Registry key (for win11-22h2-avd-m365 by default)
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Microsoft\Teams" `
+        -Name "IsWVDEnvironment" `
+        -Value "1" -PropertyType DWORD `
+        -Force `
+        -Confirm:$false
+    # Ref https://learn.microsoft.com/en-us/fslogix/configure-office-container-tutorial
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "VHDAccessMode" `
+        -Value "0" -PropertyType DWORD `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "Enabled" `
+        -Value "1" -PropertyType DWORD `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "VHDLocations" `
+        -PropertyType Multistring `
+        -Value "$ProfilePath" `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "SizeInMBs" `
+        -Type "Dword" `
+        -Value "10000"
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IsDynamic" `
+        -Value "1" -PropertyType DWORD `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "FlipFlopProfileDirectoryName" `
+        -Type "Dword" `
+        -Value "1" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "PreventLoginWithFailure" `
+        -Type "Dword" `
+        -Value "0" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeOneDrive" `
+        -Type "Dword" `
+        -Value "0" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeOneNote" `
+        -Type "Dword" `
+        -Value "0" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeOneNote_UWP" `
+        -Type "Dword" `
+        -Value "0" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeOutlook" `
+        -Type "Dword" `
+        -Value "0" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeOutlookPersonalization" `
+        -Type "Dword" `
+        -Value "1"  
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeSharepoint" `
+        -Type "Dword" `
+        -Value "0" 
+    #User will be required to sign in to teams at the beginning of each session if set to 0
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeTeams" `
+        -Type "Dword" `
+        -Value "0" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeOfficeActivation" `
+        -Type "Dword" `
+        -Value "1" 
+
+    Write-Output  "Done with FSLogix Office Profile Settings"
+
+### REF https://learn.microsoft.com/en-us/fslogix/reference-configuration-settings?tabs=odfc#app-services-settings
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
+        -Name "CleanupInvalidSessions" `
+        -Type "Dword" `
+        -Value "1" 
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
+        -Name "RoamRecycleBin" `
+        -Type "Dword" `
+        -Value "1" 
+    # https://learn.microsoft.com/en-us/fslogix/concepts-vhd-disk-compaction
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
+        -Name "VHDCompactDisk" `
+        -Type "Dword" `
+        -Value "1" 
+
+    Write-Output  "Done with App Services Settings"
 
 }
 
