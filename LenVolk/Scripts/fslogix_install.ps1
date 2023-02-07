@@ -169,60 +169,81 @@ try {
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IsDynamic" `
-        -Value "1" -PropertyType DWORD `
+        -Value "1" `
+        -PropertyType DWORD `
         -Force `
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "FlipFlopProfileDirectoryName" `
         -Type "Dword" `
-        -Value "1" 
+        -Value "1" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "PreventLoginWithFailure" `
         -Type "Dword" `
-        -Value "0" 
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOneDrive" `
         -Type "Dword" `
-        -Value "0" 
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOneNote" `
         -Type "Dword" `
-        -Value "0" 
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOneNote_UWP" `
         -Type "Dword" `
-        -Value "0" 
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOutlook" `
         -Type "Dword" `
-        -Value "0" 
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOutlookPersonalization" `
         -Type "Dword" `
-        -Value "1"  
+        -Value "1" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeSharepoint" `
         -Type "Dword" `
-        -Value "0" 
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     #User will be required to sign in to teams at the beginning of each session if set to 0
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeTeams" `
         -Type "Dword" `
-        -Value "0" 
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOfficeActivation" `
         -Type "Dword" `
-        -Value "1" 
+        -Value "1" `
+        -Force `
+        -Confirm:$false
 
     Write-Output  "Done with FSLogix Office Profile Settings"
 
@@ -231,18 +252,24 @@ try {
         -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
         -Name "CleanupInvalidSessions" `
         -Type "Dword" `
-        -Value "1" 
+        -Value "1" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
         -Name "RoamRecycleBin" `
         -Type "Dword" `
-        -Value "1" 
+        -Value "1" `
+        -Force `
+        -Confirm:$false
     # https://learn.microsoft.com/en-us/fslogix/concepts-vhd-disk-compaction
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
         -Name "VHDCompactDisk" `
         -Type "Dword" `
-        -Value "1" 
+        -Value "1" `
+        -Force `
+        -Confirm:$false
 
     Write-Output  "Done with App Services Settings"
 
