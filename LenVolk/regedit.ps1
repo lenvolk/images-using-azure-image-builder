@@ -203,7 +203,13 @@ New-ItemProperty -ErrorAction Stop `
     -Force `
     -Confirm:$false
 
-
+New-ItemProperty -ErrorAction Stop `
+    -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WcmSvc\GroupPolicy" `
+    -Name "fSoftDisconnectConnections" `
+    -Type "Dword" `
+    -Value "0" `
+    -Force `
+    -Confirm:$false
 
 ### Maybe Add it too
 
