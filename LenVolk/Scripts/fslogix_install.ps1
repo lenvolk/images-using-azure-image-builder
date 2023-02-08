@@ -259,7 +259,7 @@ try {
         -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
         -Name "RoamRecycleBin" `
         -Type "Dword" `
-        -Value "1" `
+        -Value "0" `
         -Force `
         -Confirm:$false
     # https://learn.microsoft.com/en-us/fslogix/concepts-vhd-disk-compaction
