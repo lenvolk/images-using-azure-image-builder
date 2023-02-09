@@ -1,3 +1,4 @@
+# on the remote VM check C:\Packages\Plugins\Microsoft.CPlat.Core.RunCommandWindows\1.1.15\Downloads
 
 $ResourceGroup = "imageBuilderRG"
 $hostPool = "Lab1HP"
@@ -76,3 +77,21 @@ $RunningVMs | ForEach-Object -Parallel {
 }
 
 
+##################################################
+# ADRemove
+##################################################
+$user = "lvolk\lv"
+$pass = "DomainPass"
+
+
+$ResourceGroup = "Garbage"
+$RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+# (Get-Command ./AADextention.ps1).Parameters
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{user = $using:user;pass = $using:pass} `
+        -ScriptPath '.\ADRemove.ps1'
+}

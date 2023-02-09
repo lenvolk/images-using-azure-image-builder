@@ -51,11 +51,3 @@ catch {
     Write-Output "***** Error adding VM to domain: $ErrorMessage"
 }
 
-
-########## Remove from AD and add to workgroup
-# $username = "domain01\admin01"
-# $password = Get-Content 'C:\mysecurestring.txt' | ConvertTo-SecureString
-# $cred = new-object -typename System.Management.Automation.PSCredential `
-#          -argumentlist $username, $password
-
-# Remove-Computer -UnjoinDomaincredential Domain01\Admin01 -PassThru -Verbose -Restart
