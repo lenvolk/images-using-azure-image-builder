@@ -43,7 +43,6 @@ try {
 Add-Computer -DomainName $DomainName -OUPath $OUPath -Credential $credential -Force
 Write-Output "$(get-date -format 'yyyyMMdd HH:mm:ss') $env:computername successfully domain joined" | Out-File -Encoding utf8 $logFile -Append
 Restart-Computer -Force
-# Remove-Computer -UnjoinDomaincredential $credential -PassThru -Verbose -Restart -Force
 }
 
 catch {
@@ -51,3 +50,12 @@ catch {
     write-log "Error adding VM to domain: $ErrorMessage"
     Write-Output "***** Error adding VM to domain: $ErrorMessage"
 }
+
+
+########## Remove from AD and add to workgroup
+$username = "domain01\admin01"
+$password = Get-Content 'C:\mysecurestring.txt' | ConvertTo-SecureString
+$cred = new-object -typename System.Management.Automation.PSCredential `
+         -argumentlist $username, $password
+
+Remove-Computer -UnjoinDomaincredential Domain01\Admin01 -PassThru -Verbose -Restart
