@@ -58,8 +58,8 @@
             "equals": "Windows"
           },
           {
-            "field": "tags['Project']",
-            "equals": "jumpstart_arcbox"
+            "field": "tags['PCI']",
+            "equals": "YES"
           },
           {
             "field": "location",
