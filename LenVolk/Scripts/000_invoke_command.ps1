@@ -78,7 +78,7 @@ $RunningVMs | ForEach-Object -Parallel {
 
 
 ##################################################
-# ADRemove
+# AD_Remove
 ##################################################
 $user = "lvolk\lv"
 $pass = "DomainPass"
@@ -93,5 +93,5 @@ $RunningVMs | ForEach-Object -Parallel {
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
         -Parameter @{user = $using:user;pass = $using:pass} `
-        -ScriptPath '.\ADRemove.ps1'
+        -ScriptPath '.\AD_Remove.ps1'
 }
