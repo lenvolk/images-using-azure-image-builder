@@ -246,7 +246,7 @@ try {
         -Force `
         -Confirm:$false
 
-    Write-Output  "Done with FSLogix Office Profile Settings"
+    Write-Output  "Done with FSLogix Office Container Settings"
 
 ### REF https://learn.microsoft.com/en-us/fslogix/reference-configuration-settings?tabs=odfc#app-services-settings
     New-ItemProperty -ErrorAction Stop `
