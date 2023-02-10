@@ -52,7 +52,6 @@ $RunningVMs | ForEach-Object -Parallel {
 $user = "lvolk\lv"
 $pass = "DomAdminPass"
 
-
 $ResourceGroup = "Garbage"
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 # (Get-Command ./AADextention.ps1).Parameters
@@ -64,8 +63,6 @@ $RunningVMs | ForEach-Object -Parallel {
         -Parameter @{user = $using:user;pass = $using:pass} `
         -ScriptPath '.\AD_Remove.ps1'
 }
-
-
 ################################
 #     Installing Fslogix       #
 ################################
