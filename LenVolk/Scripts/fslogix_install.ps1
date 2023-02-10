@@ -129,9 +129,10 @@ try {
 
 
 
-
+# The redirections.xml file only works in conjunction with a Profile Container, not with the Office container. 
+# Ref: https://learn.microsoft.com/en-us/fslogix/profile-container-office-container-cncpt
 #######################################
-#    FSLogix Office Profile Settings    #
+#    FSLogix Office Container    #
 #######################################
 
     # Set the Teams Registry key (for win11-22h2-avd-m365 by default)
