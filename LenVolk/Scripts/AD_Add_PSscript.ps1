@@ -4,7 +4,6 @@
 #       C:\Packages\Plugins
 # From PS: net use \\dc1.lvolk.com\ipc$ /u:lvolk\lv <mypassword>
 
-# $VMRG = "imageBuilderRG"
 # $DomainName = "lvolk.com"
 # $OUPath = "OU=PoolHostPool,OU=AVD,DC=lvolk,DC=com"
 # $credential = Get-Credential lvolk\lv
@@ -12,8 +11,12 @@
 Param (
     [string]$DomainName,
     [string]$OUPath,
-    [string]$credential
+    [string]$user,
+    [string]$pass
 )
+
+$securePass = ConvertTo-SecureString $pass -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential ($user, $securePass)
 ####################################
 if((Test-Path c:\temp) -eq $false) {
     Add-Content -LiteralPath C:\New-AVDSessionHost.log "Create C:\temp Directory"

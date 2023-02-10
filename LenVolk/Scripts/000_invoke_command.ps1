@@ -27,6 +27,45 @@ $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Objec
 #         -ScriptPath '.\param_invoke.ps1'
 # }
 
+##################################################
+# Add_2_Domain
+##################################################
+$DomainName = "lvolk.com"
+$OUPath = "OU=PoolHostPool,OU=AVD,DC=lvolk,DC=com"
+$user = "lvolk\lv"
+$pass = "DomAdminPass"
+
+$ResourceGroup = "Garbage"
+$RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+# (Get-Command ./AADextention.ps1).Parameters
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{DomainName = $using:DomainName;OUPath = $using:OUPath;user = $using:user;pass = $using:pass} `
+        -ScriptPath '.\AD_Add_PSscript.ps1'
+}
+##################################################
+# AD_Remove
+##################################################
+$user = "lvolk\lv"
+$pass = "DomAdminPass"
+
+
+$ResourceGroup = "Garbage"
+$RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+# (Get-Command ./AADextention.ps1).Parameters
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{user = $using:user;pass = $using:pass} `
+        -ScriptPath '.\AD_Remove.ps1'
+}
+
+
 ################################
 #     Installing Fslogix       #
 ################################
@@ -74,24 +113,4 @@ $RunningVMs | ForEach-Object -Parallel {
         -CommandId 'RunPowerShellScript' `
         -Parameter @{HPRegToken = $using:RegistrationToken} `
         -ScriptPath '.\hostpool_vms.ps1'
-}
-
-
-##################################################
-# AD_Remove
-##################################################
-$user = "lvolk\lv"
-$pass = "DomainPass"
-
-
-$ResourceGroup = "Garbage"
-$RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
-# (Get-Command ./AADextention.ps1).Parameters
-$RunningVMs | ForEach-Object -Parallel {
-    Invoke-AzVMRunCommand `
-        -ResourceGroupName $_.ResourceGroupName `
-        -VMName $_.Name `
-        -CommandId 'RunPowerShellScript' `
-        -Parameter @{user = $using:user;pass = $using:pass} `
-        -ScriptPath '.\AD_Remove.ps1'
 }
