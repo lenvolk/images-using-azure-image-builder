@@ -9,13 +9,6 @@ Param (
 $securePass = ConvertTo-SecureString $pass -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential ($user, $securePass)
 Remove-Computer -Credential $cred -Force -Verbose
-Restart-Computer -Force
-
-# # PartOfDomain (boolean Property)
-# (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
- 
-# # Workgroup (string Property)
-# (Get-WmiObject -Class Win32_ComputerSystem).Workgroup
 
 if((Get-WmiObject -Class Win32_ComputerSystem).Workgroup -eq $True) {
     Add-Content -LiteralPath C:\VMState.log "Now a part of WorkGruop"
@@ -32,3 +25,10 @@ else {
         -BackgroundColor Black `
         "OS is domainjoined"
 }
+
+### REF
+# # PartOfDomain (boolean Property)
+# (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
+ 
+# # Workgroup (string Property)
+# (Get-WmiObject -Class Win32_ComputerSystem).Workgroup
