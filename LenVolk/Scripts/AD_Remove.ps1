@@ -1,5 +1,5 @@
 ########## Remove from AD and add to workgroup
-
+# $cred = Get-Credential lvolk\lv
 Param (
     [string]$user,
     [string]$pass
