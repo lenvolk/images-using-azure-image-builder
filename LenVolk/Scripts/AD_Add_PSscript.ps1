@@ -45,6 +45,7 @@ function Write-Log {
 try {
 Add-Computer -DomainName $DomainName -OUPath $OUPath -Credential $credential -Force
 Write-Output "$(get-date -format 'yyyyMMdd HH:mm:ss') $env:computername successfully domain joined" | Out-File -Encoding utf8 $logFile -Append
+# Add-LocalGroupMember -Group "Administrators" -Member "lvolk\VMAdmins"
 Restart-Computer -Force
 }
 
