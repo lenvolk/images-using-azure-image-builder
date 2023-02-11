@@ -7,5 +7,6 @@ $vm.LicenseType = "Windows_Client"
 Update-AzVM -ResourceGroupName $vm.ResourceGroupName -VM $vm
 
 # Check all VMs in your subscription
-$vms = Get-AzVM
+$vms = Get-AzVM | Where-Object { $_.StorageProfile.OsDisk.OsType -eq "Windows" }
 $vms | Where-Object {$_.LicenseType -like "Windows_Client"} | Select-Object ResourceGroupName, Name, LicenseType
+$vms | Select-Object ResourceGroupName, Name, LicenseType
