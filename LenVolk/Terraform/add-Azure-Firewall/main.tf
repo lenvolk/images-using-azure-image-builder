@@ -106,7 +106,8 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
       destination_ports = ["123"]
     }
   }
-
+  
+## Network rules
   application_rule_collection {
     name     = "avd-application-rules"
     priority = 300
@@ -126,7 +127,70 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
         port = 443
       }
     }
+    rule {
+      name             = "az-sql-pub-allow"
+      source_addresses = ["*"]
+      destination_fqdn_tags = [
+         "thevolksqlsrv.database.windows.net"
+      ]
+      protocols {
+        type = "Mssql"
+        port = 1433
+      }
+    }
+
+    rule {
+      name             = "az-sql-priv-allow"
+      source_addresses = ["*"]
+      destination_fqdn_tags = [
+         "thevolksqlsrv.privatelink.database.windows.net"
+      ]
+      protocols {
+        type = "Mssql"
+        port = 1433
+      }
+    }
+
   }
+
+  application_rule_collection {
+    name     = "SocialMedia"
+    priority = 350
+    action   = "Deny"
+    rule {
+      name             = "SMediaBlock"
+      source_addresses = ["*"]
+      destination_fqdn_tags = ["*.facebook.com"]
+      protocols {
+        type = "Https"
+        port = 443
+      }
+      protocols {
+        type = "Http"
+        port = 80
+      }
+    }
+  }
+
+  application_rule_collection {
+    name     = "Web-ALL"
+    priority = 400
+    action   = "Allow"
+    rule {
+      name             = "AllowAllWeb"
+      source_addresses = ["*"]
+      destination_fqdn_tags = ["*"]
+      protocols {
+        type = "Https"
+        port = 443
+      }
+      protocols {
+        type = "Http"
+        port = 80
+      }
+    }
+  }
+
 }
 
 # User Defined Route to Azure Firewall
