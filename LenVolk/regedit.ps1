@@ -179,13 +179,13 @@ New-ItemProperty -ErrorAction Stop `
     -Force `
     -Confirm:$false
 
-# New-ItemProperty -ErrorAction Stop `
-#     -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideRestart" `
-#     -Name "value" `
-#     -Type "Dword" `
-#     -Value "1" `
-#     -Force `
-#     -Confirm:$false
+New-ItemProperty -ErrorAction Stop `
+    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideRestart" `
+    -Name "value" `
+    -Type "Dword" `
+    -Value "1" `
+    -Force `
+    -Confirm:$false
 
 New-ItemProperty -ErrorAction Stop `
     -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideSleep" `
@@ -199,6 +199,22 @@ New-ItemProperty -ErrorAction Stop `
     -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideSwitchAccount" `
     -Name "value" `
     -Type "Dword" `
+    -Value "1" `
+    -Force `
+    -Confirm:$false
+
+New-ItemProperty -ErrorAction Stop `
+    -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\Start\HideSignOut" `
+    -Name "value" `
+    -Type "Dword" `
+    -Value "0" `
+    -Force `
+    -Confirm:$false
+
+New-ItemProperty -ErrorAction Stop `
+    -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" `
+    -Name "NoDisconnect" `
+    -Type "DWORD" `
     -Value "1" `
     -Force `
     -Confirm:$false
