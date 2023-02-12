@@ -1,9 +1,22 @@
+Function CreateFileShare  
+{  
+    Param($ShareName)
+
+    Write-Host -ForegroundColor Green "Creating an file Share.."    
+    ## Get the storage account context  
+    $ctx=(Get-AzStorageAccount -ResourceGroupName $ResourceGroup -Name $SAName).Context  
+    ## Creates an file share  
+    New-AzStorageShare -Context $ctx -Name $ShareName
+}  
 
 $ResourceGroup = "imageBuilderRG"
-$SAName = "imagesapilot"
-$FileShareName = "pilotshare"
+$SAName = "imagesaaad"
+$FileShareName = "avdprofiles1"
 
-# For SA domain joined SMB RBAC
+#Create AVD Profiles share
+CreateFileShare $FileShareName
+
+# SA SMB RBAC
 $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
 $RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Contributor").name
 New-AzRoleAssignment -ObjectId $GroupId `
@@ -33,13 +46,30 @@ $UNCPath = $sa.PrimaryEndpoints.File -replace ("https://","\\")
 $UNCPath = $UNCPath -replace ("/","\")
 
 net use L: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
-
 # Run these from a standard command prompt
-icacls L: /grant "smbadmins@lvolk.com":(OI)(CI)(IO)(F)
-icacls L: /grant "wvdusers@lvolk.com":(X,RD,RA,AD)
+icacls L: /inheritance:r
+icacls L: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
+icacls L: /grant "wvdusers@lvolk.com":(X,R,RD,RA,REA,AD)
 icacls L: /grant "Creator Owner":(OI)(CI)(IO)(M)
 icacls L: /remove "Authenticated Users"
 icacls L: /remove "Builtin\Users"
 
 # Use this value for the FSLogix install
-$UNCPath + $FileShareName
+$ProfileShare = $UNCPath + $FileShareName
+
+# Creating AppMasking Share
+$FileShareName = "appmaskrules"
+CreateFileShare $FileShareName
+
+net use M: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
+# Run these from a standard command prompt
+icacls M: /inheritance:r
+icacls M: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
+icacls M: /grant "wvdusers@lvolk.com":(OI)(R)
+icacls M: /grant "Creator Owner":(OI)(CI)(IO)(M)
+icacls M: /remove "Authenticated Users"
+icacls M: /remove "Builtin\Users"
+
+
+
+# Net Use * /delete
