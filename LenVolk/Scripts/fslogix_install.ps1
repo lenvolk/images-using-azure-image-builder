@@ -138,7 +138,7 @@ try {
 #######################################
 #    FSLogix Profile Container    #
 #######################################
-    Set Office RedirXMLSourceFolder - Profile Container
+    # Set Office RedirXMLSourceFolder - Profile Container
     New-ItemProperty -ErrorAction Stop `
         -Path HKLM:\SOFTWARE\FSLogix\Profiles `
         -Name "RedirXMLSourceFolder" `
