@@ -136,7 +136,7 @@ try {
 # The redirections.xml file only works in conjunction with a Profile Container, not with the Office container. 
 # Ref: https://learn.microsoft.com/en-us/fslogix/profile-container-office-container-cncpt
 #######################################
-#    FSLogix Profile Container    #
+#    FSLogix Profile Container        #
 #######################################
     # Set Office RedirXMLSourceFolder - Profile Container
     New-ItemProperty -ErrorAction Stop `
@@ -147,7 +147,9 @@ try {
         -Force `
         -Confirm:$false
 #######################################
-#    FSLogix Office Container    #
+#    FSLogix Office Container         
+#    Office Container is generally implemented with another profile solution, 
+#    and is designed to improve the performance of Microsoft Office in non-persistent environments
 #######################################
 
     # Set the Teams Registry key (for win11-22h2-avd-m365 by default)
