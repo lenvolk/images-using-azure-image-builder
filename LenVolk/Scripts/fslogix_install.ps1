@@ -136,14 +136,14 @@ try {
 #######################################
 #    FSLogix Profile Container    #
 #######################################
-    #Set Office RedirXMLSourceFolder - Profile Container
-    # New-ItemProperty -ErrorAction Stop `
-    #     -Path HKLM:\SOFTWARE\FSLogix\Profiles `
-    #     -Name "RedirXMLSourceFolder" `
-    #     -PropertyType Multistring `
-    #     -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
-    #     -Force `
-    #     -Confirm:$false
+    Set Office RedirXMLSourceFolder - Profile Container
+    New-ItemProperty -ErrorAction Stop `
+        -Path HKLM:\SOFTWARE\FSLogix\Profiles `
+        -Name "RedirXMLSourceFolder" `
+        -PropertyType Multistring `
+        -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
+        -Force `
+        -Confirm:$false
 #######################################
 #    FSLogix Office Container    #
 #######################################
