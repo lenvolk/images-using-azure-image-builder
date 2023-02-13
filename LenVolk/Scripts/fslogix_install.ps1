@@ -145,7 +145,7 @@ try {
         -Force `
         -Confirm:$false
 
-    #Set Office RedirXMLSourceFolder - !NOT Needed Anymore!
+    #Set Office RedirXMLSourceFolder - Profile Container
     # New-ItemProperty -ErrorAction Stop `
     #     -Path HKLM:\SOFTWARE\FSLogix\Profiles `
     #     -Name "RedirXMLSourceFolder" `
