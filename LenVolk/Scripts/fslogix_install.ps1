@@ -134,6 +134,17 @@ try {
 # The redirections.xml file only works in conjunction with a Profile Container, not with the Office container. 
 # Ref: https://learn.microsoft.com/en-us/fslogix/profile-container-office-container-cncpt
 #######################################
+#    FSLogix Profile Container    #
+#######################################
+    #Set Office RedirXMLSourceFolder - Profile Container
+    # New-ItemProperty -ErrorAction Stop `
+    #     -Path HKLM:\SOFTWARE\FSLogix\Profiles `
+    #     -Name "RedirXMLSourceFolder" `
+    #     -PropertyType Multistring `
+    #     -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
+    #     -Force `
+    #     -Confirm:$false
+#######################################
 #    FSLogix Office Container    #
 #######################################
 
@@ -145,14 +156,6 @@ try {
         -Force `
         -Confirm:$false
 
-    #Set Office RedirXMLSourceFolder - Profile Container
-    # New-ItemProperty -ErrorAction Stop `
-    #     -Path HKLM:\SOFTWARE\FSLogix\Profiles `
-    #     -Name "RedirXMLSourceFolder" `
-    #     -PropertyType Multistring `
-    #     -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
-    #     -Force `
-    #     -Confirm:$false
     #User will be required to sign in to teams at the beginning of each session if set to 0
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
