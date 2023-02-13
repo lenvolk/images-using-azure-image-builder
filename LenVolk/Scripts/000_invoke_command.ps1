@@ -67,14 +67,15 @@ $RunningVMs | ForEach-Object -Parallel {
 #     Installing Fslogix       #
 ################################
 $VMRG = "imageBuilderRG"
-$ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles\profiles"
+$ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles1"
+$ProfContURI = "\\imagesaaad.file.core.windows.net\appmaskrules"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
-        -Parameter @{ProfilePath = $using:ProfilePath} `
+        -Parameter @{ProfilePath = $using:ProfilePath;ProfContURI = $using:ProfContURI} `
         -ScriptPath './fslogix_install.ps1'
 }
 

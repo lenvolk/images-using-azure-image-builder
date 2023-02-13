@@ -5,10 +5,12 @@
 # # .\\avd_fslogix.ps1 -ProfilePath "\\lvolkfiles.file.core.windows.net\garbage" - LocalWVDpath "C:\installers\FsLogix\x64\Release" -Verbose 
 
 Param (
-    [string]$ProfilePath
+    [string]$ProfilePath,
+    [string]$ProfContURI
 )
 
 # $ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles1"
+# $ProfContURI = "\\imagesaaad.file.core.windows.net\appmaskrules"
 
 #########################################
 $LocalWVDpath            = "c:\tempavd"
@@ -141,7 +143,7 @@ try {
         -Path HKLM:\SOFTWARE\FSLogix\Profiles `
         -Name "RedirXMLSourceFolder" `
         -PropertyType Multistring `
-        -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
+        -Value $ProfContURI `
         -Force `
         -Confirm:$false
 #######################################
