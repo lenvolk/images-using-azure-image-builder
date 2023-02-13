@@ -142,6 +142,16 @@ try {
         -Value "1" -PropertyType DWORD `
         -Force `
         -Confirm:$false
+
+    #Set Office RedirXMLSourceFolder
+    New-ItemProperty -ErrorAction Stop `
+        -Path HKLM:\SOFTWARE\FSLogix\Profiles `
+        -Name "RedirXMLSourceFolder" `
+        -PropertyType Multistring `
+        -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
+        -Force `
+        -Confirm:$false
+
     # Ref https://learn.microsoft.com/en-us/fslogix/configure-office-container-tutorial
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
@@ -185,7 +195,7 @@ try {
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "PreventLoginWithFailure" `
         -Type "Dword" `
-        -Value "0" `
+        -Value "1" `
         -Force `
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
