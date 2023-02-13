@@ -183,7 +183,9 @@ try {
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "SizeInMBs" `
         -Type "Dword" `
-        -Value "10000"
+        -Value "10000" `
+        -Force `
+        -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IsDynamic" `
