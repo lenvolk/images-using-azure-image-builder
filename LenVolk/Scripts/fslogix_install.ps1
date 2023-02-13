@@ -183,6 +183,13 @@ try {
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "VolumeType" `
+        -Type String `
+        -Value "vhdx" `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "SizeInMBs" `
         -Type "Dword" `
         -Value "10000" `
@@ -202,11 +209,12 @@ try {
         -Value "1" `
         -Force `
         -Confirm:$false
+# if enabled MSTSC connection would fail
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "PreventLoginWithFailure" `
         -Type "Dword" `
-        -Value "1" `
+        -Value "0" `
         -Force `
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
