@@ -151,7 +151,14 @@ try {
         -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
         -Force `
         -Confirm:$false
-
+    #User will be required to sign in to teams at the beginning of each session if set to 0
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "IncludeTeams" `
+        -Type "Dword" `
+        -Value "0" `
+        -Force `
+        -Confirm:$false
     # Ref https://learn.microsoft.com/en-us/fslogix/configure-office-container-tutorial
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
@@ -236,14 +243,6 @@ try {
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeSharepoint" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
-    #User will be required to sign in to teams at the beginning of each session if set to 0
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeTeams" `
         -Type "Dword" `
         -Value "0" `
         -Force `
