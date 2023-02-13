@@ -8,6 +8,8 @@ Param (
     [string]$ProfilePath
 )
 
+# $ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles1"
+
 #########################################
 $LocalWVDpath            = "c:\tempavd"
 if((Test-Path $LocalWVDpath) -eq $false) {
@@ -143,14 +145,14 @@ try {
         -Force `
         -Confirm:$false
 
-    #Set Office RedirXMLSourceFolder
-    New-ItemProperty -ErrorAction Stop `
-        -Path HKLM:\SOFTWARE\FSLogix\Profiles `
-        -Name "RedirXMLSourceFolder" `
-        -PropertyType Multistring `
-        -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
-        -Force `
-        -Confirm:$false
+    #Set Office RedirXMLSourceFolder - !NOT Needed Anymore!
+    # New-ItemProperty -ErrorAction Stop `
+    #     -Path HKLM:\SOFTWARE\FSLogix\Profiles `
+    #     -Name "RedirXMLSourceFolder" `
+    #     -PropertyType Multistring `
+    #     -Value "\\imagesaaad.file.core.windows.net\appmaskrules" `
+    #     -Force `
+    #     -Confirm:$false
     #User will be required to sign in to teams at the beginning of each session if set to 0
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
