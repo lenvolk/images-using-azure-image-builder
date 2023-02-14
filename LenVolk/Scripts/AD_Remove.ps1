@@ -6,24 +6,27 @@ Param (
 )
 
 
-$securePass = ConvertTo-SecureString $pass -AsPlainText -Force
-$cred = New-Object System.Management.Automation.PSCredential ($user, $securePass)
-Remove-Computer -Credential $cred -Force -Verbose
+$instance = Get-CimInstance -ComputerName $env:computername  -ClassName 'Win32_ComputerSystem'
+$invCimParams = @{
+    MethodName = 'UnjoinDomainOrWorkGroup'
+    Arguments = @{ FUnjoinOptions=0;Username="$env:computername\"+"$user";Password=$pass }
+}
+$instance | Invoke-CimMethod @invCimParams
 
-if((Get-WmiObject -Class Win32_ComputerSystem).Workgroup -eq $True) {
+if((Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain -eq $False) {
     Add-Content -LiteralPath C:\VMState.log "Now a part of WorkGruop"
     Write-Host `
         -ForegroundColor Cyan `
         -BackgroundColor Black `
-        "Now a part of WorkGruop"
-        Restart-Computer -Force
+        "$env:computername Now a part of WorkGruop"
+         Restart-Computer -Force
 }
 else {
     Add-Content -LiteralPath C:\VMState.log "OS is domainjoined"
     Write-Host `
         -ForegroundColor Yellow `
         -BackgroundColor Black `
-        "OS is domainjoined"
+        "$env:computername is domainjoined"
 }
 
 ### REF
