@@ -49,8 +49,8 @@ $RunningVMs | ForEach-Object -Parallel {
 ##################################################
 # AD_Remove
 ##################################################
-$user = 'lvolk\lv'
-$pass = 'DomAdminPass'
+$user = '.\mosksky'
+$pass = 'LocAdminPass'
 
 $ResourceGroup = "Lab1HPRG"
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 

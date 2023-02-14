@@ -27,6 +27,12 @@ else {
 }
 
 ### REF
+#
+# sysdm.cpl
+# Computer Name tab
+# Change button
+# Member of: Workgroup option button & enter WORKGROUP in the text box
+#
 # # PartOfDomain (boolean Property)
 # (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
  
