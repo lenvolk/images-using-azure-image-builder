@@ -66,9 +66,9 @@ $RunningVMs | ForEach-Object -Parallel {
 ################################
 #     Installing Fslogix       #
 ################################
-$VMRG = "imageBuilderRG"
-$ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles1"
-$ProfContURI = "\\imagesaaad.file.core.windows.net\appmaskrules"
+$VMRG = "lab1hprg"
+$ProfilePath = "\\lvolklab01.file.core.windows.net\labshare\Profiles"
+$ProfContURI = "\\lvolklab01.file.core.windows.net\labshare\FSLogixRules"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `

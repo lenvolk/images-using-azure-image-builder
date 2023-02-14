@@ -136,9 +136,9 @@ try {
 # The redirections.xml file only works in conjunction with a Profile Container, not with the Office container. 
 # Ref: https://learn.microsoft.com/en-us/fslogix/profile-container-office-container-cncpt
 #######################################
-#    FSLogix Profile Container        #
+#    FSLogix Profile Container 
+#    Set Office RedirXMLSourceFolder
 #######################################
-    # Set Office RedirXMLSourceFolder - Profile Container
     New-ItemProperty -ErrorAction Stop `
         -Path HKLM:\SOFTWARE\FSLogix\Profiles `
         -Name "RedirXMLSourceFolder" `
@@ -301,6 +301,9 @@ try {
         -Confirm:$false
 
     Write-Output  "Done with App Services Settings"
+
+    Write-output "Restarting host: $env:computername"
+    Restart-Computer -Force
 
 }
 

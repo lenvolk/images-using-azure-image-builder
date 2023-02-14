@@ -56,6 +56,8 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 ```
+## Monitoring
+[Alerts](https://github.com/JCoreMS/AVDAlerts)
 
 ## Terraform
 [AVD Terraform](https://github.com/lenvolk/Plan-and-Implement-Identity-and-Security-on-AVD)
