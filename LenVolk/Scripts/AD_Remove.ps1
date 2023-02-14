@@ -14,7 +14,7 @@ $invCimParams = @{
 $instance | Invoke-CimMethod @invCimParams
 
 if((Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain -eq $False) {
-    Add-Content -LiteralPath C:\VMState.log "Now a part of WorkGruop"
+    Add-Content -LiteralPath C:\VMState.log "$env:computername Now a part of WorkGruop"
     Write-Host `
         -ForegroundColor Cyan `
         -BackgroundColor Black `
@@ -22,7 +22,7 @@ if((Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain -eq $False) {
          Restart-Computer -Force
 }
 else {
-    Add-Content -LiteralPath C:\VMState.log "OS is domainjoined"
+    Add-Content -LiteralPath C:\VMState.log "$env:computername OS is domainjoined"
     Write-Host `
         -ForegroundColor Yellow `
         -BackgroundColor Black `
