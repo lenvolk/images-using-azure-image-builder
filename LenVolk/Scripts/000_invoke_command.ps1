@@ -32,8 +32,8 @@ $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Objec
 ##################################################
 $DomainName = "lvolk.com"
 $OUPath = "OU=PoolHostPool,OU=AVD,DC=lvolk,DC=com"
-$user = "lvolk\lv"
-$pass = "DomAdminPass"
+$user = 'lvolk\lv'
+$pass = 'DomAdminPass'
 
 $ResourceGroup = "Garbage"
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
@@ -49,10 +49,10 @@ $RunningVMs | ForEach-Object -Parallel {
 ##################################################
 # AD_Remove
 ##################################################
-$user = "lvolk\lv"
-$pass = "DomAdminPass"
+$user = 'lvolk\lv'
+$pass = 'DomAdminPass'
 
-$ResourceGroup = "Garbage"
+$ResourceGroup = "Lab1HPRG"
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 # (Get-Command ./AADextention.ps1).Parameters
 $RunningVMs | ForEach-Object -Parallel {
