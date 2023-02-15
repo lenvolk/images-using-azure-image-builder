@@ -24,6 +24,7 @@ Expand-Archive `
 Remove-Item $TerraformInstaller -Force
 
 #### Authenticate to Portal
+az logout
 Disconnect-AzAccount
 $subscription = "ca5dfa45-eb4e-4612-9ebd-06f6fc3bc996"
 Connect-AzAccount -Subscription $subscription 
