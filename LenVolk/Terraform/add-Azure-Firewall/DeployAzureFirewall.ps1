@@ -28,6 +28,8 @@ az logout
 Disconnect-AzAccount
 $subscription = "ca5dfa45-eb4e-4612-9ebd-06f6fc3bc996"
 Connect-AzAccount -Subscription $subscription 
+az login --only-show-errors -o table --query Dummy
+az account set -s $Subscription
 
 
 #### Setup parameters

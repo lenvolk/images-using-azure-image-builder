@@ -1,6 +1,6 @@
 # Azure Firewall Config
 locals {
-  base_name = "${var.prefix}-FW-${data.azurerm_resource_group.hub_vnet.location}"
+  base_name = "${var.prefix}-FW-${var.location}"
 }
 
 data "azurerm_resource_group" "hub_vnet" {
@@ -11,7 +11,7 @@ data "azurerm_resource_group" "hub_vnet" {
 resource "azurerm_public_ip" "hub_firewall" {
   name                = local.base_name
   resource_group_name = data.azurerm_resource_group.hub_vnet.name
-  location            = data.azurerm_resource_group.hub_vnet.location
+  location            = var.location
   allocation_method   = "Static"
   sku                 = "Standard"
 }
@@ -21,7 +21,7 @@ resource "azurerm_public_ip" "hub_firewall" {
 resource "azurerm_firewall" "hub_firewall" {
   name                = local.base_name
   resource_group_name = data.azurerm_resource_group.hub_vnet.name
-  location            = data.azurerm_resource_group.hub_vnet.location
+  location            = var.location
 
   sku_name = "AZFW_VNet"
   sku_tier = "Standard"
@@ -44,7 +44,7 @@ resource "azurerm_firewall" "hub_firewall" {
 resource "azurerm_firewall_policy" "hub_fw_base_policy" {
   name                     = local.base_name
   resource_group_name      = data.azurerm_resource_group.hub_vnet.name
-  location                 = data.azurerm_resource_group.hub_vnet.location
+  location                 = var.location
   sku                      = "Standard"
   threat_intelligence_mode = "Deny"
 
@@ -197,7 +197,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
 resource "azurerm_route_table" "azure_firewall" {
   name                = local.base_name
   resource_group_name = data.azurerm_resource_group.hub_vnet.name
-  location            = data.azurerm_resource_group.hub_vnet.location
+  location            = var.location
 
   route {
     name                   = "AzureFirewall"
