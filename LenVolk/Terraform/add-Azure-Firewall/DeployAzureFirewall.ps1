@@ -8,11 +8,8 @@
 
 # The Azure Firewall is expensive to run ($1.25/hour) 
 
-$subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
-Connect-AzAccount -Subscription $subscription 
-
+#### Download Terraform
 $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
-
 $TerraformURI              = 'https://releases.hashicorp.com/terraform/1.3.7/terraform_1.3.7_windows_386.zip'
 $TerraformInstaller             = 'TerraformSetup.zip'
 
@@ -26,8 +23,15 @@ Expand-Archive `
     -Verbose
 Remove-Item $TerraformInstaller -Force
 
-$hub_vnet_resource_group = "network-eus"
-$vnetName = "mngntVNET"
+#### Authenticate to Portal
+Disconnect-AzAccount
+$subscription = "ca5dfa45-eb4e-4612-9ebd-06f6fc3bc996"
+Connect-AzAccount -Subscription $subscription 
+
+
+#### Setup parameters
+$hub_vnet_resource_group = "POC-SA"
+$vnetName = "POC-vnet"
 $vnet = Get-AzVirtualNetwork -Name $vnetName -ResourceGroupName $hub_vnet_resource_group
 $fw_subnet_id = (Get-AzVirtualNetworkSubnetConfig -Name "AzureFirewallSubnet" -VirtualNetwork $vnet).id
 
