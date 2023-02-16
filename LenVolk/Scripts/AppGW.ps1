@@ -1,6 +1,8 @@
 
 # Ref: https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ssl-powershell
 # Create alerts  https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-backend-5xx
+#                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-unhealthy-host
+#                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-backend-lastbyte-resp
 $RGname = "myResourceGroupAG"
 $locName = "eastus"
 az group create --name $RGname --location $locName
