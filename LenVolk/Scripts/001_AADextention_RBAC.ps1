@@ -97,23 +97,20 @@ New-AzRoleAssignment -ObjectId $GroupId `
 
 # OR
 # Share Level Permissions: https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-assign-permissions?tabs=azure-powershell#share-level-permissions-for-all-authenticated-identities
-
 # $defaultPermission = "StorageFileDataSmbShareContributor" # Set the default permission of your choice
-
 # $account = Set-AzStorageAccount -ResourceGroupName $ResourceGroup -AccountName "imagesapilot" -DefaultSharePermission $defaultPermission
-
 # $account.AzureFilesIdentityBasedAuth
 
 #!!!SA to AAD ref docs  (fslogix_regkey_AADSA.ps1)
-# https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
-# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts-preview
-#Run from on-prem AD
+# Create SA          https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
+# Enable AD Kerberos https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts-preview
+# Run from on-prem AD
 # $domainInformation = Get-ADDomain 
 # $domainGuid = $domainInformation.ObjectGUID.ToString() 
 # $domainName = $domainInformation.DnsRoot
 # !!! at the AAD VM run reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters /v CloudKerberosTicketRetrievalEnabled /t REG_DWORD /d 1 /f
 ##########################################
 # From AAD vm to SSO on-prem share 
-# make sure vnet DNS only has IP of on-prem DNS server/s
+# make sure vnet DNS only has IP of on-prem DNS server/s (no azure wired ip 168.63. 129.16)
 # run example 1 from on-prem DC
 # https://learn.microsoft.com/en-us/azure/active-directory/authentication/howto-authentication-passwordless-security-key-on-premises#example-1-prompt-for-all-credentials
