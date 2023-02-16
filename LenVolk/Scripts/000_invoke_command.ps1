@@ -49,7 +49,7 @@ $RunningVMs | ForEach-Object -Parallel {
 ##################################################
 # AD_Remove
 ##################################################
-$user = 'mosksky'
+$user = 'LocalAdmin'
 $pass = 'LocalAdminPass'
 
 $ResourceGroup = 'Lab1HPRG'

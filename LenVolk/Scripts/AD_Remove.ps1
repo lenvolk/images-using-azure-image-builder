@@ -5,6 +5,7 @@ Param (
     [string]$pass
 )
 
+winrm quickconfig -quiet
 
 $instance = Get-CimInstance -ComputerName $env:computername  -ClassName 'Win32_ComputerSystem'
 $invCimParams = @{
