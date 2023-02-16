@@ -96,7 +96,7 @@ New-AzRoleAssignment -ObjectId $GroupId `
 -ResourceGroupName $ResourceGroup
 
 # OR
-# https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-assign-permissions?tabs=azure-powershell#share-level-permissions-for-all-authenticated-identities
+# Share Level Permissions: https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-assign-permissions?tabs=azure-powershell#share-level-permissions-for-all-authenticated-identities
 
 # $defaultPermission = "StorageFileDataSmbShareContributor" # Set the default permission of your choice
 
@@ -112,6 +112,7 @@ New-AzRoleAssignment -ObjectId $GroupId `
 # $domainGuid = $domainInformation.ObjectGUID.ToString() 
 # $domainName = $domainInformation.DnsRoot
 # !!! at the AAD VM run reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters /v CloudKerberosTicketRetrievalEnabled /t REG_DWORD /d 1 /f
+##########################################
 # From AAD vm to SSO on-prem share 
 # make sure vnet DNS only has IP of on-prem DNS server/s
 # run example 1 from on-prem DC
