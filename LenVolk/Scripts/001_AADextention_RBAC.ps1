@@ -110,6 +110,6 @@ New-AzRoleAssignment -ObjectId $GroupId `
 #     reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters /v CloudKerberosTicketRetrievalEnabled /t REG_DWORD /d 1 /f
 ##########################################
 # From AAD vm to SSO on-prem share 
-# make sure vnet DNS only has IP of on-prem DNS server/s (no azure wired ip 168.63. 129.16)
+# make sure vnet DNS only has IP of on-prem DNS server/s (no azure wired ip 168.63.129.16)
 # run example 1 from on-prem DC
 # https://learn.microsoft.com/en-us/azure/active-directory/authentication/howto-authentication-passwordless-security-key-on-premises#example-1-prompt-for-all-credentials
