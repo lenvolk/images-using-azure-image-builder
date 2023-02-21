@@ -17,7 +17,7 @@ foreach ($vmName in $computers) {
     $vmAzure = Get-AzVM -Name $vmName
     if ($vmAzure) {
         Write-Output "Removing MMA agent"
-        Remove-AzVMExtension -ResourceGroupName $vmAzure.ResourceGroupName -Name MicrosoftMonitoringAgent -VMName $vmAzure.Name
+        Remove-AzVMExtension -ResourceGroupName $vmAzure.ResourceGroupName -Name MicrosoftMonitoringAgent -VMName $vmAzure.Name -Force
         
 
 
