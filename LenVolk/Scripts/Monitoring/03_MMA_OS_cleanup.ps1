@@ -5,7 +5,7 @@
 
 #Variables
 $PathToCsv = "C:\Temp\MMA_VMs.csv"
-$computers = Import-Csv -Path $PathToCsv | select VmName
+$computers = (Import-Csv -Path $PathToCsv).vmname
 
 # Download from https://go.microsoft.com/fwlink/?LinkId=828603
 $sourcefile = "\\server01\LAWShare\setup.exe"
