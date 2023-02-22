@@ -29,5 +29,5 @@ foreach ($vmName in $computers) {
 
         Remove-AzConnectedMachineExtension -MachineName $vmName.VmName -ResourceGroupName $vmName.ResourceGroupName -Name OmsAgentforLinux -NoWait
         Remove-AzConnectedMachineExtension -MachineName $vmName.VmName -ResourceGroupName $vmName.ResourceGroupName -Name AzureMonitorLinuxAgent -NoWait
-        Write-Output "Machine Name: "$vmName.VmName" has MMA removed"
+        Write-Output "Machine Name: $($vmName.VmName) has MMA removed"
 }

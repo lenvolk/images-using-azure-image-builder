@@ -51,7 +51,7 @@ foreach ($ArcName in $ArcMachines) {
     $extension = Get-AzConnectedMachineExtension -ResourceGroupName $ArcName.resourceGroup -MachineName $ArcName.Name
 
     if (($extension.Name -like "AzureMonitor*") -or ($extension.Name -like "OMSAgent*")) {
-        Write-Output ""$ArcName.Name" has MMA"
+        Write-Output "$($ArcName.Name) has MMA"
         $ReportDetails.VMName = $ArcName.Name 
         $ReportDetails.ResourceGroupName = $ArcName.resourceGroup
         $report+=$ReportDetails 
