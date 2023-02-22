@@ -10,4 +10,4 @@ foreach ($vm in $vms) {
 
 
 
-Remove-AzOperationalInsightsDataSource -Workspace $WorkspaceName -Name $VMName
+Remove-AzOperationalInsightsDataSource -Workspace mainlaw -Name Lab1MSIX-1-0
