@@ -1,5 +1,6 @@
 
 # Ref https://supportability.visualstudio.com/AzureDev/_wiki/wikis/AzureDev/662529/Delete-PageBlob-PowerShell-Script
+# Function https://techcommunity.microsoft.com/t5/azure-paas-blog/lifecycle-management-for-page-blob-and-block-blob-using-function/ba-p/2801787
 
 param(
     [parameter(Mandatory=$true)]
