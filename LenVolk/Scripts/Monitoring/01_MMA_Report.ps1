@@ -1,4 +1,6 @@
-# REF report on LAW agent https://argonsys.com/microsoft-cloud/library/how-to-find-your-azure-log-analytics-agent-deployments-in-preparation-for-the-azure-monitor-agent/
+# REF 
+# Migration workbook  https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-migration-tools
+# report on LAW agent https://argonsys.com/microsoft-cloud/library/how-to-find-your-azure-log-analytics-agent-deployments-in-preparation-for-the-azure-monitor-agent/
 
 # Create Report Array
 $report = @()
