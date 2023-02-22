@@ -8,7 +8,7 @@ $PathToCsv = "C:\Temp\MMA_VMs.csv"
 $computers = (Import-Csv -Path $PathToCsv).vmname
 
 # Download from https://go.microsoft.com/fwlink/?LinkId=828603
-$sourcefile = "\\server01\LAWShare\setup.exe"
+$sourcefile = "\\server01\LAWShare\MMASetup-AMD64.exe"
 #This section will uninstall the MMA 
 foreach ($computer in $computers) 
 {
@@ -21,7 +21,7 @@ foreach ($computer in $computers)
     }
     Copy-Item -Path $sourcefile -Destination $destinationFolder
     Invoke-Command -ComputerName $computer `
-    -ScriptBlock {Start-Process 'c:\temp\setup.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_AZURE_CLOUD_TYPE=1 OPINSIGHTS_WORKSPACE_ID="<your workspace ID>" OPINSIGHTS_WORKSPACE_KEY="<your workspace key>" AcceptEndUserLicenseAgreement=1'}
+                   -ScriptBlock {Start-Process 'c:\temp\MMASetup-AMD64.exe /Q'}
 }
  
 # Linux 
@@ -32,5 +32,5 @@ foreach ($computer in $computers)
 # $computers | ForEach-Object -Parallel {
 # Invoke-Command `
 #    -ComputerName $_.Name `
-#    -ScriptBlock {Start-Process 'c:\temp\setup.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_AZURE_CLOUD_TYPE=1 OPINSIGHTS_WORKSPACE_ID="<your workspace ID>" OPINSIGHTS_WORKSPACE_KEY="<your workspace key>" AcceptEndUserLicenseAgreement=1'}
+#    -ScriptBlock {Start-Process 'c:\temp\MMASetup-AMD64.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_AZURE_CLOUD_TYPE=1 OPINSIGHTS_WORKSPACE_ID="<your workspace ID>" OPINSIGHTS_WORKSPACE_KEY="<your workspace key>" AcceptEndUserLicenseAgreement=1'}
 # }
