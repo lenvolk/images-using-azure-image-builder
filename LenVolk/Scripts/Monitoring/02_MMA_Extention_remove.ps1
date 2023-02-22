@@ -7,7 +7,7 @@ $computers = (Import-Csv -Path $PathToCsv).vmname
 foreach ($vmName in $computers) { 
     $vmAzure = Get-AzVM -Name $vmName
     if ($vmAzure) {
-        Write-Output "Removing MMA agent from $vmAzure"
+        Write-Output "Removing MMA agent from $vmName"
         Remove-AzVMExtension -ResourceGroupName $vmAzure.ResourceGroupName -Name MicrosoftMonitoringAgent -VMName $vmAzure.Name -Force
     } 
     else {
