@@ -11,7 +11,7 @@
 # https://github.com/tsrob50/WVD-Public/blob/master/SnapImage.ps1
 # https://www.youtube.com/watch?v=H3UrVsI9f7s
 #
-
+# !!! No per User application install
 <#
 .SYNOPSIS
     This script automates the process of creating an image of an Azure VM without destroying the source, or reference VM.
