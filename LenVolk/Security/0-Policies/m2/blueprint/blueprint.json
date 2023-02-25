@@ -1,0 +1,92 @@
+{
+    "properties": {
+        "description": "Create a subscription with the proper settings.",
+        "targetScope": "subscription",
+        "parameters": {
+            "vnetName": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "vnetName",
+                    "description": "VNet name"
+                },
+                "defaultValue": "VNet",
+                "allowedValues": []
+            },
+            "vnetAddressPrefix": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "vnetAddressPrefix",
+                    "description": "Address prefix"
+                },
+                "defaultValue": "10.0.0.0/16",
+                "allowedValues": []
+            },
+            "subnet1Prefix": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "subnet1Prefix",
+                    "description": "Subnet 1 Prefix"
+                },
+                "defaultValue": "10.0.0.0/24",
+                "allowedValues": []
+            },
+            "subnet1Name": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "subnet1Name",
+                    "description": "Subnet 1 Name"
+                },
+                "defaultValue": "Subnet1",
+                "allowedValues": []
+            },
+            "environment_tagValue": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "Environment tag value",
+                    "description": null
+                }
+            },
+            "security_owner_tagValue": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "Security owner tag value",
+                    "description": null
+                }
+            },
+            "networkOwners": {
+                "type": "array",
+                "metadata": {
+                    "displayName": "Networking admin group",
+                    "description": "List of AAD object IDs that is assigned Owner role of the Networking resource group",
+                    "strongType": "PrincipalId"
+                }
+            },
+            "securityOwners": {
+                "type": "array",
+                "metadata": {
+                    "displayName": "Security admin group",
+                    "description": "List of AAD object IDs that is assigned Owner role of the Security resource group",
+                    "strongType": "PrincipalId"
+                }
+            },
+            "subscriptionContributors": {
+                "type": "array",
+                "metadata": {
+                    "displayName": "Subscription contributor group",
+                    "description": "List of AAD object IDs that is assigned Contributor role of the subscription",
+                    "strongType": "PrincipalId"
+                }
+            }
+        },
+        "resourceGroups": {
+            "Networking": {
+                "description": "Resource group for networking resources",
+                "name": "Networking"
+            },
+            "Security": {
+                "description": "Resource group for security resources",
+                "name": "Security"
+            }
+        }
+    }
+}

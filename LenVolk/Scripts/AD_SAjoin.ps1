@@ -38,6 +38,26 @@ $StorageAccountName = "imagesapilot"
 #Select the target subscription for the current session
 Select-AzSubscription -SubscriptionId $SubscriptionId 
 
+# To create new SA
+# $location = "eastus"
+# $prefix = "volk"
+# $id = Get-Random -Minimum 1000 -Maximum 9999
+# $rg1 = New-AzResourceGroup -Name "$prefix-$id-1" -Location $location
+# if (Get-AzStorageAccountNameAvailability -Name "$($prefix)sa$id")
+# {
+# #Create a new storage account
+# $saAccountParameters = @{
+#     Name = "$($prefix)sa$id"
+#     ResourceGroupName = $rg1.ResourceGroupName
+#     Location = $location
+#     SkuName = "Standard_LRS"
+#     AllowBlobPublicAccess = $true
+# }
+
+# $storageAccount = New-AzStorageAccount @saAccountParameters
+
+# }
+
 # Register the target storage account with your active directory environment under the target OU (for example: specify the OU with Name as "UserAccounts" or DistinguishedName as "OU=UserAccounts,DC=CONTOSO,DC=COM"). 
 # You can use to this PowerShell cmdlet: Get-ADOrganizationalUnit to find the Name and DistinguishedName of your target OU. If you are using the OU Name, specify it with -OrganizationalUnitName as shown below. If you are using the OU DistinguishedName, you can set it with -OrganizationalUnitDistinguishedName. You can choose to provide one of the two names to specify the target OU.
 # You can choose to create the identity that represents the storage account as either a Service Logon Account or Computer Account (default parameter value), depends on the AD permission you have and preference. 

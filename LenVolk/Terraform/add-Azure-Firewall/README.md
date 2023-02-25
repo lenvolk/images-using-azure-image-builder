@@ -22,3 +22,4 @@ $publicip1 = Get-AzPublicIpAddress -Name "avd-FW-eastus" -ResourceGroupName $hub
 $azfw.Allocate($vnet,@($publicip1))
 Set-AzFirewall -AzureFirewall $azfw
 ```
+[MoreScripts](https://github.com/Azure/Azure-Network-Security)

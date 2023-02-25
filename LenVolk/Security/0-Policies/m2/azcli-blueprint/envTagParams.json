@@ -1,0 +1,8 @@
+{
+    "tagName": {
+        "value": "Environment"
+    },
+    "tagValue": {
+        "value": "[parameters('environment_tagValue')]"
+    }
+}

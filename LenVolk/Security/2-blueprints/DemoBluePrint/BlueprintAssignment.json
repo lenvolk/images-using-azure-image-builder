@@ -1,0 +1,25 @@
+{
+    "properties": {
+        "blueprintId": "/subscriptions/77950549-89f8-47fa-bf94-49cba3c855f0/providers/Microsoft.Blueprint/blueprints/DemoBluePrint",
+        "resourceGroups": {
+            "Networking": {
+                "name": "Networking",
+                "location": "eastus"
+            }
+        },
+        "parameters": {
+            "tagValue": {
+                "value": "Demo"
+            },
+            "networkOwners": {
+                "value": [
+                    "e1caca43-7736-4b79-88c3-6cf83a048d63"
+                ]
+            }
+        }
+    },
+    "identity": {
+        "type": "systemAssigned"
+    },
+    "location": "eastus"
+}
