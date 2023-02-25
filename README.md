@@ -64,3 +64,6 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 
 ## Bicep
 [AVD Monitoring](https://github.com/jamesatighe/AVD-BICEP/blob/main/Bicep/Monitoring.bicep)
+
+## CheckList
+[AVD Check List](https://github.com/Azure/review-checklists)
