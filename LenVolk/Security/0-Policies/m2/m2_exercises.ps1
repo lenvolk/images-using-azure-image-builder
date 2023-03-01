@@ -13,8 +13,10 @@ cd ./blueprint
 $blueprint = New-AzBlueprint -Name "Default-Setup" -BlueprintFile "blueprint.json" -ManagementGroupId "volk-SandBox"
 
 # Add the Blueprint artifacts
+# Policies
 New-AzBlueprintArtifact -Blueprint $blueprint -Name 'envPolicyTags' -ArtifactFile ".\artifacts\environmentTags.json"
 New-AzBlueprintArtifact -Blueprint $blueprint -Name 'secPolicyTags' -ArtifactFile ".\artifacts\securityOwnerTags.json"
+# RBAC
 New-AzBlueprintArtifact -Blueprint $blueprint -Name 'SecRBAC' -ArtifactFile ".\artifacts\securityOwners.json"
 New-AzBlueprintArtifact -Blueprint $blueprint -Name 'NetRBAC' -ArtifactFile ".\artifacts\networkOwners.json"
 New-AzBlueprintArtifact -Blueprint $blueprint -Name 'ContribRBAC' -ArtifactFile ".\artifacts\subscriptionContributors.json"
