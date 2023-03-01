@@ -11,6 +11,7 @@
 ## https://learn.microsoft.com/en-us/azure/virtual-desktop/set-up-golden-image#other-recommendations
 ## https://learn.microsoft.com/en-us/azure/virtual-machines/windows/upload-generalized-managed?toc=%252fazure%252fvirtual-machines%252fwindows%252ftoc.json#generalize-the-source-vm-by-using-sysprep   
 ## (before running sysprep Delete the panther directory (C:\Windows\Panther))
+## for win11 issue https://internal.evergreen.microsoft.com/en-us/topic/c94bb007-e8cc-6735-4643-7b17805fbcaa
 
 .LINK
 
