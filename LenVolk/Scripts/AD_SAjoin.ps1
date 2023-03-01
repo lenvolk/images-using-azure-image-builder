@@ -9,6 +9,13 @@
 ## Join the Storage Account for SMB Auth Microsoft Source:
 ## https://docs.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-enable
 
+function Check-IsAdmin{
+
+  (whoami /all | Select-String S-1-16-12288) -ne $null
+}
+
+
+if (Check-IsAdmin) {
 #Change the execution policy to unblock importing AzFilesHybrid.psm1 module
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
 
@@ -17,7 +24,10 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
 
 #Import AzFilesHybrid module
 Import-Module -Name AzFilesHybrid
-
+}
+else {
+  Write-Error "Script needs to be run with higher privileges"
+}
 #Login with an Azure AD credential that has either storage account owner or contributor Azure role assignment
 Get-AzContext #to validate if logged in
 
