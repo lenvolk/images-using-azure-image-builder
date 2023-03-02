@@ -3,6 +3,7 @@
 # Create alerts  https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-backend-5xx
 #                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-unhealthy-host
 #                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-backend-lastbyte-resp
+# !!!  FW        https://www.youtube.com/watch?v=7yL1R2_B5WI
 $RGname = "myResourceGroupAG"
 $locName = "eastus"
 az group create --name $RGname --location $locName
