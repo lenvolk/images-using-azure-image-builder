@@ -372,7 +372,7 @@ $refVmRg = 'imageBuilderRG'
 $location = (Get-AzResourceGroup -Name $refVmRg).Location
 $vnetName = 'aibVNet' 
 $subnetName = 'aibSubnet'
-
+#$image = "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/SIGRG/providers/Microsoft.Compute/galleries/LabSIG/images/avd-win11/versions/0.202210.031625"
 $VM_User = "aibadmin"
 $WinVM_Password = "P@ssw0rdP@ssw0rd"
 
