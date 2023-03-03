@@ -237,4 +237,4 @@ foreach($res in $Resources) {
     az resource delete -n $res.name -g $aibRG --resource-type $res.type
 }
 
-az group delete -g $aibRG --yes
+az group delete -g $aibRG --yes --no-wait
