@@ -1,5 +1,12 @@
 # Installing Tools
-#
+
+# install Git
+# https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/Git-2.39.0.2-64-bit.exe
+# install vscode
+# https://code.visualstudio.com/Download
+# PowerShell Versions
+# https://github.com/PowerShell/PowerShell/releases/tag/v7.2.9
+# Bicept
 # https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install
 #
 # We assume, that choco, the required PowerShell Azure Modules, the Azure CLI and VSCode are installed.
