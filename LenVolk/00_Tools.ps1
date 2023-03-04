@@ -84,12 +84,14 @@ choco install azure-cli -y
 # choco install git
 choco install bicep -y
 # Install PowerShell Azure Modules Accounts & Resources
-Install-Module Az.Accounts
-Install-Module Az.Resources
 Install-Module -Name Az -AllowCLobber -Verbose -Confirm:$false
 Import-Module -Name Az -Verbose
 Install-Module AzureAd -AllowClobber -Verbose -Confirm:$false
-Import-Module AzureAD
+# also in PS 5.1.x
+Install-Module AzureAd -AllowClobber -Verbose -Confirm:$false
+# now back in VSCode
+Import-Module AzureAD -Verbose -UserWindowsPowerShell
+
 
 # Install the VSCode extension from CMD
 # code --list-extensions | % { "code --install-extension $_" }
