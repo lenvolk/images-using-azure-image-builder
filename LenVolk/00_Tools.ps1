@@ -66,7 +66,10 @@ mstsc /v:$VMIP /w:1600 /h:1200
 # https://github.com/PowerShell/PowerShell/releases/tag/v7.2.9
 # Bicept
 # https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install
-#
+
+$PSVersionTable.PSVersion
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
 # # Download and install chocolatey
 # https://learn.microsoft.com/en-us/mem/configmgr/core/plan-design/security/enable-tls-1-2-client#configure-for-strong-cryptography
 Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NetFramework\v2.0.50727' -Name 'SchUseStrongCrypto' -Value '1' -Type DWord
