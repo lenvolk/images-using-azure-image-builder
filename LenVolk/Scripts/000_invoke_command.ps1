@@ -10,6 +10,8 @@ $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Objec
 # req PS 7 
 # iex "&amp; { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
 
+# Just an example
+# PsExec.exe /accepteula \\CZ###APPNPADC01 cmd.exe /c "powershell.exe -ExecutionPolicy Bypass -File C:\Users\lvolk\Scripts\AD_Add_PSscript.ps1"
 
 ##################################################
 # Testing passing parameters to the VM's PS script

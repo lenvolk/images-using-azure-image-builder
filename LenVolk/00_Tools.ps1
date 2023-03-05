@@ -50,7 +50,7 @@ $VMIP = ( az vm create --resource-group $RGname --name $vmName `
 az vm list -g $RGname -o table
 # Get disk size
 # az vm show --resource-group $RGname --name $vmName --query storageProfile.osDisk.diskSizeGb
-# Connect to VM
+# Connect to VM $VMIP = "20.122.94.204"
 cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
 mstsc /v:$VMIP /w:1600 /h:1200
 
