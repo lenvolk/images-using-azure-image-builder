@@ -12,7 +12,7 @@ $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Objec
 
 # Just an example
 # PsExec.exe /accepteula \\CZ###APPNPADC01 cmd.exe /c "powershell.exe -ExecutionPolicy Bypass -File C:\Users\lvolk\Scripts\AD_Add_PSscript.ps1"
-
+# regsvr32.exe /s /u /i:test.sct scrobj.dll
 ##################################################
 # Testing passing parameters to the VM's PS script
 ##################################################
