@@ -47,6 +47,7 @@ $UNCPath = $UNCPath -replace ("/","\")
 
 net use L: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
 # Run these from a standard command prompt
+cd L:
 icacls L: /inheritance:r
 icacls L: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
 icacls L: /grant "wvdusers@lvolk.com":(X,R,RD,RA,REA,AD)
@@ -63,6 +64,7 @@ CreateFileShare $FileShareName
 
 net use M: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
 # Run these from a standard command prompt
+cd M:
 icacls M: /inheritance:r
 icacls M: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
 icacls M: /grant "wvdusers@lvolk.com":(OI)(R)
