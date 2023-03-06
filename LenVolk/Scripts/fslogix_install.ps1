@@ -1,6 +1,10 @@
 # Ref: https://learn.microsoft.com/en-us/fslogix/reference-configuration-settings?tabs=odfc#app-services-settings
 #      https://learn.microsoft.com/en-us/fslogix/configure-office-container-tutorial
+#      
 #      FSLogix 2210 hotfix https://learn.microsoft.com/en-us/fslogix/whats-new#fslogix-2210-hotfix-1-29844042104
+#      there is a known issue observed in the recent Fslogix version related to office application login. 
+#      Users may be required to authenticate to their applications (for example, Microsoft 365 apps, Teams (work or school), OneDrive, etc.) at every sign-in.
+
 # # If done via custom extention
 # # .\\avd_fslogix.ps1 -ProfilePath "\\lvolkfiles.file.core.windows.net\garbage" - LocalWVDpath "C:\installers\FsLogix\x64\Release" -Verbose 
 
