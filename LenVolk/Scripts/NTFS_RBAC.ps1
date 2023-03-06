@@ -57,7 +57,7 @@ icacls L: /remove "Builtin\Users"
 # Use this value for the FSLogix install
 $ProfileShare = $UNCPath + $FileShareName
 
-# Creating AppMasking Share
+# Creating AppMasking Share AND office redirection share
 $FileShareName = "appmaskrules"
 CreateFileShare $FileShareName
 
