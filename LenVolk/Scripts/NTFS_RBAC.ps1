@@ -59,7 +59,7 @@ icacls L: /remove "Builtin\Users"
 # $ProfileShare = $UNCPath + $FileShareName
 
 # Creating AppMasking Share AND office redirection share
-$FileShareName = "appmaskrules"
+$FileShareName = "avdshare"
 CreateFileShare $FileShareName
 
 net use M: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
