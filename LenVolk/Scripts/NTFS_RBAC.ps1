@@ -21,14 +21,16 @@ $GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
 $RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Contributor").name
 New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
--ResourceGroupName $ResourceGroup
+-ResourceGroupName $ResourceGroup `
+-ErrorAction SilentlyContinue
+
 #
 $GroupId = (Get-AzADGroup -DisplayName "SMBAdmins").id
 $RoleName = (Get-AzRoleDefinition -Name "Storage File Data SMB Share Elevated Contributor").name
 New-AzRoleAssignment -ObjectId $GroupId `
 -RoleDefinitionName $RoleName `
--ResourceGroupName $ResourceGroup
-
+-ResourceGroupName $ResourceGroup `
+-ErrorAction SilentlyContinue
 
 # Get properties of the storage account for confirmation
 $sa = Get-AzStorageAccount -ResourceGroupName $ResourceGroup -Name $SAName
