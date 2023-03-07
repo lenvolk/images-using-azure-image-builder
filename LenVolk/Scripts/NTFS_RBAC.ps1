@@ -55,8 +55,8 @@ icacls L: /grant "Creator Owner":(OI)(CI)(IO)(M)
 icacls L: /remove "Authenticated Users"
 icacls L: /remove "Builtin\Users"
 
-# Use this value for the FSLogix install
-$ProfileShare = $UNCPath + $FileShareName
+# Use this value for the FSLogix user profile path
+# $ProfileShare = $UNCPath + $FileShareName
 
 # Creating AppMasking Share AND office redirection share
 $FileShareName = "appmaskrules"
