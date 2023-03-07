@@ -18,6 +18,28 @@ az network vnet create --resource-group $RGname --address-prefixes 10.150.0.0/24
 $SubnetId = (az network vnet subnet show --resource-group $RGname --vnet-name $VNETName --name=$SubnetName --query id -o tsv)
 
 #######################################
+#     Create NSG          #
+#######################################
+
+$RG = Get-AzResourceGroup -Name $RGname
+
+#Create a default NSG
+$NSG = New-AzNetworkSecurityGroup -Name "tool-nsg" -ResourceGroupName $RG.ResourceGroupName -Location $location
+
+#Get the VNet
+$Vnet = Get-AzVirtualNetwork -Name "tool-vnet" -ResourceGroupName $RG.ResourceGroupName
+
+#Check if each has an NSG, if not apply one
+foreach($subnet in $Vnet.Subnets){
+    if($subnet.NetworkSecurityGroup -eq $null){
+        Write-Output "$($subnet.Name) has no NSG"
+        Set-AzVirtualNetworkSubnetConfig -Name $subnet.Name -VirtualNetwork $Vnet -NetworkSecurityGroupId $NSG.Id -AddressPrefix $subnet.AddressPrefix
+    }
+}
+
+$Vnet | Set-AzVirtualNetwork
+
+#######################################
 #              Create VM              #
 #######################################
 ##########################################################################
