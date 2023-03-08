@@ -4,7 +4,7 @@
 # PS 
 # $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
 # Connect-AzAccount -Subscription $subscription 
-# Set-AzContext -Subscription "AzIntConsumption"
+# Set-AzContext -Subscription $subscription
 # Disconnect-AzAccount
 #
 # AZ CLI
