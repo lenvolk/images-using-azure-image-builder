@@ -46,6 +46,9 @@ $Vnet | Set-AzVirtualNetwork
 # Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
 # Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus #!!! Only the -avd are multi-session
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
+#
+# Get-AzVMImageSku -Location $locName -PublisherName $pubName -Offer $offerName | Select Skus | Where-Object { $_.Skus -like '2022*'}
+# Get-AzVMImage -Location "eastus" -PublisherName "MicrosoftWindowsServer" -Offer "windowsserver" -Skus "2022-datacenter"
 ##########################################################################
 
 $image = "MicrosoftWindowsDesktop:Windows-11:win11-22h2-avd:latest"
