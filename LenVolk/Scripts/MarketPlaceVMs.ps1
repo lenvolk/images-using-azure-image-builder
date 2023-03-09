@@ -58,3 +58,86 @@ for ($i = 1; $i -le $TotalVMs; $i++) {
 #         #Exit
 #     }
 # }
+
+
+#############################################
+# Provisioin VM via automation account      #
+#############################################
+
+# #Set the variables for the VM
+# $vmName = "automatedVM"
+# $vmSize = "Standard_B4ms"
+# $vmImage = "Win2019Datacenter"
+# $vmLocation = "eastus2"
+# $vmResourceGroup = "automatedVMRG"
+# $vmAdminUsername = "adminuser"
+# $vmPassword = "P@ssw0rd1234"
+# $VMResourceID = ""
+# ##$vmPublicIPName = "automatedVMIP"
+# ##$vmNsgName = "automatedVMNSG"
+
+# #Connect to Azure with system-assigned managed identity
+# # Ensures you do not inherit an AzContext in your runbook
+# Disable-AzContextAutosave -Scope Process
+
+# # Connect to Azure with system-assigned managed identity
+# $AzureContext = (Connect-AzAccount -Identity).context
+
+# # Set and store context
+# $AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
+
+
+# ##Create new AZ VM that will delete itself after 24 hours or when the VM is stopped
+# ##This script will create a new VM in the existing resource group that is specified in the script
+
+
+# #Create Credentials
+# $vmCredential = New-Object System.Management.Automation.PSCredential ($vmAdminUsername, (ConvertTo-SecureString -String $vmPassword -AsPlainText -Force))
+
+# #Create the VM
+# New-AzVM -ResourceGroupName $vmResourceGroup -Name $vmName -Location $vmLocation -Size $vmSize -Image $VMResourceID -Credential $vmCredential -NetworkInterfaceDeleteOption Delete -OSDiskDeleteOption Delete
+
+# ##Create loop that checks VM status every 5 minutes
+# ##If the VM is stopped, delete the VM 
+# ##If the VM is running, wait 5 minutes and check again
+# ##If the VM has been running for 24 hours, delete the VM
+
+# ##wait 5 minutes before starting the loop to check the status of the VM
+# Start-Sleep -Seconds 300
+
+# #Set the variables for the loop including validation that the server has been provisioned and the time the VM will be deleted  hours after creation
+# $VMObject = Get-AzVM -ResourceGroupName $vmResourceGroup -Name $vmName -Status
+# $vmStatus = $VMObject.Statuses[0].DisplayStatus
+# $vmStartTime = Get-Date
+# $vmStopTime = $vmStartTime.AddMinutes(170)
+# $osdisks = $VMObject.disks[0].name
+# ##Create the loop that checks the status of the VM if the VM is running it will wait 5 minutes and check again 
+# ##If the VM is stopped, delete the VM
+# while ($vmStatus -eq "Provisioning succeeded")
+# {
+#     Start-Sleep -Seconds 60
+#     Get-AzVM -ResourceGroupName $vmResourceGroup -Name $vmName -ErrorVariable VMnotPresent -ErrorAction SilentlyContinue 
+#     if ($VMnotPresent)
+#         {
+#         $vmStatus = "VM deleted"
+#         }
+#     else
+#         {
+#         $vmState = (Get-AzVM -ResourceGroupName $vmResourceGroup -Name $vmName -Status ).Statuses[1].DisplayStatus
+#         if ($vmState -eq "VM deallocated")
+#         {
+#             Remove-AzVM -ResourceGroupName $vmResourceGroup -Name $vmName -Force -ForceDeletion $true
+#             Start-Sleep -Seconds 60
+#             Remove-AZDisk -ResourceGroupName $vmResourceGroup -DiskName $osdisks -Force            
+#         }
+#         elseif ((Get-Date) -gt $vmStopTime)
+#         {
+#         Remove-AzVM -ResourceGroupName $vmResourceGroup -Name $vmName -ForceDeletion $true -Force
+#         Start-Sleep -Seconds 60
+#         Remove-AZDisk -ResourceGroupName $vmResourceGroup -DiskName $osdisks -Force         
+#         }
+#         }
+# }
+
+
+
