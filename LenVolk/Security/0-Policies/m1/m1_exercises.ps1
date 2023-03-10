@@ -22,8 +22,8 @@ $rg2 = New-AzResourceGroup -Name "$prefix-$id-2" -Location $location
 # Create a new policy definition
 
 $defParams = @{
-    Name = "AppendTagResourceGroupVolk"
-    DisplayName = "Append Tag to Resource Group Volk"
+    Name = "AppendTagResourceGroupVolk1"
+    DisplayName = "Append Tag to Resource Group Volk1"
     Description = "Add tag to a resource group"
     Metadata = '{"category":"Tags"}'
     Parameter = "append_tag_parameters.json"
