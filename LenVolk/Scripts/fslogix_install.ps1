@@ -140,7 +140,7 @@ try {
 # The redirections.xml file only works in conjunction with a Profile Container, not with the Office container. 
 # Ref: https://learn.microsoft.com/en-us/fslogix/profile-container-office-container-cncpt
 #######################################
-#    FSLogix Profile Container 
+#    FSLogix Profile Container IS more prefered in AVD
 #    Set Office RedirXMLSourceFolder
 #######################################
     New-ItemProperty -ErrorAction Stop `
@@ -150,6 +150,37 @@ try {
         -Value $ProfContURI `
         -Force `
         -Confirm:$false
+
+    # OneDrive Configuration  https://admx.help/?Category=OneDrive&Policy=Microsoft.Policies.OneDriveNGSC::BlockKnownFolderMove
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive" `
+        -Name "FilesOnDemandEnabled" `
+        -Type "Dword" `
+        -Value "1" `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive" `
+        -Name "MinDiskSpaceLimitInMB" `
+        -Type "Dword" `
+        -Value "2000" `
+        -Force `
+        -Confirm:$false
+    # New-ItemProperty -ErrorAction Stop `
+    #     -Path "HKCU:\SOFTWARE\Policies\Microsoft\OneDrive" `
+    #     -Name "DisableCustomRoot" `
+    #     -Type "Dword" `
+    #     -Value "1" `
+    #     -Force `
+    #     -Confirm:$false
+    # New-ItemProperty -ErrorAction Stop `
+    #     -Path "HKCU:\Policies\Microsoft\OneDrive" `
+    #     -Name "DisableTutorial" `
+    #     -Type "Dword" `
+    #     -Value "1" `
+    #     -Force `
+    #     -Confirm:$false
+    
 #######################################
 #    FSLogix Office Container         
 #    Office Container is generally implemented with another profile solution, 
@@ -235,35 +266,7 @@ try {
         -Value "0" `
         -Force `
         -Confirm:$false
-# OneDrive Configuration  https://admx.help/?Category=OneDrive&Policy=Microsoft.Policies.OneDriveNGSC::BlockKnownFolderMove
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive" `
-        -Name "FilesOnDemandEnabled" `
-        -Type "Dword" `
-        -Value "1" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive" `
-        -Name "MinDiskSpaceLimitInMB" `
-        -Type "Dword" `
-        -Value "2000" `
-        -Force `
-        -Confirm:$false
-    # New-ItemProperty -ErrorAction Stop `
-    #     -Path "HKCU:\SOFTWARE\Policies\Microsoft\OneDrive" `
-    #     -Name "DisableCustomRoot" `
-    #     -Type "Dword" `
-    #     -Value "1" `
-    #     -Force `
-    #     -Confirm:$false
-    # New-ItemProperty -ErrorAction Stop `
-    #     -Path "HKCU:\Policies\Microsoft\OneDrive" `
-    #     -Name "DisableTutorial" `
-    #     -Type "Dword" `
-    #     -Value "1" `
-    #     -Force `
-    #     -Confirm:$false
+
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOneNote" `
