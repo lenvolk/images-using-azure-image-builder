@@ -1,5 +1,7 @@
 ### General Info
 
+[Azure Virtual Desktop for the enterprise](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/wvd/windows-virtual-desktop)
+
 [install Git](https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/Git-2.39.0.2-64-bit.exe)
 
 [install vscode](https://code.visualstudio.com/Download)
@@ -67,3 +69,7 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 
 ## CheckList
 [AVD Check List](https://github.com/Azure/review-checklists)
+
+## FinOps
+[The Azure FinOps Guide](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-azure-finops-guide/ba-p/3704132)
+[Cut out waste with Monitoring WorkBook](https://github.com/dolevshor/azure-orphan-resources)
