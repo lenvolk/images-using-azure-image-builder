@@ -235,6 +235,35 @@ try {
         -Value "0" `
         -Force `
         -Confirm:$false
+# OneDrive Configuration  https://admx.help/?Category=OneDrive&Policy=Microsoft.Policies.OneDriveNGSC::BlockKnownFolderMove
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive" `
+        -Name "FilesOnDemandEnabled" `
+        -Type "Dword" `
+        -Value "1" `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive" `
+        -Name "MinDiskSpaceLimitInMB" `
+        -Type "Dword" `
+        -Value "2000" `
+        -Force `
+        -Confirm:$false
+    # New-ItemProperty -ErrorAction Stop `
+    #     -Path "HKCU:\SOFTWARE\Policies\Microsoft\OneDrive" `
+    #     -Name "DisableCustomRoot" `
+    #     -Type "Dword" `
+    #     -Value "1" `
+    #     -Force `
+    #     -Confirm:$false
+    # New-ItemProperty -ErrorAction Stop `
+    #     -Path "HKCU:\Policies\Microsoft\OneDrive" `
+    #     -Name "DisableTutorial" `
+    #     -Type "Dword" `
+    #     -Value "1" `
+    #     -Force `
+    #     -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "IncludeOneNote" `
