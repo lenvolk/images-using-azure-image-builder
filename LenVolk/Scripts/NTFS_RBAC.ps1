@@ -77,7 +77,7 @@ icacls M: /remove "Builtin\Users"
 $FileShareName = "avdshare"
 CreateFileShare $FileShareName
 
-net use M: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
+net use N: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
 # Run these from a standard command prompt
 cd N:
 icacls N: /inheritance:r
