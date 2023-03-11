@@ -60,19 +60,32 @@ icacls L: /remove "Builtin\Users"
 # Use this value for the FSLogix user profile path
 # $ProfileShare = $UNCPath + $FileShareName
 
-# Creating AppMasking Share AND office redirection share
-$FileShareName = "avdshare"
+# Creating office profile share
+$FileShareName = "offcontshare"
 CreateFileShare $FileShareName
-
 net use M: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
 # Run these from a standard command prompt
 cd M:
 icacls M: /inheritance:r
 icacls M: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
-icacls M: /grant "wvdusers@lvolk.com":(OI)(R)
+icacls M: /grant "wvdusers@lvolk.com":(X,R,RD,RA,REA,AD)
 icacls M: /grant "Creator Owner":(OI)(CI)(IO)(M)
 icacls M: /remove "Authenticated Users"
 icacls M: /remove "Builtin\Users"
+
+# Creating AppMasking Share AND office profile redirection share
+$FileShareName = "avdshare"
+CreateFileShare $FileShareName
+
+net use M: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
+# Run these from a standard command prompt
+cd N:
+icacls N: /inheritance:r
+icacls N: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
+icacls N: /grant "wvdusers@lvolk.com":(OI)(R)
+icacls N: /grant "Creator Owner":(OI)(CI)(IO)(M)
+icacls N: /remove "Authenticated Users"
+icacls N: /remove "Builtin\Users"
 
 
 

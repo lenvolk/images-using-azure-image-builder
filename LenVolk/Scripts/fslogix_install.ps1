@@ -140,7 +140,7 @@ try {
 # The redirections.xml file only works in conjunction with a Profile Container, not with the Office container. 
 # Ref: https://learn.microsoft.com/en-us/fslogix/profile-container-office-container-cncpt
 #######################################
-#    FSLogix -- Profile Container -- IS more prefered in AVD
+#    FSLogix -- Profile Container --
 #    Set Office RedirXMLSourceFolder
 #######################################
     New-ItemProperty -ErrorAction Stop `
