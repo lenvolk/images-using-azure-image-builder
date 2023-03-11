@@ -39,7 +39,7 @@ $FSLogixURI              = 'https://aka.ms/fslogix_download'
 $FSInstaller             = 'FSLogixAppsSetup.zip'
 
 #################################
-#    Download WVD Componants    #
+#    Download AVD Componants    #
 #################################
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
