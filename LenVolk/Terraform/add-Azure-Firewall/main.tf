@@ -127,6 +127,14 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
         port = 443
       }
     }
+
+    rule {
+      name                  = "RDPShortPathPublicNet"
+      protocols             = ["UDP"]
+      source_addresses      = ["*"]
+      destination_addresses = ["*"]
+      destination_ports     = ["3390","3478"]
+    }
     rule {
       name             = "az-sql-pub-allow"
       source_addresses = ["*"]
