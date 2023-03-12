@@ -28,6 +28,19 @@ If ($Tenants.count -gt 1){
 else{$TenantId = $Tenants[0].Id}
 
 # =================================================================================================
+# Set Subscription for Deployment
+# =================================================================================================
+Write-Host "Which Azure Subscription would you like to deploy the AVD Metrics solution in?"
+[array]$Subs = Get-AzSubscription -TenantId $TenantId
+Foreach($Sub in $Subs){
+    Write-Host ($Subs.Indexof($Sub)+1) "-" $Sub.Name
+ }
+$SubSelection = Read-Host "Enter selection"
+$SubID = ($Subs[$SubSelection-1]).Id
+Set-AzContext -Tenant $TenantId -Subscription $SubID | Out-Null
+Clear-Host
+# =================================================================================================
+
 # PS 
 # $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
 # Connect-AzAccount -Subscription $subscription 
