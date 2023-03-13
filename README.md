@@ -73,4 +73,5 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 
 ## FinOps
 [The Azure FinOps Guide](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-azure-finops-guide/ba-p/3704132)
+
 [Cut out waste with Monitoring WorkBook](https://github.com/dolevshor/azure-orphan-resources)
