@@ -36,6 +36,8 @@
 (https://github.com/danielsollondon/azvmimagebuilder/tree/master/solutions/14_Building_Images_WVD)
 
 ----
+## Office
+[Install Office in shared computer activation mode](https://learn.microsoft.com/en-us/azure/virtual-desktop/install-office-on-wvd-master-image#install-office-in-shared-computer-activation-mode)
 ## AAD Joined VM
 (https://learn.microsoft.com/en-us/azure/architecture/example-scenario/wvd/azure-virtual-desktop-azure-active-directory-join)
 
