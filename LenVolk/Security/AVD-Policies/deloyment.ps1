@@ -2,7 +2,8 @@
 
 $avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "policy-deploy-diagnostics-avd-application-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-application-group.json
 
-$avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
+# $avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
+$avdappgrp = New-AzPolicyDefinition -SubscriptionId "c6aa1fdc-66a8-446e-8b37-7794cd545e44" -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
 $job = Start-AzPolicyComplianceScan -ResourceGroupName "imageBuilderRG"
 # $jobStatus = ""
 # $count = 0

@@ -160,28 +160,28 @@
           }
         },
         "metricsEnabled": {
-          "type": "Boolean",
+          "type": "String",
           "metadata": {
             "displayName": "Enable metrics",
             "description": "Whether to enable metrics stream to the Log Analytics workspace - True or False"
           },
           "allowedValues": [
-            true,
-            false
+            "True",
+            "False"
           ],
-          "defaultValue": true
+          "defaultValue": "True"
         },
         "logsEnabled": {
-          "type": "Boolean",
+          "type": "String",
           "metadata": {
             "displayName": "Enable logs",
             "description": "Whether to enable logs stream to the Log Analytics workspace - True or False"
           },
           "allowedValues": [
-            true,
-            false
+            "True",
+            "False"
           ],
-          "defaultValue": true
+          "defaultValue": "True"
         }
       }
     }
