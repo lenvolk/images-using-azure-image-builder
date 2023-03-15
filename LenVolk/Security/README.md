@@ -1,3 +1,6 @@
+### How to - Policy
+https://jloudon.com/cloud/How-To-Win-vs-Azure-Policy-Non-Compliance/
+
 ### BluePrints
 
 [Azure Blueprints tasks for Azure Pipelines](https://marketplace.visualstudio.com/items?itemName=nepeters.azure-blueprints)
