@@ -1,10 +1,20 @@
 
 
-$avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "policy-deploy-diagnostics-avd-application-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-application-group.json
+# $avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "policy-deploy-diagnostics-avd-application-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-application-group.json
+# to the current subscription
+$avdappgrp = New-AzPolicyDefinition -Name "policy-deploy-diagnostics-avd-application-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-application-group.json
 
 # $avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
-$avdappgrp = New-AzPolicyDefinition -SubscriptionId "c6aa1fdc-66a8-446e-8b37-7794cd545e44" -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
-$job = Start-AzPolicyComplianceScan -ResourceGroupName "imageBuilderRG"
+$avdappgrp = New-AzPolicyDefinition -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
+
+$avdappgrp = New-AzPolicyDefinition -Name "AVD Scaling Plans to Log Analytics workspace" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-scaling-plan.json
+
+
+
+
+
+
+# $job = Start-AzPolicyComplianceScan -ResourceGroupName "imageBuilderRG"
 # $jobStatus = ""
 # $count = 0
 # while ($jobStatus -notlike "Completed") { 
