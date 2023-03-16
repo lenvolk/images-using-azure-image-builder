@@ -33,7 +33,7 @@ function Write-Log {
 }
 
 ######################
-#    WVD Variables   #
+#    AVD Variables   #
 ######################
 $FSLogixURI              = 'https://aka.ms/fslogix_download'
 $FSInstaller             = 'FSLogixAppsSetup.zip'
