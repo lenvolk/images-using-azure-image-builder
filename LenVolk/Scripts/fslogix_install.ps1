@@ -96,7 +96,7 @@ try {
         -Path HKLM:\Software\FSLogix\Profiles `
         -Name "SizeInMBs" `
         -Type "Dword" `
-        -Value "10000"
+        -Value "15000"
     Set-ItemProperty `
         -Path HKLM:\Software\FSLogix\Profiles `
         -Name "IsDynamic" `
@@ -140,7 +140,7 @@ try {
         -Force `
         -Confirm:$false
 
-    Write-Output  "Done with FSLogix User Profile Settings"
+Write-Output  "Done with FSLogix User Profile Settings"
 
 
 
@@ -196,7 +196,7 @@ try {
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "Enabled" `
-        -Value "1" -PropertyType DWORD `
+        -Value "0" -PropertyType DWORD `
         -Force `
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
@@ -316,7 +316,7 @@ try {
         -Force `
         -Confirm:$false
 
-    Write-Output  "Done with FSLogix Office Container Settings"
+Write-Output  "Done with FSLogix Office Container Settings"
 
 ### REF https://learn.microsoft.com/en-us/fslogix/reference-configuration-settings?tabs=odfc#app-services-settings
     New-ItemProperty -ErrorAction Stop `
@@ -342,10 +342,11 @@ try {
         -Force `
         -Confirm:$false
 
-    Write-Output  "Done with App Services Settings"
+Write-Output  "Done with App Services Settings"
 
-    Write-output "Restarting host: $env:computername"
-    Restart-Computer -Force
+Write-output "Restarting host: $env:computername"
+
+Restart-Computer -Force
 
 }
 
