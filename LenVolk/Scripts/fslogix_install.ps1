@@ -112,16 +112,16 @@ try {
         -Name "FlipFlopProfileDirectoryName" `
         -Type "Dword" `
         -Value "1" 
-    Set-ItemProperty `
-        -Path HKLM:\Software\FSLogix\Profiles `
-        -Name "SIDDirNamePattern" `
-        -Type String `
-        -Value "%username%%sid%"
-    Set-ItemProperty `
-        -Path HKLM:\Software\FSLogix\Profiles `
-        -Name "SIDDirNameMatch" `
-        -Type String `
-        -Value "%username%%sid%"
+    # Set-ItemProperty `
+    #     -Path HKLM:\Software\FSLogix\Profiles `
+    #     -Name "SIDDirNamePattern" `
+    #     -Type String `
+    #     -Value "%username%%sid%"
+    # Set-ItemProperty `
+    #     -Path HKLM:\Software\FSLogix\Profiles `
+    #     -Name "SIDDirNameMatch" `
+    #     -Type String `
+    #     -Value "%username%%sid%"
     Set-ItemProperty `
         -Path HKLM:\Software\FSLogix\Profiles `
         -Name DeleteLocalProfileWhenVHDShouldApply `
