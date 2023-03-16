@@ -182,11 +182,17 @@ try {
     #     -Confirm:$false
 
 #######################################
-#    FSLogix -- Office Container --         
+#    FSLogix ODFS -- Office Container --         
 #    Office Container is generally implemented with another profile solution, 
 #    and is designed to improve the performance of Microsoft Office in non-persistent environments
 #######################################
-
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "VHDLocations" `
+        -PropertyType Multistring `
+        -Value "$ProfilePath" `
+        -Force `
+        -Confirm:$false
     # Set the Teams Registry key (for win11-22h2-avd-m365 by default)
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Microsoft\Teams" `
@@ -214,13 +220,6 @@ try {
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "Enabled" `
         -Value "1" -PropertyType DWORD `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "VHDLocations" `
-        -PropertyType Multistring `
-        -Value "$ProfilePath" `
         -Force `
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
