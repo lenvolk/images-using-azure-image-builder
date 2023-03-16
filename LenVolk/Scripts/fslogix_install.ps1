@@ -188,11 +188,18 @@ try {
 #######################################
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+        -Name "Enabled" `
+        -Value "1" -PropertyType DWORD `
+        -Force `
+        -Confirm:$false
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "VHDLocations" `
         -PropertyType Multistring `
         -Value "$ProfilePath" `
         -Force `
         -Confirm:$false
+
     # Set the Teams Registry key (for win11-22h2-avd-m365 by default)
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Microsoft\Teams" `
@@ -200,7 +207,6 @@ try {
         -Value "1" -PropertyType DWORD `
         -Force `
         -Confirm:$false
-
     #User will be required to sign in to teams at the beginning of each session if set to 0
     New-ItemProperty -ErrorAction Stop `
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
@@ -214,12 +220,6 @@ try {
         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
         -Name "VHDAccessMode" `
         -Value "0" -PropertyType DWORD `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "Enabled" `
-        -Value "1" -PropertyType DWORD `
         -Force `
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
