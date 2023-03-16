@@ -338,7 +338,7 @@ try {
         -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
         -Name "VHDCompactDisk" `
         -Type "Dword" `
-        -Value "1" `
+        -Value "0" `
         -Force `
         -Confirm:$false
 
