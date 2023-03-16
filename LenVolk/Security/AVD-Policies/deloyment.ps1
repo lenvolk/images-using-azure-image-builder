@@ -2,15 +2,23 @@
 
 # $avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "policy-deploy-diagnostics-avd-application-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-application-group.json
 # to the current subscription
-$avdappgrp = New-AzPolicyDefinition -Name "policy-deploy-diagnostics-avd-application-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-application-group.json
+$avdappgrp = New-AzPolicyDefinition -Name "avd-application-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-application-group.json
 
-# $avdappgrp = New-AzPolicyDefinition -ManagementGroupName "volk-SandBox" -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
-$avdappgrp = New-AzPolicyDefinition -Name "diagnostic settings for File Services" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
+$avdhp = New-AzPolicyDefinition -Name "avd-host-pool" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-host-pool.json
 
-$avdappgrp = New-AzPolicyDefinition -Name "AVD Scaling Plans to Log Analytics workspace" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-scaling-plan.json
+$avdscalplan = New-AzPolicyDefinition -Name "avd-scaling-plan" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-scaling-plan.json
 
+$avdws = New-AzPolicyDefinition -Name "avd-workspace" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-avd-workspace.json
 
+$avdazfiles = New-AzPolicyDefinition -Name "avd-azure-files" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-azure-files.json
 
+$avdnsg = New-AzPolicyDefinition -Name "avd-network-security-group" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-network-security-group.json
+
+$avdnic = New-AzPolicyDefinition -Name "avd-diagnostics-nic" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-nic.json
+
+$avdvm = New-AzPolicyDefinition -Name "avd-virtual-machine" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-virtual-machine.json
+
+$avdvnet = New-AzPolicyDefinition -Name "avd-virtual-network" -Policy ..\AVD-Policies\monitoring\policy-definitions\policy-definition-es-deploy-diagnostics-virtual-network.json
 
 
 
