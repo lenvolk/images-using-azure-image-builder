@@ -133,7 +133,7 @@ try {
         -Type "Dword" `
         -Value "3"
     New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\Software\FSLogix\Profiles " `
+        -Path "HKLM:\Software\FSLogix\Profiles" `
         -Name "RoamIdentity" `
         -Type "Dword" `
         -Value "1" `
