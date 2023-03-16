@@ -193,130 +193,130 @@ Write-Output  "Done with FSLogix User Profile Settings"
 #    Office Container is generally implemented with another profile solution, 
 #    and is designed to improve the performance of Microsoft Office in non-persistent environments
 #######################################
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "Enabled" `
-        -Value "0" -PropertyType DWORD `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "VHDLocations" `
-        -PropertyType Multistring `
-        -Value "$ProfilePath" `
-        -Force `
-        -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "Enabled" `
+#         -Value "0" -PropertyType DWORD `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "VHDLocations" `
+#         -PropertyType Multistring `
+#         -Value "$ProfilePath" `
+#         -Force `
+#         -Confirm:$false
 
-    # Set the Teams Registry key (for win11-22h2-avd-m365 by default)
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Microsoft\Teams" `
-        -Name "IsWVDEnvironment" `
-        -Value "1" -PropertyType DWORD `
-        -Force `
-        -Confirm:$false
-    #User will be required to sign in to teams at the beginning of each session if set to 0
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeTeams" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
-    # Ref https://learn.microsoft.com/en-us/fslogix/configure-office-container-tutorial
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "VHDAccessMode" `
-        -Value "0" -PropertyType DWORD `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "VolumeType" `
-        -Type String `
-        -Value "vhdx" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "SizeInMBs" `
-        -Type "Dword" `
-        -Value "10000" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IsDynamic" `
-        -Value "1" `
-        -PropertyType DWORD `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "FlipFlopProfileDirectoryName" `
-        -Type "Dword" `
-        -Value "1" `
-        -Force `
-        -Confirm:$false
-# if enabled MSTSC connection would fail
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "PreventLoginWithFailure" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeOneDrive" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
+#     # Set the Teams Registry key (for win11-22h2-avd-m365 by default)
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Microsoft\Teams" `
+#         -Name "IsWVDEnvironment" `
+#         -Value "1" -PropertyType DWORD `
+#         -Force `
+#         -Confirm:$false
+#     #User will be required to sign in to teams at the beginning of each session if set to 0
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeTeams" `
+#         -Type "Dword" `
+#         -Value "0" `
+#         -Force `
+#         -Confirm:$false
+#     # Ref https://learn.microsoft.com/en-us/fslogix/configure-office-container-tutorial
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "VHDAccessMode" `
+#         -Value "0" -PropertyType DWORD `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "VolumeType" `
+#         -Type String `
+#         -Value "vhdx" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "SizeInMBs" `
+#         -Type "Dword" `
+#         -Value "10000" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IsDynamic" `
+#         -Value "1" `
+#         -PropertyType DWORD `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "FlipFlopProfileDirectoryName" `
+#         -Type "Dword" `
+#         -Value "1" `
+#         -Force `
+#         -Confirm:$false
+# # if enabled MSTSC connection would fail
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "PreventLoginWithFailure" `
+#         -Type "Dword" `
+#         -Value "0" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeOneDrive" `
+#         -Type "Dword" `
+#         -Value "0" `
+#         -Force `
+#         -Confirm:$false
 
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeOneNote" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeOneNote_UWP" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeOutlook" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeOutlookPersonalization" `
-        -Type "Dword" `
-        -Value "1" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeSharepoint" `
-        -Type "Dword" `
-        -Value "0" `
-        -Force `
-        -Confirm:$false
-    New-ItemProperty -ErrorAction Stop `
-        -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
-        -Name "IncludeOfficeActivation" `
-        -Type "Dword" `
-        -Value "1" `
-        -Force `
-        -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeOneNote" `
+#         -Type "Dword" `
+#         -Value "0" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeOneNote_UWP" `
+#         -Type "Dword" `
+#         -Value "0" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeOutlook" `
+#         -Type "Dword" `
+#         -Value "0" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeOutlookPersonalization" `
+#         -Type "Dword" `
+#         -Value "1" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeSharepoint" `
+#         -Type "Dword" `
+#         -Value "0" `
+#         -Force `
+#         -Confirm:$false
+#     New-ItemProperty -ErrorAction Stop `
+#         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
+#         -Name "IncludeOfficeActivation" `
+#         -Type "Dword" `
+#         -Value "1" `
+#         -Force `
+#         -Confirm:$false
 
-Write-Output  "Done with FSLogix Office Container Settings"
+# Write-Output  "Done with FSLogix Office Container Settings"
 
 ### REF https://learn.microsoft.com/en-us/fslogix/reference-configuration-settings?tabs=odfc#app-services-settings
     New-ItemProperty -ErrorAction Stop `
