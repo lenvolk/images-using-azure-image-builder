@@ -132,6 +132,13 @@ try {
         -Name "ProfileType" `
         -Type "Dword" `
         -Value "3"
+    New-ItemProperty -ErrorAction Stop `
+        -Path "HKLM:\Software\FSLogix\Profiles " `
+        -Name "RoamIdentity" `
+        -Type "Dword" `
+        -Value "1" `
+        -Force `
+        -Confirm:$false
 
     Write-Output  "Done with FSLogix User Profile Settings"
 
@@ -316,7 +323,7 @@ try {
         -Path "HKLM:\SOFTWARE\FSLogix\Apps" `
         -Name "CleanupInvalidSessions" `
         -Type "Dword" `
-        -Value "1" `
+        -Value "0" `
         -Force `
         -Confirm:$false
     New-ItemProperty -ErrorAction Stop `
