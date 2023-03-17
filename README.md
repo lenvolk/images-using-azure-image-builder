@@ -19,10 +19,6 @@
 [04 adjust fslogix profile](/LenVolk/Scripts/000_invoke_command.ps1#L29-L42)
 
 ----
-### Azure Network Security
-https://mslearn.cloudguides.com/guides/Azure%20network%20security
-
-----
 ## Images-using-azure-image-builder, sample of the pipeline 
 (https://dev.azure.com/chrysalis-innersource/_git/Enterprise-scale%20Azure%20Data%20Factory%20Pipelines?path=/azure-pipelines.yml)
 
@@ -78,6 +74,12 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 ----
 ## Bicep
 [AVD Monitoring](https://github.com/jamesatighe/AVD-BICEP/blob/main/Bicep/Monitoring.bicep)
+
+----
+
+----
+### Azure Network Security
+https://mslearn.cloudguides.com/guides/Azure%20network%20security
 
 ----
 ## Monitoring & Alerting
