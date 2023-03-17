@@ -196,7 +196,7 @@ Write-Output  "Done with FSLogix User Profile Settings"
 #     New-ItemProperty -ErrorAction Stop `
 #         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
 #         -Name "Enabled" `
-#         -Value "0" -PropertyType DWORD `
+#         -Value "1" -PropertyType DWORD `
 #         -Force `
 #         -Confirm:$false
 #     New-ItemProperty -ErrorAction Stop `
