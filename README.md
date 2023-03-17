@@ -63,6 +63,9 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 ## Terraform
 [AVD Terraform](https://github.com/lenvolk/Plan-and-Implement-Identity-and-Security-on-AVD)
 
+## Policies
+[T-Shooting](https://github.com/Azure/avdaccelerator/tree/main/workload/policies)
+
 ## Bicep
 [AVD Monitoring](https://github.com/jamesatighe/AVD-BICEP/blob/main/Bicep/Monitoring.bicep)
 
