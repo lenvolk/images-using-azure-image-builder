@@ -5,7 +5,7 @@
     "scope": null,
     "properties": {
       "policyType": "Custom",
-      "mode": "Indexed",
+      "mode": "All",
       "displayName": "Custom - Deploy Diagnostic Settings for Network Interfaces to Log Analytics workspace",
       "description": "Custom - Deploys the diagnostic settings for Network Interfaces to stream to a Log Analytics workspace when any Network Interfaces which is missing this diagnostic settings is created or updated. The Policy will set the diagnostic with all metrics and category enabled",
       "metadata": {

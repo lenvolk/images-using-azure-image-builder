@@ -19,8 +19,9 @@ Register-AzResourceProvider -ProviderNamespace 'Microsoft.PolicyInsights'
 $rg1 = New-AzResourceGroup -Name "$prefix-$id-1" -Location $location
 $rg2 = New-AzResourceGroup -Name "$prefix-$id-2" -Location $location
 
-# Create a new policy definition
-
+####################################################
+# Create a new policy definition                   #
+####################################################
 $defParams = @{
     Name = "AppendTagResourceGroupVolk1"
     DisplayName = "Append Tag to Resource Group Volk1"
@@ -32,8 +33,9 @@ $defParams = @{
 
 $definition = New-AzPolicyDefinition @defParams
 
-# Create an initiative for security tags
-
+####################################################
+#       Create an initiative for security tags     # 
+####################################################
 $PolicyDefinition = @"
 [
     {
@@ -61,7 +63,9 @@ $initiativeParams = @{
 
 $initiative = New-AzPolicySetDefinition @initiativeParams
 
-# Assign the initiave to the subscription, excluding the resource group
+##########################################################################
+# Assign the initiave to the subscription, excluding the resource group  #
+##########################################################################
 
 $assignParams = @{
     Name = "SecTagsResourceGroupsVolk"
@@ -80,7 +84,9 @@ Start-AzPolicyComplianceScan
 
 $rg3 = New-AzResourceGroup -Name "$prefix-$id-3" -Location $location
 
-# Create storage policy and storage account
+##########################################################################
+#          Create storage policy and storage account                     #
+##########################################################################
 
 $defParams = @{
     Name = "ModifyPublicStorageAccountAccessVolk"
