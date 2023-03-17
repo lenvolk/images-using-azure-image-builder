@@ -76,8 +76,6 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 [AVD Monitoring](https://github.com/jamesatighe/AVD-BICEP/blob/main/Bicep/Monitoring.bicep)
 
 ----
-
-----
 ### Azure Network Security
 https://mslearn.cloudguides.com/guides/Azure%20network%20security
 
