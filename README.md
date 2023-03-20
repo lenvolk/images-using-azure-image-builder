@@ -69,7 +69,7 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 
 ----
 ## Policies
-[T-Shooting](https://github.com/Azure/avdaccelerator/tree/main/workload/policies)
+[T-Shooting](https://jloudon.com/cloud/How-To-Win-vs-Azure-Policy-Non-Compliance/)
 
 ----
 ## Bicep
