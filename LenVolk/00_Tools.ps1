@@ -1,4 +1,20 @@
 
+# PS 
+# $subscription = "f043b87b-e870-4884-b2d1-d665cc58f247"
+# Connect-AzAccount -Subscription $subscription 
+# Set-AzContext -Subscription $subscription
+# Disconnect-AzAccount
+#
+# AZ CLI
+## az cloud set --name AzureUSGovernment
+## az cloud set --name AzureCloud
+# az login --only-show-errors -o table --query Dummy
+# $subscription = "f043b87b-e870-4884-b2d1-d665cc58f247"
+# az account set -s $Subscription
+# az logout
+
+# Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network | Where-Object RegistrationState -ne Registered | Register-AzResourceProvider
+
 #######################################
 #     Create VNET and Subnet          #
 #######################################
@@ -27,7 +43,7 @@ $RG = Get-AzResourceGroup -Name $RGname
 $NSG = New-AzNetworkSecurityGroup -Name "tool-nsg" -ResourceGroupName $RG.ResourceGroupName -Location $location
 
 #Get the VNet
-$Vnet = Get-AzVirtualNetwork -Name "tool-vnet" -ResourceGroupName $RG.ResourceGroupName
+$Vnet = Get-AzVirtualNetwork -Name "maintenanceVNET" -ResourceGroupName $RG.ResourceGroupName
 
 #Check if each has an NSG, if not apply one
 foreach($subnet in $Vnet.Subnets){
@@ -48,7 +64,7 @@ $Vnet | Set-AzVirtualNetwork
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 #
 # Get-AzVMImageSku -Location $locName -PublisherName $pubName -Offer $offerName | Select Skus | Where-Object { $_.Skus -like '2022*'}
-# Get-AzVMImage -Location "eastus" -PublisherName "MicrosoftWindowsServer" -Offer "windowsserver" -Skus "2022-datacenter"
+# Get-AzVMImage -Location "eastus2" -PublisherName "MicrosoftWindowsServer" -Offer "windowsserver" -Skus "2022-datacenter"
 ##########################################################################
 
 $image = "MicrosoftWindowsDesktop:Windows-11:win11-22h2-avd:latest"
