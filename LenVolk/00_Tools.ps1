@@ -39,6 +39,25 @@ az network vnet create --resource-group $RGname --address-prefixes 10.150.0.0/24
 $RG = Get-AzResourceGroup -Name $RGname
 
 $NSG = New-AzNetworkSecurityGroup -Name "tool-nsg" -ResourceGroupName $RG.ResourceGroupName -Location $location
+$myIp = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
+
+# NSG Rule
+$nsgNames = "HomeRDP"
+$ruleName = "RDPHome"
+$ruleDesc = "Allow RDP from my Home PC"
+$rulePort = 3389
+$nsg | Add-AzNetworkSecurityRuleConfig `
+-Name $ruleName `
+-Description $ruleDesc `
+-Access Allow `
+-Protocol TCP `
+-Direction Inbound `
+-Priority 100 `
+-SourceAddressPrefix $myIp `
+-SourcePortRange * `
+-DestinationAddressPrefix * `
+-DestinationPortRange $rulePort
+$nsg | Set-AzNetworkSecurityGroup
 
 #Get the VNet
 $Vnet = Get-AzVirtualNetwork -Name "maintenanceVNET" -ResourceGroupName $RG.ResourceGroupName
