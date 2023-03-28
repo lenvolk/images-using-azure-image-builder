@@ -1,4 +1,3 @@
-
 # PS 
 # $subscription = "f043b87b-e870-4884-b2d1-d665cc58f247"
 # Connect-AzAccount -Subscription $subscription 
@@ -30,8 +29,8 @@ az network vnet create --resource-group $RGname --address-prefixes 10.150.0.0/24
 # # Disable Private Link Policy
 # az network vnet subnet update --name $SubnetName --resource-group $RGname --vnet-name $VNETName `
 #                               --disable-private-link-service-network-policies true 
-# Retrieve the ID of that Subnet
-$SubnetId = (az network vnet subnet show --resource-group $RGname --vnet-name $VNETName --name=$SubnetName --query id -o tsv)
+# # Retrieve the ID of that Subnet
+# $SubnetId = (az network vnet subnet show --resource-group $RGname --vnet-name $VNETName --name=$SubnetName --query id -o tsv)
 
 #######################################
 #     Create NSG          #
@@ -39,7 +38,6 @@ $SubnetId = (az network vnet subnet show --resource-group $RGname --vnet-name $V
 
 $RG = Get-AzResourceGroup -Name $RGname
 
-#Create a default NSG
 $NSG = New-AzNetworkSecurityGroup -Name "tool-nsg" -ResourceGroupName $RG.ResourceGroupName -Location $location
 
 #Get the VNet
@@ -67,40 +65,100 @@ $Vnet | Set-AzVirtualNetwork
 # Get-AzVMImage -Location "eastus2" -PublisherName "MicrosoftWindowsServer" -Offer "windowsserver" -Skus "2022-datacenter"
 ##########################################################################
 
-$image = "MicrosoftWindowsDesktop:Windows-11:win11-22h2-avd:latest"
-$vmName = "maintenanceVM"
-$storageSku = "StandardSSD_LRS"
-$size = "Standard_B2ms"
+# Existing Subnet within the VNET for the this virtual machine
+$subnet = Get-AzVirtualNetworkSubnetConfig -Name $Existsubnetname -VirtualNetwork $vnet
+
+$vmName = "maintvm"
+$nicName = "$vmName-nic"
+$pipName  = "$vmName-nic"
+# Size of the VM
+$vmSize = "Standard_D2as_v4"
+
+# Gallery Publisher of the Image - Microsoft
+$publisher = "MicrosoftWindowsDesktop"
+
+# Version of Windows 10/11
+$offer = "windows-11"
+
+# The SKY ending with avd are the multi-session
+$sku = "win11-22h2-avd"
+
+# Choosing the latest version
+$version = "latest"
+
+# Setting up the Local Admin on the VM
 $VM_User = "vmadmin"
 $WinVM_Password = "P@ssw0rdP@ssw0rd"
 $securePassword = ConvertTo-SecureString $WinVM_Password -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential ($VM_User, $securePassword)
-# 
-$VMIP = ( az vm create --resource-group $RGname --name $vmName `
-                    --admin-username $VM_User --admin-password $WinVM_Password `
-                    --image $image --location $location --public-ip-sku Standard `
-                    --nsg '""' `
-                    --size $size `
-                    --storage-sku $storageSku `
-                    --tags 'Owner=LenVolk' `
-                    --license-type 'Windows_Client' `
-                    --query publicIpAddress -o tsv
-                    )
 
-# Check out VMs
-az vm list -g $RGname -o table
-# Get disk size
-# az vm show --resource-group $RGname --name $vmName --query storageProfile.osDisk.diskSizeGb
-# Connect to VM $VMIP = "20.122.94.204"
-cmdkey /generic:$VMIP /user:$VM_User /pass:$WinVM_Password
-mstsc /v:$VMIP /w:1600 /h:1200
+
+# Create PIP
+## Create IP. ##
+$pip = @{
+    Name = $pipName
+    ResourceGroupName = $RGname
+    Location = $location
+    Sku = 'Standard'
+    AllocationMethod = 'Static'
+    IpAddressVersion = 'IPv4'
+}
+$pip = New-AzPublicIpAddress @pip
+
+# Create New network interface for the virtual machine
+$NIC = New-AzNetworkInterface -Name "$vmName-nic1" -ResourceGroupName $RGname -Location $location -Subnet $subnet -PublicIpAddress $pip
+
+# Creation of the new virtual machine with delete option for Disk/NIC together
+$vm = New-AzVMConfig -VMName $vmName -VMSize $vmSize 
+
+$vm = Set-AzVMOperatingSystem `
+   -VM $vm -Windows `
+   -ComputerName $vmName `
+   -Credential $cred `
+   -ProvisionVMAgent `
+   -EnableAutoUpdate  `
+   -TimeZone 'Eastern Standard Time' 
+
+# Delete option for NIC
+$vm = Add-AzVMNetworkInterface -VM $vm `
+   -Id $NIC.Id `
+   -DeleteOption "Delete"
+
+$vm = Set-AzVMSourceImage -VM $vm `
+   -PublisherName $publisher `
+   -Offer $offer `
+   -Skus $sku `
+   -Version $version 
+
+# Delete option for Disk
+$vm = Set-AzVMOSDisk -VM $vm `
+   -StorageAccountType "StandardSSD_LRS" `
+   -CreateOption "FromImage" `
+   -DeleteOption "Delete"
+
+# The sauce around enabling the Trusted Platform
+$vm = Set-AzVmSecurityProfile -VM $vm `
+   -SecurityType "TrustedLaunch" 
+
+# The sauce around enabling TPM and Secure Boot
+$vm = Set-AzVmUefi -VM $vm `
+   -EnableVtpm $true `
+   -EnableSecureBoot $true 
+
+New-AzVM -ResourceGroupName $rgName -Location $location -VM $vm -LicenseType "Windows_Client"
+
+#RDP to the vm
+$pip.ipaddress
+
+# cmdkey /generic:$pip.ipaddress /user:$VM_User /pass:$WinVM_Password
+# mstsc /v:$VMIP /w:1600 /h:1200
+
 
 # az group delete -g $RGname --yes --no-wait
 
 #######################################
 #        Installing Tools             #
 #######################################
-
 # install Git
 # https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/Git-2.39.0.2-64-bit.exe
 # PowerShell Versions
