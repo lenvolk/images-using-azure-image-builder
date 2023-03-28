@@ -14,6 +14,7 @@
 .\azcopy.exe login --identity
 
 .\azcopy.exe make 'https://volksa.blob.core.windows.net/source1'
+.\azcopy.exe list 'https://volksa.blob.core.windows.net/source1'
 .\azcopy.exe sync "C:\Temp" "https://volksa.blob.core.windows.net/source1" --recursive
 
 .\azcopy.exe copy "https://volksa.blob.core.windows.net" "https://memnmaintemain032800470.blob.core.windows.net" --recursive=true
