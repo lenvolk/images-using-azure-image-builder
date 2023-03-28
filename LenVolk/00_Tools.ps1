@@ -76,7 +76,7 @@ $Vnet | Set-AzVirtualNetwork
 #              Create VM              #
 #######################################
 ##########################################################################
-# Get-AzComputeResourceSku "eastus2" | Where-Object { $_.Name -like 'Standard_D*' } 
+# Get-AzComputeResourceSku | Where-Object { $_.Locations -contains "eastus2" } | Where-Object { $_.Name -like 'Standard_D*' }
 # Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
 # Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus #!!! Only the -avd are multi-session
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
