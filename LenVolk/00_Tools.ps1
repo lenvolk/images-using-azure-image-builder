@@ -73,6 +73,11 @@ foreach($subnet in $Vnet.Subnets){
 $Vnet | Set-AzVirtualNetwork
 
 #######################################
+#              Create Azure Bastion   #
+#######################################
+# https://learn.microsoft.com/en-au/samples/azure/azure-quickstart-templates/azure-bastion-nsg/
+
+#######################################
 #              Create VM              #
 #######################################
 ##########################################################################
