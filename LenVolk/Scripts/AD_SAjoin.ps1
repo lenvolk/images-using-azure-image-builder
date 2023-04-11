@@ -63,10 +63,19 @@ Select-AzSubscription -SubscriptionId $SubscriptionId
 #     SkuName = "Standard_LRS"
 #     AllowBlobPublicAccess = $true
 # }
-
 # $storageAccount = New-AzStorageAccount @saAccountParameters
 
 # }
+# Premium Storage - Use this for production
+# $saAccountParameters = @{
+#     Name = "$($prefix)sa$id"
+#     ResourceGroupName = $ResourceGroupName
+#     Location = $location
+#     SkuName = "Premium_LRS"
+#     AllowBlobPublicAccess = $true
+#     Kind = "FileStorage"
+# }
+# $storageAccount = New-AzStorageAccount @saAccountParameters
 
 # Register the target storage account with your active directory environment under the target OU (for example: specify the OU with Name as "UserAccounts" or DistinguishedName as "OU=UserAccounts,DC=CONTOSO,DC=COM"). 
 # You can use to this PowerShell cmdlet: Get-ADOrganizationalUnit to find the Name and DistinguishedName of your target OU. If you are using the OU Name, specify it with -OrganizationalUnitName as shown below. If you are using the OU DistinguishedName, you can set it with -OrganizationalUnitDistinguishedName. You can choose to provide one of the two names to specify the target OU.
