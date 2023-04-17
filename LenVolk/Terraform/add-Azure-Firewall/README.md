@@ -7,6 +7,9 @@ Thanks!
 ## Rules Flow
 [doc](https://learn.microsoft.com/en-us/azure/firewall/rule-processing)
 
+## AVD Rules required
+[doc](https://learn.microsoft.com/en-us/azure/firewall/protect-azure-virtual-desktop?tabs=azure#create-network-rules)
+
 
 ## Save $$ and deallocate AzFW
 ```powershell
