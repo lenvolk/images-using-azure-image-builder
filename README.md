@@ -86,9 +86,11 @@ https://mslearn.cloudguides.com/guides/Azure%20network%20security
 [Alerts](https://github.com/JCoreMS/AVDAlerts)
 
 ----
-## Debugging Azure Virtual Desktop
+## Debugging Azure Virtual Desktop - WorkBook
 [Link](https://blog.itprocloud.de/AVD-Azure-Virtual-Desktop-Error-Drill-Down-Workbook/)
 
+----
+[Azure Virtual Desktop Experience Estimator](https://azure.microsoft.com/en-us/products/virtual-desktop/assessment/#estimation-tool)
 ----
 ## CheckList
 [AVD Check List](https://github.com/Azure/review-checklists)
