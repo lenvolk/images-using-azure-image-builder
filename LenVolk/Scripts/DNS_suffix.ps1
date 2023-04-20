@@ -33,6 +33,5 @@ Foreach ($N in $Nic) {
 # $SAfqdn = "lvolklab11.file.core.windows.net"
 # $SApe = "10.100.40.11"
 
-
 add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n$SApe`t$SAfqdn" -Force
 # Get-Content $env:windir\system32\drivers\etc\hosts
