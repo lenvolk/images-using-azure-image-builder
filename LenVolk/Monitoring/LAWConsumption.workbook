@@ -1,0 +1,443 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time range",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 2592000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "id": "49f4b0ae-d207-4f6e-907d-d491f2ba64ad"
+          },
+          {
+            "id": "3c5829ef-e450-49e3-8bfc-38bd7d7f2d5d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": true
+            }
+          },
+          {
+            "id": "46270e44-799c-4f5b-aeb6-b7326dc14ae5",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "above",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let UsageTrendByWorkspace = Usage\n| where TimeGenerated > ago(30d)\n| where IsBillable == \"true\"  \n| extend Workspace = extract(@\"\\/subscriptions\\/.+?\\/resourcegroups\\/.+?\\/providers\\/microsoft.operationalinsights\\/workspaces\\/(.*)\",1,ResourceUri)\n| make-series Trend = sum(Quantity) default = 0 on TimeGenerated in range(startofday(ago(30d)), now(), 1d) by Workspace;\nUsageTrendByWorkspace\n\n\n\n\n",
+        "size": 1,
+        "showAnnotations": true,
+        "title": "Overall Workspaces consumption (last 30 days)",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "barchart",
+        "chartSettings": {
+          "ySettings": {
+            "numberFormatSettings": {
+              "unit": 4,
+              "options": {
+                "style": "decimal",
+                "useGrouping": true
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "Overall Workspaces Usage Barchart"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Top5WorkspaceUsage = Usage\r\n    | where IsBillable == \"true\"  \r\n    | summarize WSUsage = sum(Quantity) by ResourceUri\r\n    | top 5 by WSUsage desc\r\n    //| extend Workspace = extract(@\"\\/subscriptions\\/.+?\\/resourcegroups\\/.+?\\/providers\\/microsoft.operationalinsights\\/workspaces\\/(.*)\",1,ResourceUri)    \r\n    ;\r\nlet Top5WorkspaceFilter = Top5WorkspaceUsage\r\n| distinct ResourceUri;\r\nlet UsageTrendByWorkspace = Usage\r\n| where ResourceUri in (Top5WorkspaceFilter)\r\n| where IsBillable == \"true\"  \r\n| extend Workspace = extract(@\"\\/subscriptions\\/.+?\\/resourcegroups\\/.+?\\/providers\\/microsoft.operationalinsights\\/workspaces\\/(.*)\",1,ResourceUri)\r\n| make-series Trend = sum(Quantity) default = 0 on TimeGenerated in range({TimeRange:start}, {TimeRange:end}, {TimeRange:grain}) by ResourceUri;\r\nUsageTrendByWorkspace\r\n| join kind=inner Top5WorkspaceUsage on ResourceUri\r\n| project ResourceUri, WSUsage, Trend",
+        "size": 1,
+        "showAnalytics": true,
+        "title": "Workspaces by consumption - Top 5 - Click on a line for details",
+        "timeContextFromParameter": "TimeRange",
+        "exportedParameters": [
+          {
+            "fieldName": "ResourceUri",
+            "parameterName": "ResourceUriDrillDown",
+            "parameterType": 5
+          }
+        ],
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "WSUsage",
+              "formatter": 8,
+              "formatOptions": {
+                "palette": "blue"
+              },
+              "numberFormat": {
+                "unit": 4,
+                "options": {
+                  "style": "decimal"
+                }
+              }
+            },
+            {
+              "columnMatch": "Trend",
+              "formatter": 10,
+              "formatOptions": {
+                "palette": "green"
+              }
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "WSUsage",
+              "label": "Consumption on period"
+            }
+          ]
+        }
+      },
+      "customWidth": "50",
+      "name": "Top 5 Workspaces in data volume with trendline"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "<hr>\r\n\r\n## Usage details for the selected workspace"
+            },
+            "name": "text - 5"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Usage\r\n| where IsBillable == \"true\"\r\n| summarize TotalMBytes = round(sum(Quantity),0) by bin (TimeGenerated, {TimeRange:grain}), DataType",
+              "size": 1,
+              "showAnnotations": true,
+              "showAnalytics": true,
+              "title": "Data usage by table",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{ResourceUriDrillDown}"
+              ],
+              "visualization": "barchart",
+              "chartSettings": {
+                "ySettings": {
+                  "numberFormatSettings": {
+                    "unit": 4,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": true
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "50",
+            "name": "Data Types"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "union * \r\n| where _IsBillable == true\r\n| extend ComputerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where ComputerName != \"\" and ComputerName !contains \"deprecated\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by ComputerName\r\n| top 5 by TotalIngestBytes desc\r\n",
+              "size": 1,
+              "showAnalytics": true,
+              "title": "Top 5 - Data consumption on workspace by computer (last 24 hours)",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{ResourceUriDrillDown}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "TotalIngestBytes",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "blue"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "name": "Top 5 Computers"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let StartDate1 = ago(14d);\r\nlet EndDate1 = ago(7d);\r\nlet StartDate2 = ago(7d);\r\nlet EndDate2 = ago(1h);\r\nunion * \r\n| where TimeGenerated between(StartDate1 .. EndDate1)\r\n| summarize TotalIngestBytes = sum(_BilledSize) by Type\r\n| join (\r\nunion * \r\n| where TimeGenerated between(StartDate2 .. EndDate2)\r\n| summarize TotalIngestBytes2 = sum(_BilledSize) by Type\r\n) on Type\r\n| extend IngestionDifference = TotalIngestBytes - TotalIngestBytes2\r\n| extend IngestionTrend = case(IngestionDifference > 0, \"Ingestion Decreased\",\r\n    IngestionDifference < 0, \"Ingestion Increased\", \"No Difference\")\r\n| project Type, TotalIngestBytes, TotalIngestBytes2, IngestionDifference, IngestionTrend\r\n| order by Type",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Ingestion trends",
+              "timeContext": {
+                "durationMs": 2592000000
+              },
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{ResourceUriDrillDown}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "TotalIngestBytes",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": false,
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "TotalIngestBytes2",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "IngestionDifference",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "<",
+                          "thresholdValue": "0",
+                          "representation": "yellow",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": ">",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "green",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": false,
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "IngestionTrend",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Ingestion Decreased",
+                          "representation": "trenddown",
+                          "text": "Decrease"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Ingestion Increased",
+                          "representation": "trendup",
+                          "text": "Increase"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_number_TotalIngestBytes_1",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "TotalIngestBytes",
+                    "label": "Ingestion (14d-7d ago)"
+                  },
+                  {
+                    "columnId": "TotalIngestBytes2",
+                    "label": "Ingestion (7d ago-today)"
+                  },
+                  {
+                    "columnId": "IngestionDifference",
+                    "label": "Ingestion Difference"
+                  },
+                  {
+                    "columnId": "IngestionTrend",
+                    "label": "Ingestion Trend"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_number_TotalIngestBytes_1",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "name": "Trends-details"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "ResourceUriDrillDown",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "Workspace Drilldown group"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
