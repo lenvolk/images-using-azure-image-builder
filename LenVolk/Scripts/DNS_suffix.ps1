@@ -11,7 +11,9 @@
 #ipconfig /flushdns
 
 Param (
-    [string]$DnsSufix
+    [string]$DnsSufix,
+    [string]$SAfqdn,
+    [string]$SApe
 )
 
 Set-DnsClientGlobalSetting -SuffixSearchList @("$DnsSufix")
@@ -26,3 +28,11 @@ $Nic = Get-DnsClient | Where-Object -Property InterfaceAlias -Match Ethernet
 Foreach ($N in $Nic) {
     Set-DnsClient -ConnectionSpecificSuffix $Domain -InterfaceIndex $N.InterfaceIndex
 }
+
+# To update localhostfile
+# $SAfqdn = "lvolklab11.file.core.windows.net"
+# $SApe = "10.100.40.11"
+
+
+add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n$SApe`t$SAfqdn" -Force
+# Get-Content $env:windir\system32\drivers\etc\hosts

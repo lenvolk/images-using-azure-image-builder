@@ -113,3 +113,20 @@ $RunningVMs | ForEach-Object -Parallel {
         -Parameter @{HPRegToken = $using:RegistrationToken} `
         -ScriptPath '.\hostpool_vms.ps1'
 }
+
+################################
+#   Updating DNS Suffixes      #
+################################
+$VMRG = "imageBuilderRG"
+$DnsSufix = "lvolk.com"
+$SAfqdn = "lvolklab11.file.core.windows.net"
+$SApe = "10.100.40.11"
+$RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{DnsSufix = $using:DnsSufix;SAfqdn = $using:SAfqdn;SApe = $using:SApe} `
+        -ScriptPath './DNS_suffix.ps1'
+}
