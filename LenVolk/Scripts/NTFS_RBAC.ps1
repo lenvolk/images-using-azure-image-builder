@@ -73,7 +73,7 @@ icacls L: /remove "Builtin\Users"
 # icacls M: /remove "Authenticated Users"
 # icacls M: /remove "Builtin\Users"
 
-# Creating AppMasking Share AND office profile redirection share
+# Creating AppMasking Share AND redirection.xml
 $FileShareName = "avdshare"
 CreateFileShare $FileShareName
 
