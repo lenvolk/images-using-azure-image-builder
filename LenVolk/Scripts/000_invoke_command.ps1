@@ -130,3 +130,19 @@ $RunningVMs | ForEach-Object -Parallel {
         -Parameter @{DnsSufix = $using:DnsSufix;SAfqdn = $using:SAfqdn;SApe = $using:SApe} `
         -ScriptPath './DNS_suffix.ps1'
 }
+
+
+################################
+#   Updating Proxy Suffixes    #
+################################
+$VMRG = "imageBuilderRG"
+$ProxyServer = "10.199.0.19:3128"
+$RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{DnsSufix = $using:DnsSufix;SAfqdn = $using:SAfqdn;SApe = $using:SApe} `
+        -ScriptPath './DNS_suffix.ps1'
+}
