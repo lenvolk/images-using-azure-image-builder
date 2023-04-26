@@ -1,4 +1,9 @@
 
+Param (
+    [string]$ProxyServer
+)
+
+
 New-ItemProperty -ErrorAction Stop `
 -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" `
 -Name "ProxyEnable" `
@@ -12,6 +17,6 @@ New-ItemProperty -ErrorAction Stop `
 -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" `
 -Name "ProxyServer" `
 -Type "String" `
--value "10.199.0.19:3128" `
+-value $ProxyServer `
 -Force `
 -Confirm:$false

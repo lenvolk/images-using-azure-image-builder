@@ -143,6 +143,6 @@ $RunningVMs | ForEach-Object -Parallel {
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
-        -Parameter @{DnsSufix = $using:DnsSufix;SAfqdn = $using:SAfqdn;SApe = $using:SApe} `
-        -ScriptPath './DNS_suffix.ps1'
+        -Parameter @{ProxyServer = $using:ProxyServer} `
+        -ScriptPath './ProxySettings.ps1'
 }
