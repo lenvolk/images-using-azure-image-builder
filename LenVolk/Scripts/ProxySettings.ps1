@@ -5,7 +5,7 @@ Param (
 
 
 New-ItemProperty -ErrorAction Stop `
--path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings' `
+-path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" `
 -Name 'ProxyEnable' `
 -Type 'Dword' `
 -value 1 `
