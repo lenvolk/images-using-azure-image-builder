@@ -3,6 +3,7 @@ Param (
     [string]$ProxyServer
 )
 
+# $ProxyServer = "10.199.0.19:3128"
 
 New-ItemProperty -ErrorAction Stop `
 -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" `
