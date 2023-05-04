@@ -1,11 +1,15 @@
-
-# az cloud list --output table
-# az cloud set --name AzureUSGovernment
-# az cloud set --name AzureCloud
-# $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
-# Connect-AzAccount -Subscription $subscription
-# Set-AzContext -Subscription "AzIntConsumption"
+# $subscription = "DemoSub"
+# PS 
+# Connect-AzAccount -Subscription $subscription 
+# Set-AzContext -Subscription $subscription
 # Disconnect-AzAccount
+#
+# AZ CLI
+## az cloud set --name AzureUSGovernment
+## az cloud set --name AzureCloud
+# az login --only-show-errors -o table --query Dummy
+# az account set -s $Subscription
+# az logout
 
 # Reg: 
 # https://github.com/tsrob50/WVD-Public/blob/master/SnapImage.ps1
@@ -83,42 +87,48 @@
 ##########################################################################
 # Creating marketplace vm (go to the script and change variables)
 ##########################################################################
+
 #.\MarketPlaceVM.ps1
+# .\ComputeGallery.ps1
 
+##########################################################################
 # Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
-# $refVmName = 'win10-22h2-avd-m365-g2' 
-# $refVmRg = 'IMAGEBUILDERRG' 
-# $galName = 'aibSig' 
-# $galDefName = 'ChocoWin11m365'
-# $vnetName = 'aibVNet' 
-# $subnetName = 'aibSubnet'
-# $cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1'
-# $galDeploy = $true
-# $delSnap = $true
-# $DiskSizeInGB = '150'
+$refVmName = 'PilotAVD' 
+$refVmRg = 'PilotAVDRG' 
+$CompGalNameRG = 'AVDCompGalRG' 
+$CompGalName ='AVDCompGal'
+$ImageDefName = 'AVDWin11'
+$vnetRG = 'maintenance'
+$vnetName = 'maintenanceVNET' 
+$subnetName = 'MainSubnet'
+$cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1'
+$galDeploy = $true
+$delSnap = $true
+$DiskSizeInGB = '127'
 
-[CmdletBinding()]
-param (
-    [Parameter(Mandatory = $true)][string]$refVmName,
-    [Parameter(Mandatory = $true)][string]$refVmRg,
-    [Parameter(Mandatory = $false)][string]$cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1',
-    [Parameter(Mandatory = $false)][switch]$galDeploy = $true,
-    [Parameter(Mandatory = $false)][string]$galName,
-    [parameter(Mandatory = $false)][string]$galDefName,
-    [parameter(Mandatory = $false)][string]$delSnap = $true,
-    [parameter(Mandatory = $false)][string]$deltempvm = $true,
-    [Parameter(Mandatory = $true)][string]$vnetName,
-    [Parameter(Mandatory = $true)][string]$subnetName,
-    [Parameter(Mandatory = $false)][string]$DiskSizeInGB
-)
+# [CmdletBinding()]
+# param (
+#     [Parameter(Mandatory = $true)][string]$refVmName,
+#     [Parameter(Mandatory = $true)][string]$refVmRg,
+#     [Parameter(Mandatory = $false)][string]$cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1',
+#     [Parameter(Mandatory = $false)][switch]$galDeploy = $true,
+#     [Parameter(Mandatory = $false)][string]$CompGalNameRG,
+#     [parameter(Mandatory = $false)][string]$ImageDefName,
+#     [parameter(Mandatory = $false)][string]$delSnap = $true,
+#     [parameter(Mandatory = $false)][string]$deltempvm = $true,
+#     [Parameter(Mandatory = $true)][string]$vnetRG,
+#     [Parameter(Mandatory = $true)][string]$vnetName,
+#     [Parameter(Mandatory = $true)][string]$subnetName,
+#     [Parameter(Mandatory = $false)][string]$DiskSizeInGB
+# )
 
 ##########################################################################
 #Validate the Azure Compute Gallery settings were added correctly if used
 ##########################################################################
 Try {
     if ($galDeploy -eq $true) {
-        $gallery = Get-AzGallery -ErrorAction Stop -Name $galName -ResourceGroupName $refVmRg
-        $galleryDef = Get-AzGalleryImageDefinition -ErrorAction Stop -ResourceGroupName $gallery.ResourceGroupName -GalleryName $galName -GalleryImageDefinitionName $galDefName
+        $gallery = Get-AzGallery -ErrorAction Stop -Name $CompGalName -ResourceGroupName $CompGalNameRG
+        $galleryDef = Get-AzGalleryImageDefinition -ErrorAction Stop -ResourceGroupName $gallery.ResourceGroupName -GalleryName $CompGalName -GalleryImageDefinitionName $ImageDefName
     }
 }
 Catch {
@@ -127,7 +137,7 @@ Catch {
     Break
 }
 ##########################################################################
-#Set the date, used as unique ID for artifacts and image version
+#Set the date, used as unique ID for artifacts and image version  yyyyMMddHHmm
 ##########################################################################
 $date = (get-date -Format yyyyMMddHHmm)
 ##########################################################################
@@ -184,7 +194,7 @@ Catch {
     Break
 }
 ##########################################################################
-$SubnetId=(az network vnet subnet show --resource-group $refVmRg --vnet-name $vnetName --name=$subnetName --query id -o tsv)
+$SubnetId=(az network vnet subnet show --resource-group $vnetRG --vnet-name $vnetName --name=$subnetName --query id -o tsv)
 ##########################################################################
 #Create NIC for tempVM
 Try {
@@ -210,9 +220,14 @@ Try {
     Write-Host "Creating the temporary capture VM, this will take a couple minutes"
     $capVmName = ('tempVM' + $date) 
     $CapVmConfig = New-AzVMConfig -ErrorAction Stop -VMName $CapVmName -VMSize $vm.HardwareProfile.VmSize
-    $capVm = Add-AzVMNetworkInterface -ErrorAction Stop -vm $CapVmConfig -id $nic.Id
-    $capVm = Set-AzVMOSDisk -vm $CapVm -ManagedDiskId $osDisk.id -StorageAccountType Standard_LRS -DiskSizeInGB $DiskSizeInGB -CreateOption Attach -Windows
+    $capVm = Add-AzVMNetworkInterface -ErrorAction Stop -vm $CapVmConfig -id $nic.Id -DeleteOption "Delete"
+    $capVm = Set-AzVMOSDisk -vm $CapVm -ManagedDiskId $osDisk.id -StorageAccountType Standard_LRS -DiskSizeInGB $DiskSizeInGB -CreateOption Attach -Windows -DeleteOption "Delete"
     $capVM = Set-AzVMBootDiagnostic -vm $CapVm -disable
+
+    # Educational - Creation of managed images are not supported for virtual machine with TrustedLaunch security type
+    # $capVM = Set-AzVmSecurityProfile -VM $capVM -SecurityType "TrustedLaunch" 
+    # $capVM = Set-AzVmUefi -VM $capVM -EnableVtpm $true -EnableSecureBoot $true 
+
     $capVm = new-azVM -ResourceGroupName $refVmRg -Location $location -vm $capVm -DisableBginfoExtension -Tag @{Name="PilotImage";Image="Pilot"}
 }
 Catch {
@@ -282,15 +297,16 @@ Catch {
     Break
 }
 ##########################################################################
-#Create the image from the tempVM
+# Create the image from the tempVM
+# !!! Creation of managed images are not supported for virtual machine with TrustedLaunch security type.
 Try {
     Write-Host "Capturing the VM image"
     $capVM = Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg
     $vmGen = (Get-AzVM -ErrorAction Stop -Name $capVmName -ResourceGroupName $refVmRg -Status).HyperVGeneration
     $image = New-AzImageConfig -ErrorAction Stop -Location $location -SourceVirtualMachineId $capVm.Id -HyperVGeneration $vmGen -Tag @{Name="PilotImage";Image="Pilot"}
     if ($galDeploy -eq $true) {
-        Write-Host "Azure Compute Gallery used, saving image to the capture VM Resource Group"
-        $image = New-AzImage -Image $image -ImageName $imageName -ResourceGroupName $refVmRg
+        Write-Host "Azure Compute Gallery used, saving image to the Compute Gallery Resource Group"
+        $image = New-AzImage -Image $image -ImageName $imageName -ResourceGroupName $CompGalNameRG
     }
     elseif ($galDeploy -eq $false) {
         Write-Host "Azure Compute Gallery not used, saving image to the reference VM Resource Group"
@@ -314,7 +330,7 @@ Try {
             ErrorAction                = 'Stop'
             ResourceGroupName          = $gallery.ResourceGroupName
             GalleryName                = $gallery.Name
-            GalleryImageDefinitionName = $galDefName
+            GalleryImageDefinitionName = $ImageDefName
             Name                       = $imageVersion
             Location                   = $gallery.Location
             SourceImageId              = $image.Id
@@ -372,7 +388,7 @@ $refVmRg = 'imageBuilderRG'
 $location = (Get-AzResourceGroup -Name $refVmRg).Location
 $vnetName = 'aibVNet' 
 $subnetName = 'aibSubnet'
-$image = "/subscriptions/c6aa1fdc-66a8-446e-8b37-7794cd545e44/resourceGroups/SIGRG/providers/Microsoft.Compute/galleries/LabSIG/images/avd-win11/versions/0.202210.031625"
+$image = "/subscriptions/f043b87b-e870-4884-b2d1-d665cc58f247/resourceGroups/AVDCompGalRG/providers/Microsoft.Compute/galleries/AVDCompGal/images/AVDWin11/versions/0.202305.041050"
 $VM_User = "aibadmin"
 $WinVM_Password = "P@ssw0rdP@ssw0rd"
 
