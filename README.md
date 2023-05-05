@@ -102,3 +102,5 @@ https://mslearn.cloudguides.com/guides/Azure%20network%20security
 [Cut out waste with Monitoring WorkBook](https://github.com/dolevshor/azure-orphan-resources)
 
 ----
+## Labs
+[Zero Trust Lab](https://ztlabguide.com/)
