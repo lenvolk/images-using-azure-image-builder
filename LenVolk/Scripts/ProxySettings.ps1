@@ -1,4 +1,4 @@
-
+# for Firefox https://admx.help/?Category=Firefox&Policy=Mozilla.Policies.Firefox::Proxy
 Param (
     [string]$ProxyServer
 )
