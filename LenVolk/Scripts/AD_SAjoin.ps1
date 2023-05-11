@@ -1,5 +1,9 @@
 # !!!  AAD SA join !!! 
+# https://smbtothecloud.com/azure-ad-joined-avd-with-fslogix-aad-kerberos-authentication/
+# 
 # https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts-preview
+# 
+# Cloud Cache https://gbbblog.azurewebsites.us/index.php/2022/02/23/spare-the-share-aadj-avd-and-fslogix-cloud-cache/
 # !!!
 
 # Download AzFilesHybrid
