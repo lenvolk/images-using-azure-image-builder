@@ -1,5 +1,5 @@
 # REF https://admx.help/?Category=Windows_10_2016&Policy=Microsoft.Policies.TerminalServer::TS_NoDisconnectMenu
-
+# GPO regkey https://gpsearch.azurewebsites.net/
 ##########################################
 #    Log Function                        #
 ##########################################
