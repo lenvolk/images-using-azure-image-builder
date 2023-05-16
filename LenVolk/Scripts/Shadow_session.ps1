@@ -1,5 +1,6 @@
 
 #REF https://robinhobo.com/how-to-shadow-an-active-user-session-in-windows-virtual-desktop-via-remote-desktop-connection-mstc/
+# https://christiaanbrinkhoff.com/2020/06/19/learn-about-the-different-options-to-remote-control-shadow-your-windows-virtual-desktop-sessions-for-helpdesk-users/
 
 $WinstationsKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server'
 $name1 = 'fDenyTSConnections'
