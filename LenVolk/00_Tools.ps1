@@ -1,5 +1,5 @@
 # PS 
-# $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+# $subscription = "DemoSub"
 # Connect-AzAccount -Subscription $subscription 
 # Set-AzContext -Subscription $subscription
 # Disconnect-AzAccount
@@ -8,7 +8,7 @@
 ## az cloud set --name AzureUSGovernment
 ## az cloud set --name AzureCloud
 # az login --only-show-errors -o table --query Dummy
-# $subscription = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+# $subscription = "DemoSub"
 # az account set -s $Subscription
 # az logout
 
