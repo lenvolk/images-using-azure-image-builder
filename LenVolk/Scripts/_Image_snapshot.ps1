@@ -15,6 +15,7 @@
 # https://github.com/tsrob50/WVD-Public/blob/master/SnapImage.ps1
 # https://www.youtube.com/watch?v=H3UrVsI9f7s
 #
+# https://learn.microsoft.com/en-us/azure/virtual-desktop/create-custom-image-templates
 # !!! No per User application install
 <#
 .SYNOPSIS
