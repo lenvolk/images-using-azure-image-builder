@@ -94,17 +94,18 @@
 
 ##########################################################################
 # Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
-$refVmName = 'PilotAVD' 
-$refVmRg = 'PilotAVDRG' 
+$refVmName = 'GoldenWin10' 
+$refVmRg = 'AVD-Image' 
 $CompGalNameRG = 'AVDCompGalRG' 
 $CompGalName ='AVDCompGal'
-$ImageDefName = 'AVDWin11'
-$vnetRG = 'maintenance'
-$vnetName = 'maintenanceVNET' 
-$subnetName = 'MainSubnet'
+$ImageDefName = 'Win10-O365'
+$vnetRG = 'AVD-Network'
+$vnetName = 'AVD-vNet' 
+$subnetName = 'Image'
 $cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1'
 $galDeploy = $true
 $delSnap = $true
+$deltempvm  = $true
 $DiskSizeInGB = '127'
 
 # [CmdletBinding()]
@@ -149,7 +150,8 @@ $imageName = ($refVmName + 'Image' + $date)
 #Set the image version (Name)
 #Used if adding the image to an Azure Compute Gallery
 #Format is 0.yyyyMM.ddHHmm date format for the version to keep unique and increment each new image version
-$imageVersion = '0.' + $date.Substring(0, 6) + '.' + $date.Substring(6, 6)
+#$imageVersion = "2.0.0"
+$imageVersion = '2.' + $date.Substring(0, 6) + '.' + $date.Substring(6, 6)
 ##########################################################################
 #Disable breaking change warning message
 Set-Item -Path Env:\SuppressAzurePowerShellBreakingChangeWarnings -Value $true
@@ -163,7 +165,7 @@ $location = (Get-AzResourceGroup -Name $refVmRg).Location
 #To avoid any confusions (since refVM is in the same RG as tempVM) let's shutdown reference VM - don't really have to do it
 Stop-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $refVmName  -Force | Out-Null
 ##########################################################################
-#region Create Snapshot of reference VM
+#Create a Snapshot of reference VM OS disk
 try {
     Write-Host "Creating a snapshot of $refVmName"
     $vm = Get-AzVM -ErrorAction Stop -ResourceGroupName $refVmRg -Name $refVmName
@@ -177,7 +179,7 @@ catch {
     Break
 }
 ##########################################################################
-#Create the managed disk from the Snapshot
+#Create TempOSDisk from the Snapshot
 Try {
     $osDiskConfig = @{
         ErrorAction      = 'Stop'
@@ -197,7 +199,7 @@ Catch {
 ##########################################################################
 $SubnetId=(az network vnet subnet show --resource-group $vnetRG --vnet-name $vnetName --name=$subnetName --query id -o tsv)
 ##########################################################################
-#Create NIC for tempVM
+#Create tempNIC for tempVM
 Try {
     $nicConfig = @{
         ErrorAction            = 'Stop'
@@ -346,9 +348,12 @@ Catch {
     Break
 }
 ##########################################################################
+#                          Optional Cleanup                              #
 ##########################################################################
-##########################################################################
-#Remove the snapshot (Optional)
+#Remove image
+Remove-AzImage -ResourceGroupName $CompGalNameRG -ImageName $imageName -Force
+
+#Remove the snapshot
 #Removes reference computer snapshot if $delSnap is set to $true
 if ($delSnap -eq $true) {
     Try {
@@ -385,11 +390,11 @@ if ($deltempvm -eq $true) {
 #######################################
 #         Test VMs creation           #
 #######################################
-$refVmRg = 'imageBuilderRG' 
-$location = (Get-AzResourceGroup -Name $refVmRg).Location
-$vnetName = 'aibVNet' 
-$subnetName = 'aibSubnet'
-$image = "/subscriptions/f043b87b-e870-4884-b2d1-d665cc58f247/resourceGroups/AVDCompGalRG/providers/Microsoft.Compute/galleries/AVDCompGal/images/AVDWin11/versions/0.202305.041050"
+# $refVmRg = 'imageBuilderRG' 
+# $location = (Get-AzResourceGroup -Name $refVmRg).Location
+# $vnetName = 'aibVNet' 
+# $subnetName = 'aibSubnet'
+$image = "/subscriptions/f043b87b-e870-4884-b2d1-d665cc58f247/resourceGroups/AVDCompGalRG/providers/Microsoft.Compute/galleries/AVDCompGal/images/Win10-O365/versions/2.0.0"
 $VM_User = "aibadmin"
 $WinVM_Password = "P@ssw0rdP@ssw0rd"
 
