@@ -69,7 +69,7 @@ $RunningVMs | ForEach-Object -Parallel {
 ################################
 $VMRG = "lab1hprg"
 $ProfilePath = "\\adsavdprofile.file.core.windows.net\profiles"
-$RedirectXML = "\\adsavdprofile.file.core.windows.net\avdshares\redirections.xml"
+$RedirectXML = "\\adsavdprofile.file.core.windows.net\avdshares"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
