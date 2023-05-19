@@ -51,8 +51,9 @@ net use L: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
 # Run these from a standard command prompt
 L:
 icacls L: /inheritance:r
-icacls L: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
-icacls L: /grant "wvdusers@lvolk.com":(X,R,RD,RA,REA,AD)
+icacls L: /grant "avd-admins@volk.bike":(OI)(CI)(F)
+icacls L: /grant "avd-users-gpr":(X,R,RD,RA,REA,AD)
+icacls N: /grant "Domain Admins":(OI)(CI)(F)
 icacls L: /grant "Creator Owner":(OI)(CI)(IO)(M)
 icacls L: /remove "Authenticated Users"
 icacls L: /remove "Builtin\Users"
@@ -67,23 +68,24 @@ icacls L: /remove "Builtin\Users"
 # # Run these from a standard command prompt
 # cd M:
 # icacls M: /inheritance:r
-# icacls M: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
-# icacls M: /grant "wvdusers@lvolk.com":(X,R,RD,RA,REA,AD)
+# icacls M: /grant "avd-admins@volk.bike":(OI)(CI)(F)
+# icacls M: /grant "avd-users-gpr":(X,R,RD,RA,REA,AD)
 # icacls M: /grant "Creator Owner":(OI)(CI)(IO)(M)
 # icacls M: /remove "Authenticated Users"
 # icacls M: /remove "Builtin\Users"
 
 # Creating AppMasking Share AND redirection.xml
-$FileShareName = "avdshare"
+$FileShareName = "avdshares"
 CreateFileShare $FileShareName
 
 net use N: ($UNCPath + $FileShareName) $keys[0].Value /user:Azure\$SAName
 # Run these from a standard command prompt
 N:
 icacls N: /inheritance:r
-icacls N: /grant "smbadmins@lvolk.com":(OI)(CI)(F)
-icacls N: /grant "wvdusers@lvolk.com":(OI)(R)
+icacls N: /grant "avd-admins@volk.bike":(OI)(CI)(F)
+icacls N: /grant "avd-users-gpr":(OI)(CI)(R,X)
 icacls N: /grant "Creator Owner":(OI)(CI)(IO)(M)
+icacls N: /grant "Domain Admins":(OI)(CI)(F)
 icacls N: /remove "Authenticated Users"
 icacls N: /remove "Builtin\Users"
 

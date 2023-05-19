@@ -68,15 +68,15 @@ $RunningVMs | ForEach-Object -Parallel {
 #     Installing Fslogix       #
 ################################
 $VMRG = "lab1hprg"
-$ProfilePath = "\\lvolklab01.file.core.windows.net\labshare\Profiles"
-$ProfContURI = "\\lvolklab01.file.core.windows.net\labshare\FSLogixRules"
+$ProfilePath = "\\adsavdprofile.file.core.windows.net\profiles"
+$RedirectXML = "\\adsavdprofile.file.core.windows.net\avdshares\redirections.xml"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
         -VMName $_.Name `
         -CommandId 'RunPowerShellScript' `
-        -Parameter @{ProfilePath = $using:ProfilePath;ProfContURI = $using:ProfContURI} `
+        -Parameter @{ProfilePath = $using:ProfilePath;RedirectXML = $using:RedirectXML} `
         -ScriptPath './fslogix_install.ps1'
 }
 

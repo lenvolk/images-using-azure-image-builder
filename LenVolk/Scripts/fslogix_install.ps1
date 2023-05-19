@@ -12,11 +12,11 @@
 
 Param (
     [string]$ProfilePath,
-    [string]$ProfContURI
+    [string]$RedirectXML
 )
 
 # $ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles1"
-# $ProfContURI = "\\imagesaaad.file.core.windows.net\appmaskrules"
+# $RedirectXML = "\\imagesaaad.file.core.windows.net\appmaskrules"
 
 #########################################
 $LocalWVDpath            = "c:\tempavd"
@@ -156,7 +156,7 @@ Write-Output  "Done with FSLogix User Profile Settings"
         -Path HKLM:\SOFTWARE\FSLogix\Profiles `
         -Name "RedirXMLSourceFolder" `
         -PropertyType Multistring `
-        -Value $ProfContURI `
+        -Value $RedirectXML `
         -Force `
         -Confirm:$false
 
