@@ -17,7 +17,11 @@
 
 ######## Variables ##########
 # Set the source path
-$sourcePath = '\\wvd-fileserver\AppMask'
+Param (
+    [string]$AppMaskPath
+)
+
+#$AppMaskPath = '\\adsavdprofile.file.core.windows.net\avdshares\AppMask'
 # Destination path for App Masking
 $destinationPath = 'C:\Program Files\FSLogix\Apps\Rules'
 
@@ -40,7 +44,7 @@ function write-AppEventLog {
 }
 
 # Check the source path
-if ((Test-Path $SourcePath) -eq $False) {
+if ((Test-Path $AppMaskPath) -eq $False) {
     write-AppEventLog 'Source path not found or not accessible'
 }
 
@@ -51,10 +55,10 @@ if ((Test-Path $destinationPath) -eq $False) {
 
 # Copy the files to the destination
 try {
-    Copy-Item -ErrorAction Stop -Path "$sourcePath\*.fxa" -Destination $destinationPath -Force
-    Copy-Item -ErrorAction Stop -Path "$sourcePath\*.fxr" -Destination $destinationPath -Force
+    Copy-Item -ErrorAction Stop -Path "$AppMaskPath\*.fxa" -Destination $destinationPath -Force
+    Copy-Item -ErrorAction Stop -Path "$AppMaskPath\*.fxr" -Destination $destinationPath -Force
     # used for testing:
-    #Copy-Item -ErrorAction Stop -Path "$sourcePath\*.txt" -Destination $destinationPath -Force
+    #Copy-Item -ErrorAction Stop -Path "$AppMaskPath\*.txt" -Destination $destinationPath -Force
 }
 catch {
     $ErrorMessage = $_.Exception.message

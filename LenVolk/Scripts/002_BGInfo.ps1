@@ -1,5 +1,5 @@
 # BGInfo
-$ResourceGroup = "imageBuilderRG"
+$ResourceGroup = "AVD-GEN-HP-RG"
 $location = "eastus2"
 
 $RunningVMs = (get-azvm -ResourceGroupName $ResourceGroup -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 

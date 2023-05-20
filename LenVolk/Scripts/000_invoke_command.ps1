@@ -67,7 +67,7 @@ $RunningVMs | ForEach-Object -Parallel {
 ################################
 #     Installing Fslogix       #
 ################################
-$VMRG = "lab1hprg"
+$VMRG = "AVD-GEN-HP-RG"
 $ProfilePath = "\\adsavdprofile.file.core.windows.net\profiles"
 $RedirectXML = "\\adsavdprofile.file.core.windows.net\avdshares"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
@@ -83,8 +83,9 @@ $RunningVMs | ForEach-Object -Parallel {
 #######################################
 # Adjusting Fslogix RegKey for AAD SA #
 ######################################
+$VMRG = "AVD-GEN-HP-RG"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
-$ProfilePath = "\\imagesaaad.file.core.windows.net\avdprofiles\profiles"
+$ProfilePath = "\\adsavdprofile.file.core.windows.net\profiles"
 $RunningVMs | ForEach-Object -Parallel {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
@@ -92,6 +93,21 @@ $RunningVMs | ForEach-Object -Parallel {
         -CommandId 'RunPowerShellScript' `
         -Parameter @{ProfilePath = $using:ProfilePath} `
         -ScriptPath './fslogix_regkey_AADSA.ps1'
+}
+
+#######################################
+# COPY Fslogix AppMasking Rules       #
+######################################
+$VMRG = "AVD-GEN-HP-RG"
+$RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
+$AppMaskPath = "\\adsavdprofile.file.core.windows.net\avdshares\AppMask"
+$RunningVMs | ForEach-Object -Parallel {
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -VMName $_.Name `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{AppMaskPath= $using:AppMaskPath} `
+        -ScriptPath './Copy_AppMaskingRules.ps1'
 }
 
 ################################
