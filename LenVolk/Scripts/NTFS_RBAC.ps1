@@ -53,6 +53,8 @@ L:
 icacls L: /inheritance:r
 icacls L: /grant "avd-admins@volk.bike":(OI)(CI)(F)
 icacls L: /grant "avd-users-gpr":(X,R,RD,RA,REA,AD)
+icacls L: /grant "accounting-users-grp":(X,R,RD,RA,REA,AD)
+icacls L: /grant "marketing-users-grp":(X,R,RD,RA,REA,AD)
 icacls N: /grant "Domain Admins":(OI)(CI)(F)
 icacls L: /grant "Creator Owner":(OI)(CI)(IO)(M)
 icacls L: /remove "Authenticated Users"
@@ -84,6 +86,8 @@ N:
 icacls N: /inheritance:r
 icacls N: /grant "avd-admins@volk.bike":(OI)(CI)(F)
 icacls N: /grant "avd-users-gpr":(OI)(CI)(R,X)
+icacls N: /grant "accounting-users-grp":(OI)(CI)(R,X)
+icacls N: /grant "marketing-users-grp":(OI)(CI)(R,X)
 icacls N: /grant "Creator Owner":(OI)(CI)(IO)(M)
 icacls N: /grant "Domain Admins":(OI)(CI)(F)
 icacls N: /remove "Authenticated Users"
