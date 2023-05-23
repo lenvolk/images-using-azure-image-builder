@@ -53,3 +53,16 @@ write-host "Configuration Complete"
 
 # PsExec.exe /s cmdkey /list
 
+
+#### ADD Map Network Drive
+
+# AVD to the AAD VM with user who has RBAC "Virtual Machine Administrator Login"
+# Create Mapdrive.bat file on the desktop
+# in the file paste
+#
+# net use Q: /delete /yes
+# net use Q: \\aadnativesa.file.core.windows.net\shares <SAKey> /user:localhost\aadnativesa
+#
+# Start Run shell:common startup
+# Paste the Mapdrive.bat file in that driectory
+# log out and log back in to validate map drive has been created
