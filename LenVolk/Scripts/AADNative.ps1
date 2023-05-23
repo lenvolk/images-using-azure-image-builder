@@ -49,7 +49,7 @@ write-host "Configuration Complete"
 # downlaod https://learn.microsoft.com/en-us/sysinternals/downloads/psexec
 #from CMD elevated 
 
-PsExec.exe -s cmd.exe /C "cmdkey /add:aadnativesa.file.core.windows.net /user:localhost\aadnativesa /pass:<StorageAccountAccessKey>"
+# PsExec.exe -s cmd.exe /C "cmdkey /add:aadnativesa.file.core.windows.net /user:localhost\aadnativesa /pass:<StorageAccountAccessKey>"
 
-PsExec.exe /s cmdkey /list
+# PsExec.exe /s cmdkey /list
 
