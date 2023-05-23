@@ -166,7 +166,7 @@ if (Test-Path $WinstationsKey) {
 
 New-ItemProperty -ErrorAction Stop `
 -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services\Client" `
--Name "	fClientDisableUDP" `
+-Name "fClientDisableUDP" `
 -Type "Dword" `
 -Value "0" `
 -Force `

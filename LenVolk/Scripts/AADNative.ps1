@@ -1,3 +1,5 @@
+# Ref: https://www.youtube.com/watch?v=yJqTJh2Tgxo&t=1s  scroll to 12:00
+
 write-host "Configuring FSLogix"
 
 
@@ -33,5 +35,21 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Profiles" -Name "ProfileType" -Va
 New-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Profiles" -Name "SizeInMBs" -Value 30000 -force
 New-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Profiles" -Name "VolumeType" -Value "VHDX" -force
 
+New-ItemProperty -ErrorAction Stop `
+-Path "HKLM:\SOFTWARE\FSLogix\Profiles" `
+-Name "AccessNetworkAsComputerObject" `
+-Type "Dword" `
+-Value "1" `
+-Force `
+-Confirm:$false
 
 write-host "Configuration Complete"
+
+### PSExec
+# downlaod https://learn.microsoft.com/en-us/sysinternals/downloads/psexec
+#from CMD elevated 
+
+PsExec.exe -s cmd.exe /C "cmdkey /add:aadnativesa.file.core.windows.net /user:localhost\aadnativesa /pass:<StorageAccountAccessKey>"
+
+PsExec.exe /s cmdkey /list
+
