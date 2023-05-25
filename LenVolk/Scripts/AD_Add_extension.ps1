@@ -8,7 +8,7 @@
 $extensionName = 'lvolkdomainjoin'
 $DomainName = 'lvolk.com'
 $OUPath = 'OU=PoolHostPool,OU=AVD,DC=lvolk,DC=com'
-$VMName = 'avd-win11-0'
+#$VMName = 'avd-win11-0'
 $credential = Get-Credential 'lv@lvolk.com'
 $VMRG = 'imageBuilderRG'
 
