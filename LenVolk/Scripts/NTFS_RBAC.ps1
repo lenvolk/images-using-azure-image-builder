@@ -38,7 +38,7 @@ $sa = Get-AzStorageAccount -ResourceGroupName $ResourceGroup -Name $SAName
 Write-Output $sa.AzureFilesIdentityBasedAuth.ActiveDirectoryProperties
 
 # Set up NTFS permissions
-
+# https://learn.microsoft.com/en-us/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds#set-ntfs-permissions
 # Get the storage key for the storage account
 $keys = Get-AzStorageAccountKey -ResourceGroupName $ResourceGroup -Name $SAName
 
