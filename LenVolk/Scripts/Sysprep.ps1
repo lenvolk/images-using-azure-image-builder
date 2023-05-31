@@ -47,8 +47,8 @@ $CheckRegistry = Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\M
 
 if ($CheckRegistry)
 {
-Remove-Item –Path "HKLM:\SOFTWARE\Microsoft\RDInfraAgent\" –Recurse -ErrorAction SilentlyContinue
-Remove-Item –Path "HKLM:\SOFTWARE\Microsoft\RDAgentBootLoader\" –Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\RDInfraAgent\" -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\RDAgentBootLoader\" -Recurse -ErrorAction SilentlyContinue
 
 }
 else
