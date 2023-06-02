@@ -194,6 +194,8 @@ Write-Output  "Done with FSLogix User Profile Settings"
 #    FSLogix ODFS -- Office Container --         
 #    Office Container is generally implemented with another profile solution, 
 #    and is designed to improve the performance of Microsoft Office in non-persistent environments
+#    https://learn.microsoft.com/en-us/fslogix/concepts-container-types?source=recommendations#odfc-container
+#    https://learn.microsoft.com/en-us/fslogix/concepts-container-types#when-to-use-profile-and-odfc-containers
 #######################################
 #     New-ItemProperty -ErrorAction Stop `
 #         -Path "HKLM:\SOFTWARE\Policies\FSLogix\ODFC" `
