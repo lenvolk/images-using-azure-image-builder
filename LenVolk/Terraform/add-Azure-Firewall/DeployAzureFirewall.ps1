@@ -26,15 +26,15 @@ Remove-Item $TerraformInstaller -Force
 #### Authenticate to Portal
 az logout
 Disconnect-AzAccount
-$subscription = "ca5dfa45-eb4e-4612-9ebd-06f6fc3bc996"
+$subscription = "DemoSub"
 Connect-AzAccount -Subscription $subscription 
 az login --only-show-errors -o table --query Dummy
 az account set -s $Subscription
 
 
 #### Setup parameters
-$hub_vnet_resource_group = "POC-SA"
-$vnetName = "POC-vnet"
+$hub_vnet_resource_group = "maintenance"
+$vnetName = "maintenanceVNET"
 $vnet = Get-AzVirtualNetwork -Name $vnetName -ResourceGroupName $hub_vnet_resource_group
 $fw_subnet_id = (Get-AzVirtualNetworkSubnetConfig -Name "AzureFirewallSubnet" -VirtualNetwork $vnet).id
 

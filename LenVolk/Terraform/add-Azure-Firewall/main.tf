@@ -94,7 +94,11 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
       name                  = "KMS"
       protocols             = ["TCP"]
       source_addresses      = ["*"]
-      destination_addresses = ["23.102.135.246"]
+      destination_addresses = [
+                                "20.118.99.224",
+                                "23.102.135.246",
+                                "40.83.235.53"
+                              ]
       destination_ports     = ["1688"]
     }
 
@@ -105,9 +109,17 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
       destination_fqdns = ["time.windows.com"]
       destination_ports = ["123"]
     }
+
+      rule {
+      name                  = "RDPShortPathPublicNet"
+      protocols             = ["UDP"]
+      source_addresses      = ["*"]
+      destination_addresses = ["*"]
+      destination_ports     = ["3390","3478"]
+    }
+
   }
   
-## Network rules
   application_rule_collection {
     name     = "avd-application-rules"
     priority = 300
@@ -126,14 +138,6 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
         type = "Https"
         port = 443
       }
-    }
-
-    rule {
-      name                  = "RDPShortPathPublicNet"
-      protocols             = ["UDP"]
-      source_addresses      = ["*"]
-      destination_addresses = ["*"]
-      destination_ports     = ["3390","3478"]
     }
     rule {
       name             = "az-sql-pub-allow"
