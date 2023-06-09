@@ -60,14 +60,14 @@ terraform apply -var hub_vnet_resource_group=$hub_vnet_resource_group -var fw_su
 # Stop AzFW
 # https://learn.microsoft.com/en-us/answers/questions/936825/is-it-possible-to-turn-off-the-azure-firewall-to-s
 # Stop an existing firewall
-$azfw = Get-AzFirewall -Name "avd-FW-eastus" -ResourceGroupName $hub_vnet_resource_group
+$azfw = Get-AzFirewall -Name "avd-FW-eastus2" -ResourceGroupName $hub_vnet_resource_group
 $azfw.Deallocate()
 Set-AzFirewall -AzureFirewall $azfw
 
 # Start the firewall
-$azfw = Get-AzFirewall -Name "avd-FW-eastus" -ResourceGroupName $hub_vnet_resource_group
+$azfw = Get-AzFirewall -Name "avd-FW-eastus2" -ResourceGroupName $hub_vnet_resource_group
 $vnet = Get-AzVirtualNetwork -ResourceGroupName $hub_vnet_resource_group -Name $vnetName
-$publicip1 = Get-AzPublicIpAddress -Name "avd-FW-eastus" -ResourceGroupName $hub_vnet_resource_group
+$publicip1 = Get-AzPublicIpAddress -Name "avd-FW-eastus2" -ResourceGroupName $hub_vnet_resource_group
 $azfw.Allocate($vnet,@($publicip1))
 
 Set-AzFirewall -AzureFirewall $azfw
