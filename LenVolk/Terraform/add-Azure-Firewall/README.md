@@ -11,6 +11,8 @@ Thanks!
 [doc](https://learn.microsoft.com/en-us/azure/firewall/protect-azure-virtual-desktop?tabs=azure#create-network-rules)
 
 
+[FW Workbook](https://github.com/Azure/Azure-Network-Security/tree/master/Azure%20Firewall/Workbook%20-%20Azure%20Firewall%20Monitor%20Workbook)
+
 ## Save $$ and deallocate AzFW
 ```powershell
 # Stop an existing firewall
