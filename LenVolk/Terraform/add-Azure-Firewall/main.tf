@@ -26,6 +26,11 @@ resource "azurerm_firewall" "hub_firewall" {
   sku_name = "AZFW_VNet"
   sku_tier = "Standard"
 
+  # dns_servers = [
+  #   "10.150.0.197",
+  #   "10.201.0.197"
+  # ]
+
   ip_configuration {
     name                 = "ipconfig1"
     subnet_id            = var.fw_subnet_id
@@ -137,6 +142,34 @@ resource "azurerm_firewall_policy_rule_collection_group" "hub_fw_base_policy" {
       protocols {
         type = "Https"
         port = 443
+      }
+    }
+
+    rule {
+      name             = "AllowO365"
+      source_addresses = ["*"]
+      destination_fqdn_tags = [
+        "Office365.Exchange.Optimization",
+        "Office365.Exchange.Default.Required",
+        "Office365.Exchange.Allow.Required",
+        "Office365.Skype.Allow.required",
+        "Office365.Skype.Default.Required",
+        "Office365.Skype.Defualt.NotRequired",
+        "Office365.Skype.Allow.NotRequired",
+        "Office365.SharePoint.Optimize",
+        "Office365.SharePoint.Default.NotRequired",
+        "Office365.SharePoint.Default.Required",
+        "Office365.Common.Default.NotRequired",
+        "Office365.Common.Allow.Required",
+        "Office365.Common.Default.Required"        
+      ]
+      protocols {
+        type = "Https"
+        port = 443
+      }
+      protocols {
+        type = "Http"
+        port = 80
       }
     }
     rule {
