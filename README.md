@@ -8,6 +8,8 @@
 
 [Latency Test](https://www.azurespeed.com/Azure/Latency)
 
+[Round-trip latency figures](https://learn.microsoft.com/en-us/azure/virtual-machines/availability-set-overview)
+
 [01 provision market place VM](/LenVolk/Scripts/MarketPlaceVMs.ps1)
 
 [02a Add VMs to AD](/LenVolk/Scripts/AD_VMjoin_invoke.ps1)
