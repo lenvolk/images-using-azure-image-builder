@@ -9,7 +9,7 @@ The main purposes of this Workbook are:
 
 ![image](../../docs/images/costOptimizationWorkbook/CostOptimizationWorkbook.png)
 
-[Cost Optimization workbook](https://raw.githubusercontent.com/Azure/avdaccelerator/main/workload/workbooks/costOptimizationWorkbook/costOptimization.workbook)
+[Cost Optimization workbook](https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Monitoring/CostOptimization_v3.workbook)
 
 ## Type of resources covered:
 
