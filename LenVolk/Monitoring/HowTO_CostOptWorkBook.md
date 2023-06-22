@@ -33,7 +33,7 @@ Importing this Workbook to your Azure environment.
 
 Follow this steps:
 
-* Login to [Azure Portal](https://portal.azure.com/) <img src="../../docs/icons/azure.png" width="20" height="20">
+* Login to [Azure Portal](https://portal.azure.com/) <img src="../../docs/images/costOptimizationWorkbook/azure.png" width="20" height="20">
 * Go to _'Azure Workbooks'_
 
 ![Cost optimization workbook 1](../../docs/images/costOptimizationWorkbook/costoptworkbook1.png)
