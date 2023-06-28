@@ -52,6 +52,8 @@
 
 (https://rozemuller.com/how-to-join-azure-ad-automated/)
 ----
+[Sync between two Azure file shares](https://github.com/Azure-Samples/azure-files-samples/tree/master/SyncBetweenTwoAzureFileSharesForDR)
+----
 ## Bicep
 (https://github.com/fberson/Azure-Virtual-Desktop-as-a-gaming-console)
 
