@@ -1,0 +1,59 @@
+{
+    "rules": [
+      {
+        "enabled": true,
+        "name": "sample-rule",
+        "type": "Lifecycle",
+        "definition": {
+          "actions": {
+            "version": {
+              "tierToArchive": {
+                "daysAfterCreationGreaterThan": 90
+              }
+            },
+            "baseBlob": {
+              "tierToCool": {
+                "daysAfterModificationGreaterThan": 30
+              },
+              "tierToArchive": {
+                "daysAfterModificationGreaterThan": 90
+              },
+              "delete": {
+                "daysAfterModificationGreaterThan": 180
+              }
+            },
+            "snapshot": {
+              "delete": {
+                "daysAfterCreationGreaterThan": 90
+              }
+            }
+          },
+          "filters": {
+            "blobTypes": [
+              "blockBlob"
+            ]
+          }
+        }
+      },
+      {
+        "enabled": true,
+        "name": "last-accessed-thirty-days-ago",
+        "type": "Lifecycle",
+        "definition": {
+          "actions": {
+            "baseBlob": {
+              "enableAutoTierToHotFromCool": true,
+              "tierToCool": {
+                "daysAfterLastAccessTimeGreaterThan": 30
+              }
+            }
+          },
+          "filters": {
+            "blobTypes": [
+              "blockBlob"
+            ]
+          }
+        }
+      }
+    ]
+  }
