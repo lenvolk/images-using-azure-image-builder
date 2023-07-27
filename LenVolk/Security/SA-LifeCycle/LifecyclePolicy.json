@@ -1,0 +1,175 @@
+{
+    "properties": {
+      "displayName": "deploy-a-data-lifecycle-management-policy-for-storage-accounts",
+      "policyType": "Custom",
+      "mode": "All",
+      "metadata": {
+        "version": "1.0.0",
+        "createdBy": "3d17cf83-3c31-4a07-884f-a73229e68e5b",
+        "createdOn": "2023-07-26T15:48:30.1034009Z",
+        "updatedBy": null,
+        "updatedOn": null
+      },
+      "parameters": {
+        "lifecyclePolicyName": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Lifecycle Policy Name",
+            "description": "The name of the lifecycle policy to deploy. The default value is 'optimizeCostDemo'."
+          },
+          "defaultValue": "optimizeCostDemo"
+        },
+        "tierToCold": {
+          "type": "Integer",
+          "metadata": {
+            "displayName": "Last time accessed before moving to cold.",
+            "description": "Last time accessed blob to move to cool tier in days. The default value is 30 days."
+          },
+          "defaultValue": 90
+        },
+        "tierToCool": {
+          "type": "Integer",
+          "metadata": {
+            "displayName": "Last time accessed before moving to cool.",
+            "description": "Last time accessed blob to move to archive tier in days. The default value is 180 days."
+          },
+          "defaultValue": 60
+        },
+        "effect": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Effect",
+            "description": "Audit or Disabled the execution of the Policy"
+          },
+          "allowedValues": [
+            "Audit",
+            "Disabled"
+          ],
+          "defaultValue": "Audit"
+        }
+      },
+      "policyRule": {
+        "if": {
+          "field": "type",
+          "equals": "Microsoft.Storage/storageAccounts"
+        },
+        "then": {
+          "effect": "[parameters('effect')]",
+          "details": {
+            "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+            "name": "default",
+            "existenceCondition": {
+              "count": {
+                "field": "Microsoft.Storage/storageAccounts/managementPolicies/policy.rules[*]",
+                "where": {
+                  "value": "[current('Microsoft.Storage/storageAccounts/managementPolicies/policy.rules[*].name')]",
+                  "equals": "[parameters('lifecyclePolicyName')]"
+                }
+              },
+              "greater": 0
+            },
+            "roleDefinitionIds": [
+              "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
+            ],
+            "evaluationDelay": "AfterProvisioning",
+            "deployment": {
+              "properties": {
+                "mode": "Incremental",
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "parameters": {
+                    "storageAccountName": {
+                      "defaultValue": "stalifecycle1",
+                      "type": "String"
+                    },
+                    "lifecyclePolicyName": {
+                      "defaultValue": "optimizeCostDemo",
+                      "type": "String"
+                    },
+                    "tierToCold": {
+                      "defaultValue": 90,
+                      "type": "Int",
+                      "metadata": {
+                        "description": "Days since last blob access before moving to cold tier"
+                      }
+                    },
+                    "tierToCool": {
+                      "defaultValue": 60,
+                      "type": "Int",
+                      "metadata": {
+                        "description": "Days since last blob access before moving to cool tier"
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+                      "apiVersion": "2021-08-01",
+                      "name": "[concat(parameters('storageAccountName'), '/default')]",
+                      "properties": {
+                        "policy": {
+                          "rules": [
+                            {
+                              "name": "[parameters('lifecyclePolicyName')]",
+                              "enabled": true,
+                              "type": "Lifecycle",
+                              "definition": {
+                                "filters": {
+                                  "blobTypes": [
+                                    "blockBlob"
+                                  ]
+                                },
+                                "actions": {
+                                  "baseBlob": {
+                                    "tierToCold": {
+                                      "daysAfterLastAccessTimeGreaterThan": "[parameters('tierToCold')]"
+                                    },
+                                    "tierToCool": {
+                                      "daysAfterLastAccessTimeGreaterThan": "[parameters('tierToCool')]"
+                                    },
+                                    "delete": {
+                                      "daysAfterLastAccessTimeGreaterThan": 2555
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "parameters": {
+                  "storageAccountName": {
+                    "value": "[field('name')]"
+                  },
+                  "tierToCold": {
+                    "value": "[parameters('tierToCold')]"
+                  },
+                  "tierToCool": {
+                    "value": "[parameters('tierToCool')]"
+                  },
+                  "lifecyclePolicyName": {
+                    "value": "[parameters('lifecyclePolicyName')]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "id": "/subscriptions/f043b87b-e870-4884-b2d1-d665cc58f247/providers/Microsoft.Authorization/policyDefinitions/cc77dc6b-5ec8-47c1-9839-0a2d3e8665cd",
+    "type": "Microsoft.Authorization/policyDefinitions",
+    "name": "cc77dc6b-5ec8-47c1-9839-0a2d3e8665cd",
+    "systemData": {
+      "createdBy": "len@volk.bike",
+      "createdByType": "User",
+      "createdAt": "2023-07-26T15:48:30.0479286Z",
+      "lastModifiedBy": "len@volk.bike",
+      "lastModifiedByType": "User",
+      "lastModifiedAt": "2023-07-26T15:48:30.0479286Z"
+    }
+  }

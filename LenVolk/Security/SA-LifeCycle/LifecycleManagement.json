@@ -1,0 +1,54 @@
+{
+    "rules": [
+      {
+        "enabled": true,
+        "name": "last-accessed-thirty-days-ago",
+        "type": "Lifecycle",
+        "definition": {
+          "actions": {
+            "baseBlob": {
+              "enableAutoTierToHotFromCool": true,
+              "tierToCool": {
+                "daysAfterLastAccessTimeGreaterThan": 30
+              }
+            }
+          },
+          "filters": {
+            "blobTypes": [
+              "blockBlob"
+            ],
+            "prefixMatch": [
+              "mylifecyclecontainer/log"
+            ]
+          }
+        }
+      },
+      {
+        "enabled": true,
+        "name": "images",
+        "type": "Lifecycle",
+        "definition": {
+          "actions": {
+            "baseBlob": {
+              "tierToCool": {
+                "daysAfterCreationGreaterThan": 60
+              },
+              "delete": {
+                "daysAfterModificationGreaterThan": 120
+              }
+            },
+            "snapshot": {
+              "delete": {
+                "daysAfterCreationGreaterThan": 120
+              }
+            }
+          },
+          "filters": {
+            "blobTypes": [
+              "blockBlob"
+            ]
+          }
+        }
+      }
+    ]
+  }
