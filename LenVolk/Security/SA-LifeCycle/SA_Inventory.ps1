@@ -1,5 +1,11 @@
 # Ref https://stackoverflow.com/questions/65669597/list-all-storage-accounts-and-containers-in-aure-w-powershell
+$subscription = "DemoSub"
 
+Connect-AzAccount -Subscription $subscription 
+Set-AzContext -Subscription $subscription
+#
+az login --only-show-errors -o table --query Dummy
+az account set -s $Subscription
 
 ##################################################
 # Gather storage account information 

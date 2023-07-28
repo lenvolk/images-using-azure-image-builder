@@ -4,8 +4,8 @@
 #                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-unhealthy-host
 #                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-backend-lastbyte-resp
 # !!!  FW        https://www.youtube.com/watch?v=7yL1R2_B5WI
-$RGname = "myResourceGroupAG"
-$locName = "eastus"
+$RGname = "AppGW"
+$locName = "eastus2"
 az group create --name $RGname --location $locName
 
 #Create Network Resources
@@ -18,15 +18,15 @@ $agSubnetConfig = New-AzVirtualNetworkSubnetConfig `
   -AddressPrefix 10.0.2.0/24
 
 $vnet = New-AzVirtualNetwork `
-  -ResourceGroupName myResourceGroupAG `
-  -Location eastus `
+  -ResourceGroupName AppGW"`
+  -Location eastus2 `
   -Name myVNet `
   -AddressPrefix 10.0.0.0/16 `
   -Subnet $backendSubnetConfig, $agSubnetConfig
 
 # $pip = New-AzPublicIpAddress `
-#   -ResourceGroupName myResourceGroupAG `
-#   -Location eastus `
+#   -ResourceGroupName AppGW"`
+#   -Location eastus2 `
 #   -Name myAGPublicIPAddress `
 #   -AllocationMethod Static `
 #   -Sku Standard
