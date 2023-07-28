@@ -1,5 +1,8 @@
 
-# Ref: https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ssl-powershell
+# Ref: 
+# How to:  https://www.youtube.com/watch?v=X-4KSoe9Kt8
+# Tutorial https://learn.microsoft.com/en-us/azure/application-gateway/quick-create-portal
+# https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ssl-powershell
 # Create alerts  https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-backend-5xx
 #                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-unhealthy-host
 #                https://github.com/Azure/azure-quickstart-templates/tree/master/demos/ag-alert-backend-lastbyte-resp
@@ -18,14 +21,14 @@ $agSubnetConfig = New-AzVirtualNetworkSubnetConfig `
   -AddressPrefix 10.0.2.0/24
 
 $vnet = New-AzVirtualNetwork `
-  -ResourceGroupName AppGW"`
+  -ResourceGroupName "AppGW"`
   -Location eastus2 `
   -Name myVNet `
   -AddressPrefix 10.0.0.0/16 `
   -Subnet $backendSubnetConfig, $agSubnetConfig
 
 # $pip = New-AzPublicIpAddress `
-#   -ResourceGroupName AppGW"`
+#   -ResourceGroupName AppGW" `
 #   -Location eastus2 `
 #   -Name myAGPublicIPAddress `
 #   -AllocationMethod Static `
@@ -86,6 +89,8 @@ $VMIP_Video=( az vm create --resource-group $RGname --name "Video" `
                     --subnet $subnetName `
                     --public-ip-sku Standard `
                     --query publicIpAddress -o tsv)
+
+Set-location C:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVolk\Scripts  
 
 $RunningVMs = (get-azvm -ResourceGroupName $RGname -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RunningVMs | ForEach-Object -Parallel {
