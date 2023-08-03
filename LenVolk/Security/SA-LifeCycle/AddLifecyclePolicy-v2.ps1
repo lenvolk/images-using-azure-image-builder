@@ -4,49 +4,73 @@
 # Example1 https://learn.microsoft.com/en-us/powershell/module/az.storage/add-azstorageaccountmanagementpolicyaction?view=azps-10.1.0#example-1-creates-a-managementpolicy-action-group-object-with-4-actions-then-add-it-to-a-management-policy-rule-and-set-to-a-storage-account
 # Explanation of the policy https://www.jorgebernhardt.com/lifecycle-management-policy-azure-powershell/
 
-$subscription = "DemoSub"
-Connect-AzAccount -Subscription $subscription 
-Set-AzContext -Subscription $subscription
+# $subscription = "DemoSub"
+# Connect-AzAccount -Subscription $subscription 
+# Set-AzContext -Subscription $subscription
 
-# Initialize these variables with your values.
-$rgName = "TestSA_PE"
-$accountName = "testsapevolk"
+##################################################
+# Gather storage account information 
+#     across all subscriptions
+##################################################
 
-Enable-AzStorageBlobLastAccessTimeTracking  -ResourceGroupName $rgName `
-    -StorageAccountName $accountName `
-    -PassThru
+$SubscriptionNames= "DemoSub"
+
+##################################################
+#     SA lifecycle policy 
+#     across all subscriptions
+##################################################
 
 
-$ExistingPolicy = Get-AzStorageAccountManagementPolicy `
-    -ResourceGroupName $rgName `
-    -StorageAccountName $accountName `
-    | Select-Object Rules, StorageAccountName
- 
-if ($ExistingPolicy.Rules.Name -eq "CostOpt") {
-    Write-Host "The SA name: $($accountName) already has a policy named: $($ExistingPolicy.Rules.Name)"
-}
+# Loop through each subscription
+foreach ($SubscriptionName in $SubscriptionNames) {
 
-else {
+    # Set context to the subscription
+    Select-AzSubscription -SubscriptionId $SubscriptionName | Out-Null
+    $context = Get-AzContext
+    Write-Host "The subscription context is set to: $($context.Name)`n"
+    $storageAccounts = Get-AzResource -ResourceType 'Microsoft.Storage/storageAccounts' 
+    Write-Host "Storage Account Names are: $($storageAccounts.Name)`n"
+    
+    foreach ($storageAccount in $storageAccounts) {
+    
+        Enable-AzStorageBlobLastAccessTimeTracking  -ResourceGroupName $storageAccount.ResourceGroupName `
+        -StorageAccountName $storageAccount.Name `
+        -PassThru
+    
+        $ExistingPolicy = Get-AzStorageAccountManagementPolicy `
+        -ResourceGroupName $storageAccount.ResourceGroupName `
+        -StorageAccountName $storageAccount.Name `
+        | Select-Object Rules, StorageAccountName `
+        -ErrorAction Ignore
 
-Write-Output "The SA name: $($accountName) doesn't have lifecycle policy. Creating one."
-  
+        if ($ExistingPolicy.Rules.Name -eq "CostOpt") {
+            Write-Host "The SA name: $($storageAccount.Name) already has a policy named: $($ExistingPolicy.Rules.Name)"
+        }
+        
+        else {
+        
+        Write-Output "The SA name: $($storageAccount.Name) doesn't have lifecycle policy. Creating one."
+          
+        $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -DaysAfterCreationGreaterThan 100
+        $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToArchive -daysAfterModificationGreaterThan 50  -DaysAfterLastTierChangeGreaterThan 40 -InputObject $action
+        $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToCool -DaysAfterLastAccessTimeGreaterThan 30  -EnableAutoTierToHotFromCool -InputObject $action
+        #$action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToHot -DaysAfterCreationGreaterThan 100 -InputObject $action
+        $action = Add-AzStorageAccountManagementPolicyAction -SnapshotAction Delete -daysAfterCreationGreaterThan 100 -InputObject $action
+        
+        # Create a new filter object.
+        $filter = New-AzStorageAccountManagementPolicyFilter `
+            -BlobType blockBlob
+        
+        # Create a new rule object.
+        $rule = New-AzStorageAccountManagementPolicyRule -Name CostOpt `
+            -Action $action `
+            -Filter $filter
+        
+        # Create the policy.
+        Set-AzStorageAccountManagementPolicy -ResourceGroupName $storageAccount.ResourceGroupName -AccountName $storageAccount.Name -Rule $rule
+        
+        }
 
-$action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -DaysAfterCreationGreaterThan 100
-$action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToArchive -daysAfterModificationGreaterThan 50  -DaysAfterLastTierChangeGreaterThan 40 -InputObject $action
-$action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToCool -DaysAfterLastAccessTimeGreaterThan 30  -EnableAutoTierToHotFromCool -InputObject $action
-#$action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToHot -DaysAfterCreationGreaterThan 100 -InputObject $action
-$action = Add-AzStorageAccountManagementPolicyAction -SnapshotAction Delete -daysAfterCreationGreaterThan 100 -InputObject $action
-
-# Create a new filter object.
-$filter = New-AzStorageAccountManagementPolicyFilter `
-    -BlobType blockBlob
-
-# Create a new rule object.
-$rule = New-AzStorageAccountManagementPolicyRule -Name CostOpt `
-    -Action $action `
-    -Filter $filter
-
-# Create the policy.
-Set-AzStorageAccountManagementPolicy -ResourceGroupName $rgName -AccountName $accountName -Rule $rule
-
+    }
+    
 }

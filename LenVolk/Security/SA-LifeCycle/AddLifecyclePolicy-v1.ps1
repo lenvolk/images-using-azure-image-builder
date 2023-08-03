@@ -16,6 +16,11 @@ Enable-AzStorageBlobLastAccessTimeTracking  -ResourceGroupName $rgName `
     -StorageAccountName $accountName `
     -PassThru
 
+$ExistingPolicy = Get-AzStorageAccountManagementPolicy `
+    -ResourceGroupName $rgName `
+    -StorageAccountName $accountName `
+    | Select-Object Rules, StorageAccountName `
+    -ErrorAction SilentlyContinue
 
 # Create a new action object.
 # $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete `
