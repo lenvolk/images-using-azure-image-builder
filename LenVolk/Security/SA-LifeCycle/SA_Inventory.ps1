@@ -43,3 +43,6 @@ foreach ($storageAccount in $storageAccounts) {
 }
 
 }
+
+
+# az storage account management-policy show --account-name "testsapevolk" --resource-group "TestSA_PE"
