@@ -13,7 +13,12 @@
 #     across all subscriptions
 ##################################################
 
-$SubscriptionNames= "DemoSub"
+# To output a list of all your subscription IDs using Resource Graph you can use 
+# ref https://www.geeksforgeeks.org/microsoft-azure-get-azure-subscription-details-using-resource-graph-query/
+# Install-Module Az.ResourceGraph -force
+$SubscriptionNames = Search-AzGraph -Query "resourcecontainers | where type=='microsoft.resources/subscriptions' | project SubscriptionName=name, subscriptionId, tenantId"
+
+#$SubscriptionNames= "DemoSub"
 
 ##################################################
 #     SA lifecycle policy 
@@ -22,7 +27,7 @@ $SubscriptionNames= "DemoSub"
 
 
 # Loop through each subscription
-foreach ($SubscriptionName in $SubscriptionNames) {
+foreach ($SubscriptionName in $SubscriptionNames.subscriptionname) {
 
     # Set context to the subscription
     Select-AzSubscription -SubscriptionId $SubscriptionName | Out-Null
@@ -48,8 +53,16 @@ foreach ($SubscriptionName in $SubscriptionNames) {
         }
         
         else {
+
+            Write-Output "The SA name: $($storageAccount.Name) doesn't have lifecycle policy."
+                $confirmation = Read-Host "Would you like to creat it? Y or N"
+                if ($confirmation -ne 'y')
+                {
+                    Write-Output "exiting"
+                    exit
+                }
         
-        Write-Output "The SA name: $($storageAccount.Name) doesn't have lifecycle policy. Creating one."
+        Write-Output "Adding lifecycle policy for SA name: $($storageAccount.Name)"
           
         $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -DaysAfterCreationGreaterThan 100
         $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToArchive -daysAfterModificationGreaterThan 50  -DaysAfterLastTierChangeGreaterThan 40 -InputObject $action
