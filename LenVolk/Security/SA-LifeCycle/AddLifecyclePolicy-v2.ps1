@@ -15,7 +15,7 @@
 
 # To output a list of all your subscription IDs using Resource Graph you can use 
 # ref https://www.geeksforgeeks.org/microsoft-azure-get-azure-subscription-details-using-resource-graph-query/
-# Install-Module Az.ResourceGraph -force
+Install-Module Az.ResourceGraph -force
 $SubscriptionNames = Search-AzGraph -Query "resourcecontainers | where type=='microsoft.resources/subscriptions' | project SubscriptionName=name, subscriptionId, tenantId"
 
 #$SubscriptionNames= "DemoSub"
