@@ -1,3 +1,7 @@
+# Features https://learn.microsoft.com/en-us/azure/firewall/choose-firewall-sku#feature-comparison
+# Basic doesn't have thread intelligence deny
+# backup https://www.checkyourlogs.net/powershell-script-to-backup-azure-firewall-configuration/
+#
 # This script will add the following resources to the project:
 # - An Azure Firewall instance in the hub network
 # - An Azure Firewall policy
