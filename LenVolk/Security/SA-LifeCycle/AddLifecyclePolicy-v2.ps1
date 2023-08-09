@@ -3,7 +3,8 @@
 # https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview?tabs=template#examples
 # Example1 https://learn.microsoft.com/en-us/powershell/module/az.storage/add-azstorageaccountmanagementpolicyaction?view=azps-10.1.0#example-1-creates-a-managementpolicy-action-group-object-with-4-actions-then-add-it-to-a-management-policy-rule-and-set-to-a-storage-account
 # Explanation of the policy https://www.jorgebernhardt.com/lifecycle-management-policy-azure-powershell/
-
+#
+# !!! Policy https://www.azadvertizer.net/azpolicyadvertizer/storage_deploy-storage-account-lifecycle-management.html
 # $subscription = "DemoSub"
 # Connect-AzAccount -Subscription $subscription 
 # Set-AzContext -Subscription $subscription
