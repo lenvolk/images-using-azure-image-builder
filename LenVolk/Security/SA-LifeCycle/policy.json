@@ -1,59 +1,36 @@
 {
-    "rules": [
-      {
-        "enabled": true,
-        "name": "sample-rule",
-        "type": "Lifecycle",
-        "definition": {
-          "actions": {
-            "version": {
-              "tierToArchive": {
-                "daysAfterCreationGreaterThan": 90
-              }
+  "rules": [
+    {
+      "enabled": true,
+      "name": "CostOpt",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "enableAutoTierToHotFromCool": true,
+            "tierToCool": {
+              "daysAfterLastAccessTimeGreaterThan": 30
             },
-            "baseBlob": {
-              "tierToCool": {
-                "daysAfterModificationGreaterThan": 30
-              },
-              "tierToArchive": {
-                "daysAfterModificationGreaterThan": 90
-              },
-              "delete": {
-                "daysAfterModificationGreaterThan": 180
-              }
+            "tierToArchive": {
+              "daysAfterLastTierChangeGreaterThan": 40,
+              "daysAfterModificationGreaterThan": 50
             },
-            "snapshot": {
-              "delete": {
-                "daysAfterCreationGreaterThan": 90
-              }
+            "delete": {
+              "daysAfterCreationGreaterThan": 100
             }
           },
-          "filters": {
-            "blobTypes": [
-              "blockBlob"
-            ]
-          }
-        }
-      },
-      {
-        "enabled": true,
-        "name": "last-accessed-thirty-days-ago",
-        "type": "Lifecycle",
-        "definition": {
-          "actions": {
-            "baseBlob": {
-              "enableAutoTierToHotFromCool": true,
-              "tierToCool": {
-                "daysAfterLastAccessTimeGreaterThan": 30
-              }
+          "snapshot": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 100
             }
-          },
-          "filters": {
-            "blobTypes": [
-              "blockBlob"
-            ]
           }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ]
         }
       }
-    ]
-  }
+    }
+  ]
+}
