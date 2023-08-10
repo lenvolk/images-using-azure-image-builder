@@ -12,8 +12,8 @@
               "daysAfterLastAccessTimeGreaterThan": 30
             },
             "tierToArchive": {
-              "daysAfterLastTierChangeGreaterThan": 40,
-              "daysAfterModificationGreaterThan": 50
+              "daysAfterLastTierChangeGreaterThan": 60,
+              "daysAfterModificationGreaterThan": 60
             },
             "delete": {
               "daysAfterCreationGreaterThan": 200
