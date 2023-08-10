@@ -5,6 +5,9 @@
 # Explanation of the policy https://www.jorgebernhardt.com/lifecycle-management-policy-azure-powershell/
 #
 # !!! Policy https://www.azadvertizer.net/azpolicyadvertizer/storage_deploy-storage-account-lifecycle-management.html
+#
+# Access tiers for blob data  https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview
+#
 # $subscription = "DemoSub"
 # Connect-AzAccount -Subscription $subscription 
 # Set-AzContext -Subscription $subscription
@@ -65,11 +68,11 @@ foreach ($SubscriptionName in $SubscriptionNames.subscriptionname) {
         
         Write-Output "Adding lifecycle policy for SA name: $($storageAccount.Name)"
           
-        $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -DaysAfterCreationGreaterThan 100
-        $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToArchive -daysAfterModificationGreaterThan 50  -DaysAfterLastTierChangeGreaterThan 40 -InputObject $action
+        $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -DaysAfterCreationGreaterThan 200
+        $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToArchive -daysAfterLastAccessTimeGreaterThan 60 -InputObject $action
         $action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToCool -DaysAfterLastAccessTimeGreaterThan 30  -EnableAutoTierToHotFromCool -InputObject $action
         #$action = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction TierToHot -DaysAfterCreationGreaterThan 100 -InputObject $action
-        $action = Add-AzStorageAccountManagementPolicyAction -SnapshotAction Delete -daysAfterCreationGreaterThan 100 -InputObject $action
+        $action = Add-AzStorageAccountManagementPolicyAction -SnapshotAction Delete -daysAfterCreationGreaterThan 210 -InputObject $action
         
         # Create a new filter object.
         $filter = New-AzStorageAccountManagementPolicyFilter `
