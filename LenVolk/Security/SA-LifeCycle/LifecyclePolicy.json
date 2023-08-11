@@ -127,7 +127,7 @@
         "displayName": "Lifecycle Policy Name",
         "description": "The name of the lifecycle policy to deploy. The default value is 'CostOpt'."
       },
-      "defaultValue": "CostOpt"
+      "defaultValue": "CostOptV8"
     },
     "LATCool": {
       "type": "Integer",
