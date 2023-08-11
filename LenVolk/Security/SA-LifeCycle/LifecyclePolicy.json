@@ -1,5 +1,5 @@
 {
-  "displayName": "Deploy a Data Lifecycle Management policy for Storage Accounts V2",
+  "displayName": "Deploy a Data Lifecycle Management policy for Storage Accounts V8",
   "policyRule": {
     "if": {
       "field": "type",
@@ -36,7 +36,7 @@
                   "type": "String"
                 },
                 "lifecyclePolicyName": {
-                  "defaultValue": "CostOpt",
+                  "defaultValue": "CostOptV8",
                   "type": "String"
                 },
                 "LATCool": {
