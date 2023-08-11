@@ -1,5 +1,5 @@
 {
-  "displayName": "Deploy a Data Lifecycle Management policy for Storage Accounts V2",
+  "displayName": "Deploy a Data Lifecycle Management policy for Storage Accounts V7",
   "policyRule": {
     "if": {
       "field": "type",
@@ -28,7 +28,7 @@
           "properties": {
             "mode": "Incremental",
             "template": {
-              "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+              "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
               "contentVersion": "1.0.0.0",
               "parameters": {
                 "storageAccountName": {
@@ -36,7 +36,7 @@
                   "type": "String"
                 },
                 "lifecyclePolicyName": {
-                  "defaultValue": "CostOpt",
+                  "defaultValue": "CostOptV7",
                   "type": "String"
                 },
                 "LATCool": {
@@ -57,7 +57,7 @@
               "resources": [
                 {
                   "type": "Microsoft.Storage/storageAccounts/managementPolicies",
-                  "apiVersion": "2021-08-01",
+                  "apiVersion": "2022-09-01",
                   "name": "[concat(parameters('storageAccountName'), '/default')]",
                   "properties": {
                     "policy": {
@@ -76,18 +76,24 @@
                               "baseBlob": {
                                 "enableAutoTierToHotFromCool": true,
                                 "tierToCool": {
-                                  "daysAfterLastAccessTimeGreaterThan": "[parameters('LATCool')]"
+                                  "daysAfterCreationGreaterThan": "[parameters('LATCool')]",
+                                  "daysAfterLastAccessTimeGreaterThan": "[parameters('LATCool')]",
+                                  "daysAfterLastTierChangeGreaterThan": "[parameters('LATCool')]",
+                                  "daysAfterModificationGreaterThan": "[parameters('LATCool')]"
                                 },
                                 "tierToArchive": {
-                                  "daysAfterLastAccessTimeGreaterThan": "[parameters('LATArchive')]"
+                                  "daysAfterCreationGreaterThan": "[parameters('LATArchive')]",
+                                  "daysAfterLastTierChangeGreaterThan": "[parameters('LATArchive')]"
                                 },
                                 "delete": {
-                                  "daysAfterLastAccessTimeGreaterThan": 200
+                                  "daysAfterCreationGreaterThan": 200,
+                                  "daysAfterLastTierChangeGreaterThan": 200
                                 }
                               },
                               "snapshot": {
                                 "delete": {
-                                  "daysAfterCreationGreaterThan": 210
+                                  "daysAfterCreationGreaterThan": 210,
+                                  "daysAfterLastTierChangeGreaterThan": 210
                                 }
                               }
                             }

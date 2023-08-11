@@ -5,6 +5,8 @@
 # Explanation of the policy https://www.jorgebernhardt.com/lifecycle-management-policy-azure-powershell/
 #
 # !!! Policy https://www.azadvertizer.net/azpolicyadvertizer/storage_deploy-storage-account-lifecycle-management.html
+# !!! https://learn.microsoft.com/en-us/azure/templates/microsoft.storage/2022-09-01/storageaccounts/managementpolicies?pivots=deployment-language-arm-template
+# !!! Complete mode https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-modes#complete-mode
 #
 # Access tiers for blob data  https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview
 #
