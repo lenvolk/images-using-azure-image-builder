@@ -1,5 +1,5 @@
 {
-  "displayName": "Deploy a Data Lifecycle Management policy for Storage Accounts V8",
+  "displayName": "Deploy a Data Lifecycle Management policy for Storage Accounts V1",
   "policyRule": {
     "if": {
       "field": "type",
@@ -36,21 +36,30 @@
                   "type": "String"
                 },
                 "lifecyclePolicyName": {
-                  "defaultValue": "CostOptV8",
                   "type": "String"
                 },
                 "LATCool": {
-                  "defaultValue": 30,
                   "type": "Int",
                   "metadata": {
                     "description": "Days since last blob access before moving to cool tier"
                   }
                 },
                 "LATArchive": {
-                  "defaultValue": 60,
                   "type": "Int",
                   "metadata": {
                     "description": "Days since last blob access before moving to archive tier"
+                  }
+                },
+                "LATDel": {
+                  "type": "Int",
+                  "metadata": {
+                    "description": "Days since last blob access before deleting"
+                  }
+                },
+                "LATDelSnap": {
+                  "type": "Int",
+                  "metadata": {
+                    "description": "Days since last snapshot creation before deleting snapshot"
                   }
                 }
               },
@@ -82,12 +91,12 @@
                                   "daysAfterLastAccessTimeGreaterThan": "[parameters('LATArchive')]"
                                 },
                                 "delete": {
-                                  "daysAfterLastAccessTimeGreaterThan": 200
+                                  "daysAfterLastAccessTimeGreaterThan": "[parameters('LATDel')]"
                                 }
                               },
                               "snapshot": {
                                 "delete": {
-                                  "daysAfterCreationGreaterThan": 210
+                                  "daysAfterCreationGreaterThan": "[parameters('LATDelSnap')]"
                                 }
                               }
                             }
@@ -109,6 +118,12 @@
               "LATArchive": {
                 "value": "[parameters('LATArchive')]"
               },
+              "LATDel": {
+                "value": "[parameters('LATDel')]"
+              },
+              "LATDelSnap": {
+                "value": "[parameters('LATDelSnap')]"
+              },
               "lifecyclePolicyName": {
                 "value": "[parameters('lifecyclePolicyName')]"
               }
@@ -127,7 +142,7 @@
         "displayName": "Lifecycle Policy Name",
         "description": "The name of the lifecycle policy to deploy. The default value is 'CostOpt'."
       },
-      "defaultValue": "CostOptV8"
+      "defaultValue": "CostOptV1"
     },
     "LATCool": {
       "type": "Integer",
@@ -144,6 +159,22 @@
         "description": "Last time accessed blob to move to archive tier in days. The default value is 180 days."
       },
       "defaultValue": 40
+    },
+    "LATDel": {
+      "type": "Integer",
+      "metadata": {
+        "displayName": "Last time accessed before deleting.",
+        "description": "Last time accessed blob to delete from archive tier in days. The default value is 200 days."
+      },
+      "defaultValue": 200
+    },
+    "LATDelSnap": {
+      "type": "Integer",
+      "metadata": {
+        "displayName": "Last time accessed before deleting the blob snapshot.",
+        "description": "Last time accessed blob to delete the snapshot in days. The default value is 200 days."
+      },
+      "defaultValue": 210
     },
     "effect": {
       "type": "String",
