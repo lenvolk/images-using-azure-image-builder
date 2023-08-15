@@ -4,6 +4,8 @@
 # Example1 https://learn.microsoft.com/en-us/powershell/module/az.storage/add-azstorageaccountmanagementpolicyaction?view=azps-10.1.0#example-1-creates-a-managementpolicy-action-group-object-with-4-actions-then-add-it-to-a-management-policy-rule-and-set-to-a-storage-account
 # Explanation of the policy https://www.jorgebernhardt.com/lifecycle-management-policy-azure-powershell/
 #
+# MOve Files Between Azure File Share Tiers https://charbelnemnom.com/move-files-between-azure-file-share-tiers/?expand_article=1
+#
 # !!! Policy https://www.azadvertizer.net/azpolicyadvertizer/storage_deploy-storage-account-lifecycle-management.html
 # !!! https://learn.microsoft.com/en-us/azure/templates/microsoft.storage/2022-09-01/storageaccounts/managementpolicies?pivots=deployment-language-arm-template
 # !!! Complete mode https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-modes#complete-mode
