@@ -158,7 +158,7 @@
         "displayName": "Last time accessed before archiving.",
         "description": "Last time accessed blob to move to archive tier in days. The default value is 180 days."
       },
-      "defaultValue": 40
+      "defaultValue": 60
     },
     "LATDel": {
       "type": "Integer",

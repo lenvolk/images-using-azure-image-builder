@@ -2,6 +2,11 @@
 #REF https://robinhobo.com/how-to-shadow-an-active-user-session-in-windows-virtual-desktop-via-remote-desktop-connection-mstc/
 # https://christiaanbrinkhoff.com/2020/06/19/learn-about-the-different-options-to-remote-control-shadow-your-windows-virtual-desktop-sessions-for-helpdesk-users/
 
+# WVDConnections
+# | where State == "Connected" and TimeGenerated > ago(12h) 
+# | order by TimeGenerated desc  
+# | project UserName, SessionHostName, TimeGenerated
+
 $WinstationsKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server'
 $name1 = 'fDenyTSConnections'
 
@@ -26,4 +31,4 @@ else {
 Netsh advfirewall firewall set rule group=”remote desktop” new enable=yes
 
 
-mstsc.exe /shadow:2 /v:ChocoWin11m365 /control #/noConsentPrompt
+mstsc.exe /shadow:2 /v:gen-0.volk.bike /control #/noConsentPrompt
