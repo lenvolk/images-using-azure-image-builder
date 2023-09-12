@@ -17,3 +17,5 @@ Azure Firewall (PowerDown only)
 System Managed Idenitity enabled and scoped to an Azure Subscription.  Function currently only supports managing power state of resources in a single Azure Subscription.  
 
 [Cron Help](https://crontab.guru/)
+
+[Azure native StartStop](https://learn.microsoft.com/en-us/azure/azure-functions/start-stop-vms/overview)
