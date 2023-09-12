@@ -15,3 +15,5 @@ Azure Firewall (PowerDown only)
 
 # What does the function require?
 System Managed Idenitity enabled and scoped to an Azure Subscription.  Function currently only supports managing power state of resources in a single Azure Subscription.  
+
+[Cron Help](https://crontab.guru/)
