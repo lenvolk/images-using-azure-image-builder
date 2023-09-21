@@ -9,8 +9,6 @@ foreach ($vmName in $computers) {
     if ($vmAzure) {
         Write-Output "Removing MMA agent from $vmName"
         Remove-AzVMExtension -ResourceGroupName $vmAzure.ResourceGroupName -Name OmsAgentForLinux -VMName $vmAzure.Name -Force
-        #for linux
-        #Remove-AzVMExtension -ResourceGroupName $vmAzure.ResourceGroupName -Name OmsAgentForLinux -VMName $vmAzure.Name -Force
     } 
     else {
         Write-Output "$vmName VM not found"
