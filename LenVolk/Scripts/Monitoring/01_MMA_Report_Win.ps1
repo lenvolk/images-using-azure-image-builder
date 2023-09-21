@@ -16,7 +16,6 @@ $reportName = "MMA_VMs.csv"
 $VMs = Get-AzVM 
 # $WindowsServers = $VMs | Where-Object { $PSItem.StorageProfile.ImageReference.Offer -eq "WindowsServer" }
 $WindowsVMs = $VMs | Where-Object  {$_.StorageProfile.OsDisk.OsType -eq "Windows" }
-
 foreach ($VM in $WindowsVMs) {
 
     $ReportDetails = "" | Select VmName, ResourceGroupName
