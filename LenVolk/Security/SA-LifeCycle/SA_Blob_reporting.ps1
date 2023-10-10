@@ -1,6 +1,7 @@
 # Ref
 # https://learn.microsoft.com/en-us/azure/storage/scripts/storage-blobs-container-calculate-size-powershell
 #
+# Inventory https://learn.microsoft.com/en-us/azure/storage/blobs/blob-inventory
 
 # $sub = Get-AzSubscription | select Name  
 $sub = "DemoSub"
