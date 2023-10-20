@@ -1,6 +1,6 @@
 # REF https://github.com/jtracey93/PublicScripts/tree/master/Azure/PowerShell/Enterprise-scale#without-spn-removal--resetting-mdfc-tiers-set-to-free
 # Install-Module -Name Az.ResourceGraph
-# .\Wipe-ESLZAzTenant.ps1 -tenantRootGroupID "96181627-8d91-447b-8be0-7ebaa0d10d2f" -intermediateRootGroupID "thevolk" -resetMdfcTierOnSubs:$true
+# .\Wipe-ESLZAzTenant.ps1 -tenantRootGroupID "eb4c059a-65c3-4849-8733-95f27bb9a2b9" -intermediateRootGroupID "ALZ" -resetMdfcTierOnSubs:$true
 ######################
 # Wipe-ESLZAzTenant #
 ######################
