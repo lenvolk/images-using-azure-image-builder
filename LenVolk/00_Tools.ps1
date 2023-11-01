@@ -1,8 +1,17 @@
+# Install on your workstation 
+# ################################
 # winget install -e --id Microsoft.VisualStudioCode --no-upgrade
 # winget install -e --id Microsoft.DotNet.SDK.7 --no-upgrade
 # code --install-extension ms-dotnettools.dotnet-interactive-vscode
 # code --install-extension ms-vscode.powershell
-
+# install Git
+# https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/Git-2.39.0.2-64-bit.exe
+# PowerShell Versions
+# https://github.com/PowerShell/PowerShell/releases/tag/v7.2.9
+# Bicept
+# https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install
+#
+# Connect to portal
 # PS 
 # $subscription = "DemoSub"
 # Connect-AzAccount -Subscription $subscription 
