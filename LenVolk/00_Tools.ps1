@@ -1,3 +1,8 @@
+# winget install -e --id Microsoft.VisualStudioCode --no-upgrade
+# winget install -e --id Microsoft.DotNet.SDK.7 --no-upgrade
+# code --install-extension ms-dotnettools.dotnet-interactive-vscode
+# code --install-extension ms-vscode.powershell
+
 # PS 
 # $subscription = "DemoSub"
 # Connect-AzAccount -Subscription $subscription 
