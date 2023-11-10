@@ -1,0 +1,17 @@
+{
+    "extend_es_root": {
+        "policy_assignments": ["Org-Baseline"],
+        "policy_definitions": ["Deny-NIC-NSG"],
+        "policy_set_definitions": ["Org-Baseline"],
+        "role_definitions": ["Network-Management"],
+        "archetype_config": {
+            "parameters": {},
+            "access_control": {
+                "[CONTOSO] Network-Management":[
+                "db5b8de4-80d5-4618-b1b6-854948785609"
+                ]
+            }
+        }
+    }
+}
+  

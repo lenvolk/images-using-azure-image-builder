@@ -23,7 +23,7 @@
 ## az cloud set --name AzureCloud
 # az login --only-show-errors -o table --query Dummy
 # $subscription = "DemoSub"
-# az account set -s $Subscription
+# az account set -s Connectivity
 # az logout
 
 # Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network | Where-Object RegistrationState -ne Registered | Register-AzResourceProvider

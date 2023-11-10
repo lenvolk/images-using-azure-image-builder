@@ -1,0 +1,29 @@
+{
+    "eu_customer": {
+      "policy_assignments": ["Deny-Resource-Locations", "Deny-RSG-Locations"],
+      "policy_definitions": [],
+      "policy_set_definitions": [],
+      "role_definitions": [],
+      "archetype_config": {
+        "parameters": { 
+          "Deny-Resource-Locations": {
+            "listOfAllowedLocations": [
+              "West Europe",
+              "North Europe"
+            ]
+          },
+          "Deny-RSG-Locations": {
+            "listOfAllowedLocations": [
+              "West Europe",
+              "North Europe"
+            ]
+          }     
+        },
+        "access_control": {
+          "Owner":[
+                   "650d561a-4783-4af3-aef7-ac5be12786f3"
+                  ]
+        }
+      }
+    }
+  }
