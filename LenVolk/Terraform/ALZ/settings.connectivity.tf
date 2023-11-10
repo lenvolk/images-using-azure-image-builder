@@ -40,7 +40,7 @@ locals {
           enabled = true
           config = {
             address_space                = ["10.200.0.0/16", ]
-            location                     = "northeurope"
+            location                     = "westus"
             link_to_ddos_protection_plan = false
             dns_servers                  = []
             bgp_community                = ""
@@ -124,7 +124,7 @@ locals {
             azure_data_factory_portal            = true
             azure_cache_for_redis                = true
           }
-          private_link_locations                                 = ["northeurope","eastus"]
+          private_link_locations                                 = ["westus","eastus"]
           public_dns_zones                                       = []
           private_dns_zones                                      = ["contoso.private"]
           enable_private_dns_zone_virtual_network_link_on_hubs   = true

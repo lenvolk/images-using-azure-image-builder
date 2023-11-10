@@ -5,8 +5,8 @@
 # az cloud set --name AzureUSGovernment
 # az cloud set --name AzureCloud
 az login --only-show-errors -o table --query Dummy
-# $subscription = "DemoSub"
-# az account set -s Connectivity
+# $subscription = "On-Prem"
+# az account set -s $subscription
 
 
 

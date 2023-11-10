@@ -2,16 +2,16 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "= 2.96.0"
+      version = ">= 3.74.0"
     }
   }
 
   backend "azurerm" {
       resource_group_name  = "tfstate"
-      storage_account_name = "tfstatelenvolk23"
+      storage_account_name = "tfstatelenvolk24"
       container_name       = "tfstate"
       key                  = "terraform.tfstate"
-      subscription_id      = "7201ec24-998b-4283-bb78-6bbabc7f3d2d"
+      subscription_id      = "6afc5ee8-735d-463a-b70a-7e652cf2302c"
   }
 }
 

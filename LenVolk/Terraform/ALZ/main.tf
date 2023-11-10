@@ -10,7 +10,7 @@ data "azurerm_client_config" "core" {}
 
 module "enterprise_scale" {
   source  = "Azure/caf-enterprise-scale/azurerm"
-  version = "1.1.3"
+  version = "5.0.0"
 
   providers = {
     azurerm              = azurerm
@@ -42,23 +42,24 @@ module "enterprise_scale" {
   deploy_corp_landing_zones = true
   deploy_online_landing_zones = true
 
-  subscription_id_overrides = {
-    sandboxes = ["7201ec24-998b-4283-bb78-6bbabc7f3d2d"]
-    #management = []
-    #root = []
-  }
+# to explicitly move subs into a specific management group
+  # subscription_id_overrides = {
+  #   sandboxes = ["7201ec24-998b-4283-bb78-6bbabc7f3d2d"]
+  #   #management = []
+  #   #root = []
+  # }
 
 
-  custom_landing_zones = {
-    "${var.root_id}-eucustomers" = {
-      display_name               = "${upper(var.root_id)} EUCustomers"
-      parent_management_group_id = "${var.root_id}-landing-zones"
-      subscription_ids           = [ ] #["6afc5ee8-735d-463a-b70a-7e652cf2302c"]
-      archetype_config = {
-        archetype_id   = "eu_customer"
-        parameters     = {}
-        access_control = {}
-      }
-    }
-  }
+  # custom_landing_zones = {
+  #   "${var.root_id}-eucustomers" = {
+  #     display_name               = "${upper(var.root_id)} EUCustomers"
+  #     parent_management_group_id = "${var.root_id}-landing-zones"
+  #     subscription_ids           = ["6afc5ee8-735d-463a-b70a-7e652cf2302c"]
+  #     archetype_config = {
+  #       archetype_id   = "eu_customer"
+  #       parameters     = {}
+  #       access_control = {}
+  #     }
+  #   }
+  # }
 }
