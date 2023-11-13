@@ -32,6 +32,10 @@ Import-Module -Name AzFilesHybrid
 else {
   Write-Error "Script needs to be run with higher privileges"
 }
+
+#Install AZ ps module
+Install-Module -Name Az -Repository PSGallery -Force
+
 #Login with an Azure AD credential that has either storage account owner or contributor Azure role assignment
 Get-AzContext #to validate if logged in
 
