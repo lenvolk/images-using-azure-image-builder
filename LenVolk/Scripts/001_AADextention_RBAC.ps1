@@ -1,9 +1,23 @@
 # Azure AD Join domain extension
-$vmName = "ChocoWin11m365"
-$ResourceGroup = "imageBuilderRG"
+$vmName = "AADNative-0"
+$ResourceGroup = "AVD_AADNative"
 $location = "eastus2"
+$hostpoolname = "AADNativeHP"
 
+###################################
+# Access Microsoft Entra joined VMs https://learn.microsoft.com/en-us/azure/virtual-desktop/azure-ad-joined-session-hosts
+###################################
+Install-Module -Name Az.DesktopVirtualization
+Import-Module -Name Az.DesktopVirtualization
+Get-AzWvdHostPool -ResourceGroupName $ResourceGroup -Name $hostpoolname
 
+$myArmDAG = Get-AzWvdHostPool -ResourceGroupName $ResourceGroup -Name $hostpoolname
+
+$properties = "targetisaadjoined:i:1"
+
+$myArmDAG.CustomRdpProperty += $properties
+
+Update-AzWvdHostPool -ResourceGroupName $ResourceGroup  -Name $hostpoolname -CustomRdpProperty $myArmDAG.CustomRdpProperty
 
 ###################################
 # System-assigned managed identity
