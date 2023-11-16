@@ -1,20 +1,12 @@
 # Connect to portal
 # PS 
 # $subscription = "DemoSub"
-# Connect-AzAccount -Subscription $subscription 
+# Connect-AzAccount -Environment AzureCloud -Subscription $subscription 
 # Set-AzContext -Subscription $subscription
 # Disconnect-AzAccount
 
 
-#Soup to nuts VM build. Will join the VM to a domain and add disk + disk pool + drive
 
-$VMcsv = Import-Csv "C:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVolk\Scripts\DomainJoinedVMs\azurevms.csv"
-
-##############################################################################################################
-##############################################################################################################
-
-foreach ($VM in $VMcsv)
-{
 
 $location = "eastus2"
 $VMRGname = "000tst"
@@ -135,4 +127,10 @@ if ($dataDiskSize3 -gt 0) {
 $vm = New-AzVM -ResourceGroupName $VMRGname -Location $location -VM $vm -LicenseType "Windows_Server"
 
 
+# Validate AV Set with VMs
+$VMlist = Get-AzAvailabilitySet -ResourceGroupName "000tst" -Name "VolkBikeAS01"
+$i=0
+foreach($vm in $VMlist.VirtualMachinesReferences){
+   "VM{0}: {1}" -f $i,($vm.Id.Split('/'))[-1]
+   $i++
 }
