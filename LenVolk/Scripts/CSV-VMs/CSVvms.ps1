@@ -65,19 +65,29 @@ $cred = New-Object System.Management.Automation.PSCredential ($VM_User, $secureP
 ##############################################################################################################
 
 # Get existing AvailabilitySet
+If ($AvailabilitySet -gt 0){
 $AVSetID = (Get-AzAvailabilitySet -ResourceGroupName $AvailabilitySetRG -Name $AvailabilitySet).id
-
+}
+else {
+$AVSetID = 0
+}
 
 # Existing Subnet within the VNET for the this virtual machine
 $vnet = Get-AzVirtualNetwork -Name $ExistingVNET 
 $subnet = ($vnet.Subnets | Where-Object { $_.Name -eq $Existsubnetname }).id
 
-# Creation of the new virtual machine with delete option for Disk/NIC together
+# Creation of the new virtual machine in AV Set if specified
+If ($AVSetID -gt 0){
 $vm = New-AzVMConfig `
     -VMName $vmName `
     -VMSize $vmSize `
     -AvailabilitySetId $AVSetID
-
+}
+else {
+$vm = New-AzVMConfig `
+    -VMName $vmName `
+    -VMSize $vmSize
+}
 # Set Bood Diagnostic
 $vm = Set-AzVMBootDiagnostic -VM $VM -Enable -ResourceGroupName $SARGname -StorageAccountName $SAname
 
@@ -144,27 +154,42 @@ foreach ($VM in $VMcsv)
 $displayStatus = ""
 $count = 0
 while ($displayStatus -notlike "VM running") { 
-    Write-Host "Waiting for the VM display status to change to VM running"
+    Write-Host "Waiting for the VM display status to change to VM is running"
     $displayStatus = (get-azvm -Name $VM.vmName -ResourceGroupName $VM.VMRGname -Status).Statuses[1].DisplayStatus
-    write-output "starting 30 second sleep"
-    start-sleep -Seconds 30
-    $count += 1
-    if ($count -gt 7) { 
-        Write-Error "five minute wait for VM to start ended, canceling script"
-        Exit
-    }
+    # write-output "starting 30 second sleep"
+    # start-sleep -Seconds 30
+    # $count += 1
+    # if ($count -gt 7) { 
+    #     Write-Error "five minute wait for VM to start ended, canceling script"
+    #     Exit
+    # }
 }
 }
-######################
-# Domain Join
-######################
+################################################################################################
+# Domain Join (Please provide the "DomainName" parameter if you want to join the VM to Azure AD)
+################################################################################################
 
 $VMcsv | ForEach-Object -Parallel {
 
+    If ($_.DomainName -gt 0){
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.VMRGname `
         -VMName $_.vmName `
         -CommandId 'RunPowerShellScript' `
         -Parameter @{DomainName = $_.DomainName;OUPath = $_.OUPath;user = $_.AdminUser;pass = $_.AdminPass} `
         -ScriptPath '.\AD_Add_PSscript.ps1'
+    }
+
 }
+
+
+######################
+# End of Script
+
+# Validate AV Set with VMs
+# $VMlist = Get-AzAvailabilitySet -ResourceGroupName 000tst -Name GovAS01
+# $i=0
+# foreach($vm in $VMlist.VirtualMachinesReferences){
+#    "VM{0}: {1}" -f $i,($vm.Id.Split('/'))[-1]
+#    $i++
+# }
