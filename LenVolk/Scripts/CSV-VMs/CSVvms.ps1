@@ -135,3 +135,36 @@ if ($dataDiskSize3 -gt 0) {
 $vm = New-AzVM -ResourceGroupName $VMRGname -Location $location -VM $vm -LicenseType "Windows_Server"
 
 }
+
+########################################################
+# Wait for VMs to be ready, display status "VM running"
+########################################################
+foreach ($VM in $VMcsv)
+{
+$displayStatus = ""
+$count = 0
+while ($displayStatus -notlike "VM running") { 
+    Write-Host "Waiting for the VM display status to change to VM running"
+    $displayStatus = (get-azvm -Name $VM.vmName -ResourceGroupName $VM.VMRGname -Status).Statuses[1].DisplayStatus
+    write-output "starting 30 second sleep"
+    start-sleep -Seconds 30
+    $count += 1
+    if ($count -gt 7) { 
+        Write-Error "five minute wait for VM to start ended, canceling script"
+        Exit
+    }
+}
+}
+######################
+# Domain Join
+######################
+
+$VMcsv | ForEach-Object -Parallel {
+
+    Invoke-AzVMRunCommand `
+        -ResourceGroupName $_.VMRGname `
+        -VMName $_.vmName `
+        -CommandId 'RunPowerShellScript' `
+        -Parameter @{DomainName = $_.DomainName;OUPath = $_.OUPath;user = $_.AdminUser;pass = $_.AdminPass} `
+        -ScriptPath '.\AD_Add_PSscript.ps1'
+}
