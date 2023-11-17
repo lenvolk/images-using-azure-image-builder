@@ -1,28 +1,32 @@
 # Connect to portal
 # PS 
+# MAC
 # $subscription = "DemoSub"
 # Connect-AzAccount -Environment AzureCloud -Subscription $subscription 
 # Set-AzContext -Subscription $subscription
 # Disconnect-AzAccount
+# MAG
+# $subscription = "AzGovInt"
+# Connect-AzAccount -Environment AzureUSGovernment -Subscription $subscription 
+# Set-AzContext -Subscription $subscription
 
 
 
-
-$location = "eastus2"
+$location = "usdodeast"
 $VMRGname = "000tst"
 
-$ExistingVNET = "maintenanceVNET"
+$ExistingVNET = "MainVNET"
 $Existsubnetname = "srv_subnet"
 
-$SAname = "volksa"
-$SARGname = "MainSA"
+$SAname = "azuredevguestdiag"
+$SARGname = "LAWs"
 
 $vmName = "001vm"
 
-$PrivateIpAddress = "10.150.0.198"
+$PrivateIpAddress = "10.10.10.20"
 
 
-$AvailabilitySet = "VolkBikeAS01"
+$AvailabilitySet = "GovAS01"
 $AvailabilitySetRG = "000tst"
 
 $OSFamily = "Windows Server 2019 Datacenter"
@@ -31,7 +35,7 @@ $offer = ($OSFamily -split " " | select -First 2) -join ""
 $Sku = ($OSFamily -split " " | select -Last 2) -join "-" 
 
 # Size of the VM
-$vmSize = "Standard_D2as_v4"
+$vmSize = "Standard_B2s"
 
 # Choosing the latest version
 $version = "latest"
@@ -40,10 +44,10 @@ $version = "latest"
 $OSstorageType = 'StandardSSD_LRS' 
 # Storage type for the Data Disk
 $DataStorageType1 = 'Standard_LRS'  # Choose between Standard_LRS, StandardSSD_LRS, StandardSSD_ZRS, Premium_ZRS, and Premium_LRS based on your scenario
-$dataDiskSize1 = 20
+$dataDiskSize1 = 10
 
 $DataStorageType2 = 'StandardSSD_LRS'  # Choose between Standard_LRS, StandardSSD_LRS, StandardSSD_ZRS, Premium_ZRS, and Premium_LRS based on your scenario
-$dataDiskSize2 = 30
+$dataDiskSize2 = 0
 
 $DataStorageType3 = 'StandardSSD_LRS'  # Choose between Standard_LRS, StandardSSD_LRS, StandardSSD_ZRS, Premium_ZRS, and Premium_LRS based on your scenario
 $dataDiskSize3 = 0
