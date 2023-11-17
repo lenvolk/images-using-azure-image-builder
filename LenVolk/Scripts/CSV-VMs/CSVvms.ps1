@@ -2,10 +2,16 @@
 # !!! Make sure PS 7 is installed https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.3#installing-the-msi-package
 ###################################################################################################################################################################################################################################################
 
-# Connect to portal
+# Connect to MAG portal
 $subscription = "AzGovInt"
 Connect-AzAccount -Environment AzureUSGovernment -Subscription $subscription | Out-Null
 Set-AzContext -Subscription $subscription | Out-Null
+# Disconnect-AzAccount
+
+# Connect to MAC portal
+# $subscription = "DemoSub"
+# Connect-AzAccount -Environment AzureCloud -Subscription $subscription | Out-Null
+# Set-AzContext -Subscription $subscription | Out-Null
 # Disconnect-AzAccount
 
 ########## To check the VM's SKU by location and AV Zones ####################################################
