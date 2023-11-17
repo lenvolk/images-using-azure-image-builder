@@ -4,8 +4,8 @@
 
 # Connect to portal
 $subscription = "AzGovInt"
-Connect-AzAccount -Environment AzureUSGovernment -Subscription $subscription 
-Set-AzContext -Subscription $subscription
+Connect-AzAccount -Environment AzureUSGovernment -Subscription $subscription | Out-Null
+Set-AzContext -Subscription $subscription | Out-Null
 # Disconnect-AzAccount
 
 
@@ -77,11 +77,9 @@ $vm = New-AzVMConfig `
 # Write-Host "###################################"
 }
 else {
-
     $vm = New-AzVMConfig `
     -VMName $vmName `
     -VMSize $vmSize
-
 }
 
 # Existing Subnet within the VNET for the this virtual machine
@@ -124,26 +122,26 @@ If ($dataDiskSize1 -gt 0){
     $dataDiskName = "$vmName-DataDisk1"
     $dataDiskSize = $dataDiskSize1
     $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType1 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize
-    $dataDisk01 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname
+    $dataDisk01 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname -WarningAction:SilentlyContinue
     $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk01.Id -Lun 0 -DiskSizeInGB $dataDiskSize -Caching ReadWrite
 }
 if ($dataDiskSize2 -gt 0) {
     $dataDiskName = "$vmName-DataDisk2"
     $dataDiskSize = $dataDiskSize2
     $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType2 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize
-    $dataDisk02 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname
+    $dataDisk02 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname -WarningAction:SilentlyContinue
     $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk02.Id -Lun 1 -DiskSizeInGB $dataDiskSize -Caching ReadWrite  
 }
 if ($dataDiskSize3 -gt 0) {
     $dataDiskName = "$vmName-DataDisk3"
     $dataDiskSize = $dataDiskSize3
     $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType3 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize
-    $dataDisk03 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname
+    $dataDisk03 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname -WarningAction:SilentlyContinue
     $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk03.Id -Lun 2 -DiskSizeInGB $dataDiskSize -Caching ReadWrite  
 }
 
 # Create the VM
-$vm = New-AzVM -ResourceGroupName $VMRGname -Location $location -VM $vm -LicenseType "Windows_Server"
+$vm = New-AzVM -ResourceGroupName $VMRGname -Location $location -VM $vm -LicenseType "Windows_Server" -WarningAction:SilentlyContinue
 
 }
 
