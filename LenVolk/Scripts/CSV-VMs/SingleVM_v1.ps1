@@ -21,7 +21,7 @@ $Existsubnetname = "srv_subnet"
 $SAname = "azuredevguestdiag"
 $SARGname = "LAWs"
 
-$vmName = "001vm"
+$vmName = "01vm"
 
 $PrivateIpAddress = "10.10.10.20"
 
@@ -74,6 +74,10 @@ $vm = New-AzVMConfig `
     -VMSize $vmSize `
     -AvailabilitySetId $AVSetID
 
+Write-Host "###################################"
+Write-Host "VM's config with AVSet is $($vm.AvailabilitySetReference.Id)"
+Write-Host "###################################"
+
 # Set Bood Diagnostic
 $vm = Set-AzVMBootDiagnostic -VM $VM -Enable -ResourceGroupName $SARGname -StorageAccountName $SAname
 
@@ -85,6 +89,9 @@ $vm = Set-AzVMOperatingSystem `
    -EnableAutoUpdate  `
    -TimeZone 'Eastern Standard Time'
  
+Write-Host "###################################"
+Write-Host "VM's config with TimeZone - AVSet is $($vm.AvailabilitySetReference.Id)"
+Write-Host "###################################"
 
 # Create New network interface for the virtual machine
 $NIC = New-AzNetworkInterface -Name "$vmName-nic1" -ResourceGroupName $VMRGname -Location $location -SubnetID $subnet -PrivateIpAddress $PrivateIpAddress -Force
@@ -103,6 +110,10 @@ $vm = Set-AzVMOSDisk -VM $vm `
    -StorageAccountType $OSstorageType `
    -CreateOption "FromImage" `
    -DeleteOption "Delete"
+
+Write-Host "###################################"
+Write-Host "VM's config with OS Disk - AVSet is $($vm.AvailabilitySetReference.Id)"
+Write-Host "###################################"
 
 # Data Disk
 If ($dataDiskSize1 -gt 0){
@@ -130,6 +141,9 @@ if ($dataDiskSize3 -gt 0) {
 # Create the VM
 $vm = New-AzVM -ResourceGroupName $VMRGname -Location $location -VM $vm -LicenseType "Windows_Server"
 
+Write-Host "###################################"
+Write-Host "VM has been provisioned - AVSet is $($vm.AvailabilitySetReference.Id)"
+Write-Host "###################################"
 
 # Validate AV Set with VMs
 $VMlist = Get-AzAvailabilitySet -ResourceGroupName $AvailabilitySetRG -Name $AvailabilitySet
