@@ -65,32 +65,30 @@ $cred = New-Object System.Management.Automation.PSCredential ($VM_User, $secureP
 ##############################################################################################################
 
 # Get existing AvailabilitySet
+
 If ($AvailabilitySet -gt 0){
 $AVSetID = (Get-AzAvailabilitySet -ResourceGroupName $AvailabilitySetRG -Name $AvailabilitySet).id
-Write-Host "###################################"
-"AvailabilitySetID is {0}" -f $AVSetID
-Write-Host "###################################"
+$vm = New-AzVMConfig `
+    -VMName $vmName `
+    -VMSize $vmSize `
+    -AvailabilitySetId $AVSetID
+# Write-Host "###################################"
+# Write-Host "VM's config with AVSet is $($vm.AvailabilitySetReference.Id)"
+# Write-Host "###################################"
 }
 else {
-$AVSetID = 0
+
+    $vm = New-AzVMConfig `
+    -VMName $vmName `
+    -VMSize $vmSize
+
 }
 
 # Existing Subnet within the VNET for the this virtual machine
 $vnet = Get-AzVirtualNetwork -Name $ExistingVNET 
 $subnet = ($vnet.Subnets | Where-Object { $_.Name -eq $Existsubnetname }).id
 
-# Creation of the new virtual machine in AV Set if specified
-If ($AVSetID -gt 0){
-$vm = New-AzVMConfig `
-    -VMName $vmName `
-    -VMSize $vmSize `
-    -AvailabilitySetId $AVSetID
-}
-else {
-$vm = New-AzVMConfig `
-    -VMName $vmName `
-    -VMSize $vmSize
-}
+
 # Set Bood Diagnostic
 $vm = Set-AzVMBootDiagnostic -VM $VM -Enable -ResourceGroupName $SARGname -StorageAccountName $SAname
 
