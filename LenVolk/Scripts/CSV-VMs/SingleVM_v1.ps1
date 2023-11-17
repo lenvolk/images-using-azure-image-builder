@@ -132,7 +132,7 @@ $vm = New-AzVM -ResourceGroupName $VMRGname -Location $location -VM $vm -License
 
 
 # Validate AV Set with VMs
-$VMlist = Get-AzAvailabilitySet -ResourceGroupName "000tst" -Name "VolkBikeAS01"
+$VMlist = Get-AzAvailabilitySet -ResourceGroupName $AvailabilitySetRG -Name $AvailabilitySet
 $i=0
 foreach($vm in $VMlist.VirtualMachinesReferences){
    "VM{0}: {1}" -f $i,($vm.Id.Split('/'))[-1]
