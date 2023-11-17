@@ -67,6 +67,9 @@ $cred = New-Object System.Management.Automation.PSCredential ($VM_User, $secureP
 # Get existing AvailabilitySet
 If ($AvailabilitySet -gt 0){
 $AVSetID = (Get-AzAvailabilitySet -ResourceGroupName $AvailabilitySetRG -Name $AvailabilitySet).id
+Write-Host "###################################"
+"AvailabilitySetID is {0}" -f $AVSetID
+Write-Host "###################################"
 }
 else {
 $AVSetID = 0
@@ -156,14 +159,17 @@ $count = 0
 while ($displayStatus -notlike "VM running") { 
     Write-Host "Waiting for the VM display status to change to VM is running"
     $displayStatus = (get-azvm -Name $VM.vmName -ResourceGroupName $VM.VMRGname -Status).Statuses[1].DisplayStatus
-    # write-output "starting 30 second sleep"
-    # start-sleep -Seconds 30
-    # $count += 1
-    # if ($count -gt 7) { 
-    #     Write-Error "five minute wait for VM to start ended, canceling script"
-    #     Exit
-    # }
+    write-output "starting 30 second sleep"
+    start-sleep -Seconds 30
+    $count += 1
+    if ($count -gt 7) { 
+        Write-Error "five minute wait for VM to start ended, canceling script"
+        Exit
+    }
 }
+Write-Host "###################################"
+"Running VM {0}" -f $VM.vmName 
+Write-Host "###################################"
 }
 ################################################################################################
 # Domain Join (Please provide the "DomainName" parameter if you want to join the VM to Azure AD)
@@ -171,7 +177,7 @@ while ($displayStatus -notlike "VM running") {
 
 $VMcsv | ForEach-Object -Parallel {
 
-    If ($_.DomainName -gt 0){
+    If (($_.DomainName -gt 0) -and ($_.DomainName -ne "FALSE")) {
     Invoke-AzVMRunCommand `
         -ResourceGroupName $_.VMRGname `
         -VMName $_.vmName `

@@ -62,7 +62,7 @@ $cred = New-Object System.Management.Automation.PSCredential ($VM_User, $secureP
 
 # Get existing AvailabilitySet
 $AVSetID = (Get-AzAvailabilitySet -ResourceGroupName $AvailabilitySetRG -Name $AvailabilitySet).id
-
+"AvailabilitySetID is {0}" -f $AVSetID
 
 # Existing Subnet within the VNET for the this virtual machine
 $vnet = Get-AzVirtualNetwork -Name $ExistingVNET 
