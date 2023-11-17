@@ -8,6 +8,9 @@ Connect-AzAccount -Environment AzureUSGovernment -Subscription $subscription | O
 Set-AzContext -Subscription $subscription | Out-Null
 # Disconnect-AzAccount
 
+########## To check the VM's SKU by location and AV Zones ####################################################
+# Get-AzComputeResourceSku | Where-Object { $_.Locations -contains "USGovVirginia" } | Where-Object { $_.Name -like 'Standard_D*' }
+##############################################################################################################
 
 $VMcsv = Import-Csv "C:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVolk\Scripts\CSV-VMs\azurevms.csv"
 
