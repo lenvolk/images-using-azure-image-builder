@@ -4,6 +4,7 @@
 
 ########## To check the VM's SKU by location and AV Zones ####################################################
 # Get-AzComputeResourceSku | Where-Object { $_.Locations -contains "USGovVirginia" } | Where-Object { $_.Name -like 'Standard_D*' }
+# Get-AzVMImageSku -Location USGovVirginia -PublisherName MicrosoftWindowsServer -Offer WindowsServer | Where-Object {$_.Skus -like '2019-datacenter-gensecond'} | Select-Object Skus, Offer, PublisherName, Location, Version
 ##############################################################################################################
 
 # Authenticate to Azure and select the subscription
@@ -33,10 +34,10 @@ $PrivateIpAddress = $_.PrivateIpAddress
 $AvailabilitySet = $_.AvailabilitySet
 $AvailabilitySetRG = $_.AvailabilitySetRG
 
-$OSFamily = $_.OSFamily
+$OSFamily = "Windows Server 2019 Datacenter" #$_.OSFamily
 $Publisher = ("Microsoft" + (($OSFamily -split " " | select -First 2) -join ""))
 $offer = ($OSFamily -split " " | select -First 2) -join ""
-$Sku = ($OSFamily -split " " | select -Last 2) -join "-" 
+$Sku = (($OSFamily -split " " | select -Last 2) -join "-") + "-gensecond"
 
 # Size of the VM
 $vmSize = $_.vmSize
@@ -141,8 +142,8 @@ if ($dataDiskSize3 -gt 0) {
 }
 
 # Please select Trusted Launch Supported Gen2 OS Image
-# $vm = Set-AzVmSecurityProfile -VM $vm `
-#    -SecurityType "TrustedLaunch" 
+$vm = Set-AzVmSecurityProfile -VM $vm `
+    -SecurityType "TrustedLaunch" 
 
 # $vm = Set-AzVmUefi -VM $vm `
 #    -EnableVtpm $true `
@@ -220,7 +221,6 @@ $ToDomainJoin = Read-Host "`nAdd VMs to the Domain? (Y or N)"
         Write-Host "###################################"
     }
 
-
 ########################################################################
 # Domain join via PS Script
 ########################################################################
@@ -266,3 +266,7 @@ $ToDomainJoin = Read-Host "`nAdd VMs to the Domain? (Y or N)"
 #    "VM{0}: {1}" -f $i,($vm.Id.Split('/'))[-1]
 #    $i++
 # }
+
+
+
+
