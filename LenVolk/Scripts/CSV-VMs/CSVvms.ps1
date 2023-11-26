@@ -2,19 +2,12 @@
 # !!! Make sure PS 7 is installed https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.3#installing-the-msi-package
 ###################################################################################################################################################################################################################################################
 
-# Authenticate to Azure and select the subscription
-.\Authenticate2Azure.ps1
-
-# Please Provide VMs local admin credentials
-Write-Host "Please Provide VMs local admin credentials: " -ForegroundColor Yellow
-$LocalAdmin = Get-Credential
-If ($null -eq $LocalAdmin) {
-    Write-Host "Local Admin credentials are not provided, will be used from CSV file..." -ForegroundColor Yellow 
-}
-
 ########## To check the VM's SKU by location and AV Zones ####################################################
 # Get-AzComputeResourceSku | Where-Object { $_.Locations -contains "USGovVirginia" } | Where-Object { $_.Name -like 'Standard_D*' }
 ##############################################################################################################
+
+# Authenticate to Azure and select the subscription
+.\Authenticate2Azure.ps1
 
 $VMcsv = Import-Csv "C:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVolk\Scripts\CSV-VMs\azurevms.csv"
 
@@ -65,18 +58,8 @@ $dataDiskSize3 = $_.dataDiskSize3
 # Setting up the Local Admin on the VM
 $VM_User = $_.VM_User
 $WinVM_Password = $_.WinVM_Password
-if ($null -eq $VM_User -or $null -eq $WinVM_Password) {
-    Write-Host "Local Admin credentials are not provided in the CSV file, will be used from prompt..." -ForegroundColor Yellow
-    $cred = $LocalAdmin
-}
-else {
-    Write-host "Local Admin credentials are provided, will be used from CSV file..."
-    $VM_User = $LocalAdmin.UserName
-    $WinVM_Password = $LocalAdmin.GetNetworkCredential().Password
-    $securePassword = ConvertTo-SecureString $WinVM_Password -AsPlainText -Force
-    $cred = New-Object System.Management.Automation.PSCredential ($VM_User, $securePassword)
-}
-
+$securePassword = ConvertTo-SecureString $WinVM_Password -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential ($VM_User, $securePassword)
 
 ##############################################################################################################
 ##############################################################################################################
@@ -157,6 +140,15 @@ if ($dataDiskSize3 -gt 0) {
     $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk03.Id -Lun 2 -DiskSizeInGB $dataDiskSize -Caching ReadWrite  
 }
 
+# Please select Trusted Launch Supported Gen2 OS Image
+# $vm = Set-AzVmSecurityProfile -VM $vm `
+#    -SecurityType "TrustedLaunch" 
+
+# $vm = Set-AzVmUefi -VM $vm `
+#    -EnableVtpm $true `
+#    -EnableSecureBoot $true 
+
+
 # Create the VM
 $vm = New-AzVM -ResourceGroupName $VMRGname -Location $location -VM $vm -LicenseType "Windows_Server" -WarningAction:SilentlyContinue
 
@@ -188,36 +180,81 @@ Write-Host "###################################"
 # Domain Join (Please provide the "DomainName" parameter if you want to join the VM to Azure AD)
 ################################################################################################
 
+
+########################################################################
+# Domain join via extention
+########################################################################
+
+#Clear-Host
+Write-Host "###################################" -ForegroundColor Yellow
+
 $ToDomainJoin = Read-Host "`nAdd VMs to the Domain? (Y or N)"
-{
-
-    If($ToDomainJoin.ToUpper() -eq 'Y'){
 
 
+    If($ToDomainJoin.ToUpper() -eq 'Y') {
 
+        Write-Host "Please Provide Domain Admin credentials (example: lv@thevolk.xyz): " -ForegroundColor Yellow
 
-        Write-Host "Running Domain Join script..."
-
+        $credential = Get-Credential
+        $extensionName = 'customdomainjoin'
+             
         $VMcsv | ForEach-Object -Parallel {
 
             If (($_.DomainName -gt 0) -and ($_.DomainName -ne "FALSE")) {
-            Invoke-AzVMRunCommand `
+            Set-AzVMADDomainExtension `
+                -Name $using:extensionName `
+                -DomainName $_.DomainName `
+                -OUPath $_.OUPath `
                 -ResourceGroupName $_.VMRGname `
                 -VMName $_.vmName `
-                -CommandId 'RunPowerShellScript' `
-                -Parameter @{DomainName = $_.DomainName;OUPath = $_.OUPath;user = $_.AdminUser;pass = $_.AdminPass} `
-                -ScriptPath '.\AD_Add_PSscript.ps1'
+                -Credential $using:credential `
+                -JoinOption 0x00000003 -Restart -Verbose
             }
-
+        
         }
     }
     else {
         Write-Host "Exiting..." -ForegroundColor Yellow
         Write-Host "###################################"
-        Write-Host "Domain Join is not selected"
+        Write-Host "Domain Join was not selected"
         Write-Host "###################################"
     }
-}
+
+
+########################################################################
+# Domain join via PS Script
+########################################################################
+
+# $ToDomainJoin = Read-Host "`nAdd VMs to the Domain? (Y or N)"
+# {
+
+#     If($ToDomainJoin.ToUpper() -eq 'Y'){
+
+
+
+
+#         Write-Host "Running Domain Join script..."
+
+#         $VMcsv | ForEach-Object -Parallel {
+
+#             If (($_.DomainName -gt 0) -and ($_.DomainName -ne "FALSE")) {
+#             Invoke-AzVMRunCommand `
+#                 -ResourceGroupName $_.VMRGname `
+#                 -VMName $_.vmName `
+#                 -CommandId 'RunPowerShellScript' `
+#                 -Parameter @{DomainName = $_.DomainName;OUPath = $_.OUPath;user = $_.AdminUser;pass = $_.AdminPass} `
+#                 -ScriptPath '.\AD_Add_PSscript.ps1'
+#             }
+
+#         }
+#     }
+#     else {
+#         Write-Host "Exiting..." -ForegroundColor Yellow
+#         Write-Host "###################################"
+#         Write-Host "Domain Join is not selected"
+#         Write-Host "###################################"
+#     }
+# }
 
 ######################
 # End of Script
