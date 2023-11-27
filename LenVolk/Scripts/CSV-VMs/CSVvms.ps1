@@ -17,6 +17,8 @@ $VMcsv = Import-Csv "C:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVol
 
 $VMcsv | ForEach-Object -Parallel {
 
+Write-Host "Provisioning VM: $($_.vmName)`n"
+
 $location = $_.location
 $VMRGname = $_.VMRGname
 
@@ -163,7 +165,7 @@ foreach ($VM in $VMcsv)
 $displayStatus = ""
 $count = 0
 while ($displayStatus -notlike "VM running") { 
-    Write-Host "Waiting for the VM display status to change to VM is running"
+    Write-Host "Waiting for the VM display status to change to VM is running: $($VM.vmName)`n"
     $displayStatus = (get-azvm -Name $VM.vmName -ResourceGroupName $VM.VMRGname -Status).Statuses[1].DisplayStatus
     write-output "starting 30 second sleep"
     start-sleep -Seconds 30
@@ -202,6 +204,7 @@ $ToDomainJoin = Read-Host "`nAdd VMs to the Domain? (Y or N)"
         $VMcsv | ForEach-Object -Parallel {
 
             If (($_.DomainName -gt 0) -and ($_.DomainName -ne "FALSE")) {
+            Write-Host "Adding VM Name: $($_.vmName) To Domain Name: $($_.DomainName)`n"
             Set-AzVMADDomainExtension `
                 -Name $using:extensionName `
                 -DomainName $_.DomainName `
