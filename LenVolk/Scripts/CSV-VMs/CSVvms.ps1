@@ -19,6 +19,8 @@ $VMcsv | ForEach-Object -Parallel {
 
 Write-Host "Provisioning VM: $($_.vmName)`n"
 
+$tags = @{'Environment' = $_.Environment; 'Patching_Day' = $_.Patching_Day; 'App_Owner' = $_.App_Owner}
+
 $location = $_.location
 $VMRGname = $_.VMRGname
 
@@ -74,7 +76,8 @@ $AVSetID = (Get-AzAvailabilitySet -ResourceGroupName $AvailabilitySetRG -Name $A
 $vm = New-AzVMConfig `
     -VMName $vmName `
     -VMSize $vmSize `
-    -AvailabilitySetId $AVSetID
+    -AvailabilitySetId $AVSetID `
+    -Tags $tags
 # Write-Host "###################################"
 # Write-Host "VM's config with AVSet is $($vm.AvailabilitySetReference.Id)"
 # Write-Host "###################################"
@@ -82,7 +85,8 @@ $vm = New-AzVMConfig `
 else {
     $vm = New-AzVMConfig `
     -VMName $vmName `
-    -VMSize $vmSize
+    -VMSize $vmSize `
+    -Tags $tags
 }
 
 # Existing Subnet within the VNET for the this virtual machine
@@ -103,7 +107,7 @@ $vm = Set-AzVMOperatingSystem `
  
 
 # Create New network interface for the virtual machine
-$NIC = New-AzNetworkInterface -Name "$vmName-nic1" -ResourceGroupName $VMRGname -Location $location -SubnetID $subnet -PrivateIpAddress $PrivateIpAddress -Force
+$NIC = New-AzNetworkInterface -Name "$vmName-nic1" -ResourceGroupName $VMRGname -Location $location -SubnetID $subnet -PrivateIpAddress $PrivateIpAddress -Tag $tags -Force
 $vm = Add-AzVMNetworkInterface -VM $vm `
     -Id $NIC.Id `
     -DeleteOption "Delete"
@@ -124,21 +128,21 @@ $vm = Set-AzVMOSDisk -VM $vm `
 If ($dataDiskSize1 -gt 0){
     $dataDiskName = "$vmName-DataDisk1"
     $dataDiskSize = $dataDiskSize1
-    $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType1 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize
+    $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType1 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize -Tag $tags
     $dataDisk01 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname -WarningAction:SilentlyContinue
     $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk01.Id -Lun 0 -DiskSizeInGB $dataDiskSize -Caching ReadWrite
 }
 if ($dataDiskSize2 -gt 0) {
     $dataDiskName = "$vmName-DataDisk2"
     $dataDiskSize = $dataDiskSize2
-    $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType2 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize
+    $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType2 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize -Tag $tags
     $dataDisk02 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname -WarningAction:SilentlyContinue
     $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk02.Id -Lun 1 -DiskSizeInGB $dataDiskSize -Caching ReadWrite  
 }
 if ($dataDiskSize3 -gt 0) {
     $dataDiskName = "$vmName-DataDisk3"
     $dataDiskSize = $dataDiskSize3
-    $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType3 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize
+    $datadiskConfig = New-AzDiskConfig -SkuName $DataStorageType3 -Location $location -CreateOption Empty -DiskSizeGB $dataDiskSize -Tag $tags
     $dataDisk03 = New-AzDisk -DiskName $dataDiskName -Disk $datadiskConfig -ResourceGroupName $VMRGname -WarningAction:SilentlyContinue
     $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk03.Id -Lun 2 -DiskSizeInGB $dataDiskSize -Caching ReadWrite  
 }
