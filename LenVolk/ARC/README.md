@@ -31,7 +31,7 @@ It's designed to be as simple as possible, yet give you enough information to re
   The dashboard is in JSON format and can be downloaded as a file here -->
   [Azure Arc-Enabled Servers](files/AzureArc-EnabledServers.json)
 
-  ## How to use it?
+## How to use it?
 
 Importing this  dashboard to your Azure environment.
 
@@ -60,4 +60,7 @@ __The dashboard is ready for use!__
 
 &nbsp;
    ![Ready to use](images/dashbaordready5.jpg)
+  
     
+## Also workbook
+[Azure Arc for Servers.workbook](https://github.com/ElanShudnow/AzureCode/tree/main/Workbooks/Azure%20Arc%20for%20Servers)
