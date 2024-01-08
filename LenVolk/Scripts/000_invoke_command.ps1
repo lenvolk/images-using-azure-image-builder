@@ -1,6 +1,8 @@
 
 .\Authenticate2Azure.ps1
 
+# Update-Module Az -Force
+
 # on the remote VM check C:\Packages\Plugins\Microsoft.CPlat.Core.RunCommandWindows\1.1.15\Downloads
 
 $ResourceGroup = "imageBuilderRG"
