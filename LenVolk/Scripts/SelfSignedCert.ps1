@@ -1,10 +1,10 @@
 # Create the self signed cert
 # List of country codes can be found at:
 # https://www.digicert.com/kb/ssl-certificate-country-codes.htm
-$friendlyName = "<FriendlyName>"
-$commonName = "<CommonName>"
-$orgName = "<OrgName>"
-$countryCode = "<CountryCode>"
+$friendlyName = "VolkBikeMSIXCert"
+$commonName = "MSIXSvc"
+$orgName = "VolkBike"
+$countryCode = "US"
 New-SelfSignedCertificate -Type Custom -Subject "CN=$commonName, O=$orgName, C=$countryCode" -KeyUsage DigitalSignature -FriendlyName $friendlyName `
 -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
 
