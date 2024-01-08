@@ -1,3 +1,6 @@
+
+.\Authenticate2Azure.ps1
+
 # on the remote VM check C:\Packages\Plugins\Microsoft.CPlat.Core.RunCommandWindows\1.1.15\Downloads
 
 $ResourceGroup = "imageBuilderRG"
@@ -67,7 +70,7 @@ $RunningVMs | ForEach-Object -Parallel {
 ################################
 #     Installing Fslogix       #
 ################################
-$VMRG = "AVD-GEN-HP-RG"
+$VMRG = "AVD-MSIX"
 $ProfilePath = "\\adsavdprofile.file.core.windows.net\profiles"
 $RedirectXML = "\\adsavdprofile.file.core.windows.net\avdshares"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
@@ -83,7 +86,7 @@ $RunningVMs | ForEach-Object -Parallel {
 #######################################
 # Adjusting Fslogix RegKey for AAD SA #
 ######################################
-$VMRG = "AVD-GEN-HP-RG"
+$VMRG = "AVD-MSIX"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $ProfilePath = "\\adsavdprofile.file.core.windows.net\profiles"
 $RunningVMs | ForEach-Object -Parallel {
