@@ -40,7 +40,8 @@ $volumeGuid = "<Volume GUID>"
 
 # Path to the source MSIX package
 $msixSource = "<Path to MSIX Package>"
-msixmgr.exe -Unpack -packagePath $msixSource -destination $unpackDir -applyacls
+cd C:\Temp\msixmgr\x64
+.\msixmgr.exe -Unpack -packagePath $msixSource -destination $unpackDir -applyacls
 
 # Get the full package name from the unpacked files
 $packageName = "<Full Package Name>" 
