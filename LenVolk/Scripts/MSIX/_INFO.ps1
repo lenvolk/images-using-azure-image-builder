@@ -14,7 +14,7 @@ import-module evergreen
 get-command -module evergreen
 
 find-evergreenapp microsoftterminal
-find-evergreenapp vlc | Get-EvergreenApp 
+find-evergreenapp vlc | Get-EvergreenApp #download x64 exe and then convert to MSIX with 02_CreateMSIXPackage.ps1
 Find-EvergreenApp firefox | Get-EvergreenApp | Where-Object {$_.Type -eq 'MSIX' -and $_.Architecture -eq 'x64'}
 # Download the MSIX package https://download-installer.cdn.mozilla.net/pub/firefox/releases/115.6.0esr/win64/multi/Firefox%20Setup%20115.6.0esr.msix
 # Doanload MSIXMGR tool https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-create-msix-image?tabs=vhdx
