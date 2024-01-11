@@ -1,6 +1,7 @@
 #Ref 
 # https://www.youtube.com/watch?v=NtzRiZAJAHw&t=0s
 # https://www.youtube.com/watch?v=bqW0ZbcLOaQ&t=313s
+# https://github.com/DeanCefola/Azure-WVD/blob/master/PowerShell/0_AppAttach%20-%20Template.ps1
 
 winget find vlc #look for "VLC UWP 9NBLGGH4VVNH"
 
