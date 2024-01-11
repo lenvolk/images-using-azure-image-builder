@@ -25,5 +25,5 @@ Export-Certificate -Cert $cert -FilePath $env:USERPROFILE\Documents\MSIXCert.cer
 
 # Export the .cer file, import it into the computer trusted root store
 Import-Certificate -ErrorAction Stop -FilePath $env:USERPROFILE\Documents\MSIXCert.cer -CertStoreLocation Cert:\LocalMachine\Root
-
+# vailidate open "Manage computer Certificates" => Trusted root certification authorities / Certificates
 

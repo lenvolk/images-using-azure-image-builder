@@ -13,3 +13,6 @@ Get-AppxPackage | where-object { $_.name -like "*7ZIP*" }
 
 # Remove with the PackageFullName
 Remove-AppxPackage -Package 7ZipPackage_1.0.0.0_x64__vztngq9shf2p2 #<FullPackageName>
+
+
+# Convert MSIX to VHDX _INFO.ps1
