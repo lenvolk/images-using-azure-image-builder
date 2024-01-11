@@ -25,6 +25,56 @@ Find-EvergreenApp firefox | Get-EvergreenApp | Where-Object {$_.Type -eq 'MSIX' 
 # Download the MSIX package https://download-installer.cdn.mozilla.net/pub/firefox/releases/115.6.0esr/win64/multi/Firefox%20Setup%20115.6.0esr.msix
 # Doanload MSIXMGR tool https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-create-msix-image?tabs=vhdx
 
-cd C:\Temp\msixmgr\x64
-.\msixmgr.exe -Unpack -packagePath "C:\Temp\FireFox\Firefox Setup 115.6.0esr.msix" -destination "C:\Temp\FireFox\Firefox.vhdx" -applyACLs -create -fileType vhdx -rootDirectory apps
+# cd C:\Temp\msixmgr\x64
+# .\msixmgr.exe -Unpack -packagePath "C:\Temp\FireFox\Firefox Setup 115.6.0esr.msix" -destination "C:\Temp\FireFox\Firefox.vhdx" -applyACLs -create -fileType vhdx -rootDirectory apps
 
+#####################################
+#    MSIX App Attach - Variables    #
+#####################################
+$App = 'FireFox' #'<APP NAME>'
+$MSIXPackageName = 'Firefox Setup 115.6.0esr.msix' #'<APP PACKAGE NAME>'
+$MSIXPath = 'C:\Temp\FireFox\'
+$PackagePath = "$MSIXPath$MSIXPackageName"
+$CimDestinationPath = "C:\Temp\$App\$App.cim"
+$VhdxDestinationPath = "C:\Temp\$App\$App.vhdx"
+
+
+##############################
+#    Create Cim Directory    #
+##############################
+# $CimDirectory = "C:\Temp\$App"
+# if ((Test-Path -path $CimDirectory) -ne $True) {
+#     New-Item -ItemType Directory $CimDirectory
+# } 
+
+########################################
+#    MSIX App Attach - CIMfs Format    #
+########################################
+# & 'C:\Temp\msixmgr\x64\msixmgr.exe' `
+#     -Unpack `
+#     -packagePath $PackagePath `
+#     -destination $CimDestinationPath `
+#     -applyACLs `
+#     -create `
+#     -fileType cim `
+#     -rootDirectory apps
+
+##############################
+#    Create VHDX Directory    #
+##############################
+$VHDxDirectory = "C:\Temp\$App"
+if ((Test-Path -path $VHDxDirectory) -ne $True) {
+    New-Item -ItemType Directory $VHDxDirectory
+} 
+
+#######################################
+#    MSIX App Attach - VHDX Format    #
+#######################################
+& 'C:\Temp\msixmgr\x64\msixmgr.exe' `
+    -Unpack `
+    -packagePath $PackagePath `
+    -destination $VhdxDestinationPath `
+    -applyACLs `
+    -create `
+    -fileType vhdx `
+    -rootDirectory apps
