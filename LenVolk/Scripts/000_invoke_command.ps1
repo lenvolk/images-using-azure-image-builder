@@ -72,7 +72,7 @@ $RunningVMs | ForEach-Object -Parallel {
 ################################
 #     Installing Fslogix       #
 ################################
-$VMRG = "AVD-MSIX"
+$VMRG = "AVD-GEN-HP-RG"
 $ProfilePath = "\\adsavdprofile.file.core.windows.net\profiles"
 $RedirectXML = "\\adsavdprofile.file.core.windows.net\avdshares"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
@@ -118,9 +118,9 @@ $RunningVMs | ForEach-Object -Parallel {
 ################################
 #    Adding AVD agents to VMs  #
 ################################
-$VMRG = "imageBuilderRG"
-$HPRG = "AADJoinedAVD"
-$HPName = "AADJoined"
+$VMRG = "AVD-GEN-HP-RG"
+$HPRG = "AVD-GEN-HP-RG"
+$HPName = "GEN-PooledHP"
 $RunningVMs = (get-azvm -ResourceGroupName $VMRG -Status) | Where-Object { $_.PowerState -eq "VM running" -and $_.StorageProfile.OsDisk.OsType -eq "Windows" } 
 $RegistrationToken = (New-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName -ExpirationTime $((get-date).ToUniversalTime().AddHours(3).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))).Token
 # $RegistrationToken = Get-AzWvdRegistrationInfo -ResourceGroupName $HPRG -HostPoolName $HPName

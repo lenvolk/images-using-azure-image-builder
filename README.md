@@ -48,6 +48,8 @@
 (https://learn.microsoft.com/en-us/azure/architecture/example-scenario/wvd/azure-virtual-desktop-azure-active-directory-join)
 
 ## AD Hybrid VM SSO
+(https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-single-sign-on)
+
 (https://techcommunity.microsoft.com/t5/azure-architecture-blog/setup-hybrid-joined-avd-single-sign-on/ba-p/3643845)
 
 (https://rozemuller.com/how-to-join-azure-ad-automated/)
