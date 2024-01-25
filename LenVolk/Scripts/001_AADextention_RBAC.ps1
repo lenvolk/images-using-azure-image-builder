@@ -89,12 +89,14 @@ New-AzRoleAssignment -ObjectId $GroupId `
 -ResourceGroupName $ResourceGroup
 #
 
-$GroupId = (Get-AzADGroup -DisplayName "WVDUsers").id
-$RoleName = (Get-AzRoleDefinition -Name "Desktop Virtualization Power On Contributor").name
+# https://learn.microsoft.com/en-us/azure/virtual-desktop/service-principal-assign-roles?tabs=portal#assign-a-role-to-an-azure-virtual-desktop-service-principal
+$parameters = @{
+    RoleDefinitionName = "Desktop Virtualization Power On Off Contributor"
+    ApplicationId = "9cdead84-a844-4324-93f2-b2e6bb768d07"
+    Scope = "/subscriptions/f043b87b-e870-4884-b2d1-d665cc58f247/resourceGroups/AVD_AADNative"
+}
 
-New-AzRoleAssignment -ObjectId $GroupId `
--RoleDefinitionName $RoleName `
--ResourceGroupName $ResourceGroup
+New-AzRoleAssignment @parameters
 
 # Share Level Permissions: https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-ad-ds-assign-permissions?tabs=azure-powershell#share-level-permissions-for-all-authenticated-identities
 # $defaultPermission = "StorageFileDataSmbShareContributor" # Set the default permission of your choice
@@ -124,7 +126,13 @@ New-AzRoleAssignment -ObjectId $GroupId `
 # $domainGuid = $domainInformation.ObjectGUID.ToString() 
 # $domainName = $domainInformation.DnsRoot
 # !!! at the AAD VM run:
-#     reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters /v CloudKerberosTicketRetrievalEnabled /t REG_DWORD /d 1 /f
+# New-ItemProperty -ErrorAction Stop `
+# -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters" `
+# -Name "CloudKerberosTicketRetrievalEnabled" `
+# -Type "Dword" `
+# -Value "1" `
+# -Force `
+# -Confirm:$false
 ##########################################
 # From AAD vm to SSO on-prem share 
 # make sure vnet DNS only has IP of on-prem DNS server/s (no azure wired ip 168.63.129.16)

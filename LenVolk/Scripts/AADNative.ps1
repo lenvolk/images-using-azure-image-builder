@@ -43,6 +43,16 @@ New-ItemProperty -ErrorAction Stop `
 -Force `
 -Confirm:$false
 
+
+#Not really needed if not using NTFS
+# New-ItemProperty -ErrorAction Stop `
+# -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters" `
+# -Name "CloudKerberosTicketRetrievalEnabled" `
+# -Type "Dword" `
+# -Value "1" `
+# -Force `
+# -Confirm:$false
+
 write-host "Configuration Complete"
 
 ### PSExec
