@@ -6,6 +6,9 @@ $hostpoolname = "AADNativeHP"
 
 ###################################
 # Access Microsoft Entra joined VMs https://learn.microsoft.com/en-us/azure/virtual-desktop/azure-ad-joined-session-hosts
+# https://www.youtube.com/watch?v=n_7nZFxhobc
+# dsregcmd /status  (AzureAdPrt: YES)
+# RDP to EntraID joined VM https://learn.microsoft.com/en-us/entra/identity/devices/howto-vm-sign-in-azure-ad-windows#log-in-using-passwordless-authentication-with-microsoft-entra-id
 ###################################
 Install-Module -Name Az.DesktopVirtualization
 Import-Module -Name Az.DesktopVirtualization
