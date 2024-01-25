@@ -61,6 +61,19 @@ New-ItemProperty -ErrorAction Stop `
 # -Force `
 # -Confirm:$false
 
+
+##########################################
+#    Region Time Zone Redirection        #
+##########################################
+
+$Name = "fEnableTimeZoneRedirection"
+$value = "1"
+# Add Registry value
+
+New-ItemProperty -ErrorAction Stop -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name $name -Value $value -PropertyType DWORD -Force
+ 
+
+
 write-host "Configuration Complete"
 
 # T-shoot
