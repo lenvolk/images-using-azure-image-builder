@@ -14,7 +14,7 @@ $profileShare = "\\$($fileServer)\$($ShareName)"
 $secret="<StorageAccountAccessKey>"
 
 ###########################################
-# IF SA has PE update localhostfile       #
+# IF SA has PE and there is no azure private DNS update localhostfile
 ###########################################
 $SApe = "10.150.0.101"
 $SAfqdn = "$($SAName).privatelink.file.core.windows.net"
