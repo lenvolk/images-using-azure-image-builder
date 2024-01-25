@@ -4,7 +4,8 @@
 # https://github.com/DeanCefola/Azure-WVD/blob/master/PowerShell/0_AppAttach%20-%20Template.ps1
 # 
 # t-shooting MSIX app attach troubleshooting part 1
-
+# to add RBAC to SA https://www.youtube.com/watch?v=UI8dlKhvOl0
+# reader and Data Access to Azure virtual desktop ARM Provider 
 
 winget find vlc #look for "VLC UWP 9NBLGGH4VVNH"
 
