@@ -6,11 +6,19 @@ write-host "Configuring FSLogix"
 ###################
 #    Variables    #
 ###################
-$fileServer="<StorageAccountName>.file.core.windows.net"
-$user="localhost\<StorageAccountName>"
-$profileShare="\\$($fileServer)\<ProfileShareName>"
+$SAName = "<StorageAccountName>"
+$ShareName = "<ProfileShareName>"
+$fileServer = "$($SAName).file.core.windows.net"
+$user = "localhost\$($SAName)"
+$profileShare = "\\$($fileServer)\$($ShareName)"
 $secret="<StorageAccountAccessKey>"
 
+###########################################
+# IF SA has PE update localhostfile       #
+###########################################
+$SApe = "10.150.0.101"
+$SAfqdn = "$($SAName).privatelink.file.core.windows.net"
+add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n$SApe`t$SAfqdn" -Force
 
 ###########################################
 #    Execute Command In SYSTEM Context    #
@@ -54,6 +62,10 @@ New-ItemProperty -ErrorAction Stop `
 # -Confirm:$false
 
 write-host "Configuration Complete"
+
+# T-shoot
+# from the host start "C:\Program Files\FSLogix\Apps\frxtray.exe"
+# cmdkey.exe /list
 
 ### PSExec
 # downlaod https://learn.microsoft.com/en-us/sysinternals/downloads/psexec
