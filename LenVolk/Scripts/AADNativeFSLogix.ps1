@@ -52,7 +52,7 @@ New-ItemProperty -ErrorAction Stop `
 -Confirm:$false
 
 
-#Not really needed if not using NTFS
+# Not needed if not using NTFS
 # New-ItemProperty -ErrorAction Stop `
 # -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters" `
 # -Name "CloudKerberosTicketRetrievalEnabled" `
