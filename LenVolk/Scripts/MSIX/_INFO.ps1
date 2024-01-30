@@ -28,6 +28,11 @@ Find-EvergreenApp firefox | Get-EvergreenApp | Where-Object {$_.Type -eq 'MSIX' 
 
 
 # Download the MSIX package https://download-installer.cdn.mozilla.net/pub/firefox/releases/115.6.0esr/win64/multi/Firefox%20Setup%20115.6.0esr.msix
+# test the FireFox package
+# Add-AppxPackage "C:\Temp\Firefox Setup 115.6.0esr.msix"
+# Get-AppxPackage | where-object { $_.name -like "*FireFox*" }
+# Remove-AppxPackage -Package Mozilla.MozillaFirefox_115.6.0.0_x64__gmpnhwe7bv608
+
 # Doanload MSIXMGR tool https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-create-msix-image?tabs=vhdx
 
 cd C:\Temp\msixmgr\x64
