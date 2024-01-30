@@ -27,7 +27,7 @@ Find-EvergreenApp firefox | Get-EvergreenApp | Where-Object {$_.Type -eq 'MSIX' 
 # download the "*.msixbundle"5319275A.WhatsAppDesktop_2.2401.3.0_neutral_~_cv1g1gvanyjgm.msixbundle
 
 
-# Download the MSIX package https://download-installer.cdn.mozilla.net/pub/firefox/releases/115.6.0esr/win64/multi/Firefox%20Setup%20115.6.0esr.msix
+# Download the MSIX package https://download-installer.cdn.mozilla.net/pub/firefox/releases/115.7.0esr/win64/multi/Firefox%20Setup%20115.7.0esr.msix
 # test the FireFox package
 # Add-AppxPackage "C:\Temp\Firefox Setup 115.6.0esr.msix"
 # Get-AppxPackage | where-object { $_.name -like "*FireFox*" }
