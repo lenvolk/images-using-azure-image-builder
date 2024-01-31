@@ -119,8 +119,8 @@ New-AzRoleAssignment -ObjectId $GroupId `
 -ResourceGroupName $ResourceGroup
 
 
-# For MSIX 
-# RBAC  "Reader and Data Access" to "Windows Virtual Desktop ARM Provider"
+# !!! For MSIX !!!
+# RBAC  "Reader and Data Access" to the name will either be "windows virtual desktop ARM Provider" or "Azure virtual desktop ARM Provider"
 
 #!!!SA to AAD ref docs  (fslogix_regkey_AADSA.ps1)
 # Create SA          https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
