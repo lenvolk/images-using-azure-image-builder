@@ -16,9 +16,9 @@ $secret="<StorageAccountAccessKey>"
 ###########################################
 # IF SA has PE and there is no azure private DNS update localhostfile
 ###########################################
-$SApe = "10.150.0.101"
-$SAfqdn = "$($SAName).file.core.windows.net"
-add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n$SApe`t$SAfqdn" -Force
+# $SApe = "10.150.0.101"
+# $SAfqdn = "$($SAName).file.core.windows.net"
+# add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n$SApe`t$SAfqdn" -Force
 
 ###########################################
 #    Execute Command In SYSTEM Context    #
