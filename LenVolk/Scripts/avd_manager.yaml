@@ -4,24 +4,24 @@ parameters:
   - name: 'HPresourceGroup'
     displayName: 'HostPoolResourceGroup'
     type: string
-    default: 'wvd-maintenance-hp-rg'
+    default: 'avd-maintenance-hp-rg'
     values: 
-      - 'wvd-maintenance-hp-rg'
-      - 'wvd-nonpersistent-hp-rg'    
+      - 'avd-maintenance-hp-rg'
+      - 'avd-nonpersistent-hp-rg'    
   - name: 'hostPoolName'
     displayName: 'HostPoolName'
     type: string
-    default: 'wvd-maintenance-hp'
+    default: 'avd-maintenance-hp'
     values: 
-      - 'wvd-maintenance-hp'
-      - 'wvd-nonpersistent-hp'
+      - 'avd-maintenance-hp'
+      - 'avd-nonpersistent-hp'
   - name: 'VMresourceGroup'
     displayName: 'VMresourceGroup'
     type: string
-    default: 'wvd-maintenance-hp-rg'
+    default: 'avd-maintenance-hp-rg'
     values: 
-      - 'wvd-maintenance-hp-rg'
-      - 'wvd-nonpersistent-hp-rg'
+      - 'avd-maintenance-hp-rg'
+      - 'avd-nonpersistent-hp-rg'
   - name: 'action'
     displayName: 'VMs_State'
     type: string
