@@ -1,0 +1,187 @@
+# Ref C:\Temp\BackUP\Terraform\WVD\ACC-Windows-Images\wvd\hp_pipeline_ops\wvd_manager.yaml
+
+parameters: 
+  - name: 'HPresourceGroup'
+    displayName: 'HostPoolResourceGroup'
+    type: string
+    default: 'wvd-maintenance-hp-rg'
+    values: 
+      - 'wvd-maintenance-hp-rg'
+      - 'wvd-nonpersistent-hp-rg'    
+  - name: 'hostPoolName'
+    displayName: 'HostPoolName'
+    type: string
+    default: 'wvd-maintenance-hp'
+    values: 
+      - 'wvd-maintenance-hp'
+      - 'wvd-nonpersistent-hp'
+  - name: 'VMresourceGroup'
+    displayName: 'VMresourceGroup'
+    type: string
+    default: 'wvd-maintenance-hp-rg'
+    values: 
+      - 'wvd-maintenance-hp-rg'
+      - 'wvd-nonpersistent-hp-rg'
+  - name: 'action'
+    displayName: 'VMs_State'
+    type: string
+    default: 'restart'
+    values: 
+      - 'stop'
+      - 'start'
+      - 'restart'
+
+# trigger:
+# - master
+trigger: none
+pr: none
+ 
+pool: avdagent
+ 
+variables:
+- name: 'vms_sku'  
+  value: "Standard_d4s_v3"
+- name: 'appgrp'
+  value: ''
+ ######### Var for copying files ######
+- name: 'SAresourceGroup'
+  value: 'image-artifact-rg'
+- name: 'storageAccount'
+  value: 'imageartifactsa01'
+- name: 'container'
+  value: 'packages'
+- name: 'blob'
+  value: 'package01.zip'  #'WindowsTH-RSAT_WS_1709-x64.zip' 
+- name: 'ImageId'
+  value: '/subscriptions/xxxx-xxxx-xx-xxxx-/resourceGroups/poc-common-rg/providers/Microsoft.Compute/galleries/gal01/images/win10ms/versions/0.3.1'
+- name: 'newhprg'
+  value: 'pilothprg'
+- name: newhpname
+  value: 'Pilot-HP'
+stages:
+  # - stage: remove_hp
+  #   displayName: remove_hp
+  #   jobs:
+  #   - job: remove_hp
+  #     steps:
+  #     - task: AzurePowerShell@5
+  #       inputs:
+  #         azureSubscription: 'DemoSub01'
+  #         ScriptType: 'FilePath'
+  #         ScriptPath: './wvd/hp_pipeline_ops/wvd_remove_hp.ps1'
+  #         ScriptArguments: 
+  #           -ResourceGroup $(HPresourceGroup) `
+  #           -hostPool $(hostPool) `
+  #           -appgrp $(appgrp)
+  #         azurePowerShellVersion: 'LatestVersion'
+  
+  - stage: vm_state
+    displayName: vm_state
+    jobs:
+    - job: vm_state
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'DemoSub01'
+          ScriptType: 'FilePath'
+          ScriptPath: './wvd/hp_pipeline_ops/vm_state.ps1'
+          ScriptArguments: 
+            -VMresourceGroup ${{ parameters.VMresourceGroup }}
+            -action ${{ parameters.action }}
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: invoke_command
+    displayName: invoke_command
+    jobs:
+    - job: invoke_command
+      timeoutInMinutes: 240
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'DemoSub01'
+          ScriptType: 'FilePath'
+          ScriptPath: './wvd/hp_pipeline_ops/invoke_command.ps1'
+          ScriptArguments: 
+            -ResourceGroup ${{ parameters.VMresourceGroup }} `
+            -hostPoolName ${{ parameters.hostPoolName }}
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: vms_sku
+    displayName: vms_sku
+    jobs:
+    - job: vms_sku
+      timeoutInMinutes: 240
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'DemoSub01'
+          ScriptType: 'FilePath'
+          ScriptPath: './wvd/hp_pipeline_ops/vms_sku.ps1'
+          ScriptArguments: 
+            -ResourceGroup ${{ parameters.VMresourceGroup }} `
+            -vms_sku $(vms_sku) 
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: wvd_new_binary
+    displayName: wvd_new_binary
+    jobs:
+    - job: wvd_download
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'DemoSub01'
+          ScriptType: 'FilePath'
+          ScriptPath: './wvd/hp_pipeline_ops/wvd_new_binary_pp.ps1'
+          ScriptArguments: 
+            -VMresourceGroup ${{ parameters.VMresourceGroup }} `
+            -SAresourceGroup $(SAresourceGroup) `
+            -storageAccount $(storageAccount) `
+            -container $(container) `
+            -blob $(blob) 
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: wvd_add_2_hp
+    displayName: wvd_add_2_hp
+    jobs:
+    - job: wvd_add_2_hp
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'DemoSub01'
+          ScriptType: 'FilePath'
+          ScriptPath: './wvd/hp_pipeline_ops/wvd_add_2_hp_pp.ps1'
+          ScriptArguments: 
+            -HPresourceGroup ${{ parameters.HPresourceGroup }}
+            -VMresourceGroup ${{ parameters.VMresourceGroup }}
+            -hostPoolName ${{ parameters.hostPoolName }}
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: vm_reimage
+    displayName: vm_reimage
+    jobs:
+    - job: vm_reimage
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'DemoSub01'
+          ScriptType: 'FilePath'
+          ScriptPath: './wvd/hp_pipeline_ops/vm_reimage.ps1'
+          ScriptArguments: 
+            -VMresourceGroup ${{ parameters.VMresourceGroup }}
+            -ImageId $(ImageId)
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: wvd_new_hp
+    displayName: wvd_new_hp
+    jobs:
+    - job: wvd_new_hp
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'DemoSub01'
+          ScriptType: 'FilePath'
+          ScriptPath: './wvd/hp_pipeline_ops/wvd_new_hp.ps1'
+          ScriptArguments: 
+            -ResourceGroup $(newhprg)
+            -hostPool $(newhpname)
+          azurePowerShellVersion: 'LatestVersion'
