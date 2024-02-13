@@ -4,7 +4,7 @@
 # Connect-AzAccount -Subscription $subscription 
 # Set-AzContext -Subscription $subscription
 # Disconnect-AzAccount
-# .\Wipe-ESLZAzTenant.ps1 -tenantRootGroupID "eb4c059a-65c3-4849-8733-95f27bb9a2b9" -intermediateRootGroupID "ALZ1" -resetMdfcTierOnSubs:$true
+# .\Wipe-ESLZAzTenant.ps1 -tenantRootGroupID "eb4c059a-65c3-4849-8733-95f27bb9a2b9" -intermediateRootGroupID "ALZ01" -resetMdfcTierOnSubs:$true
 ######################
 # Wipe-ESLZAzTenant #
 ######################
