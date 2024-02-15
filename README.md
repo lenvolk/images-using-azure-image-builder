@@ -66,7 +66,9 @@
 ----
 ## AVD Planning 
 (https://techcommunity.microsoft.com/t5/azure-virtual-desktop/azure-virtual-desktop-planning-a-little-guide-please-don-t/m-p/3785144)
-
+----
+## AVD SessionHostReplacer
+(https://github.com/Azure/AVDSessionhostreplacer)
 ----
 ## TLS 1.2
 [ref doc](https://learn.microsoft.com/en-us/mem/configmgr/core/plan-design/security/enable-tls-1-2-client#configure-for-strong-cryptography)
