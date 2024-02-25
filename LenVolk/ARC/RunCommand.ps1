@@ -1,24 +1,27 @@
 
 # Ref https://github.com/johnthebrit/RandomStuff/blob/master/AzureVarious/ArcMachine.ps1
+# The Connected Machine agent version must be 1.33 or higher to use the Az.ConnectedMachine module.
 # https://learn.microsoft.com/en-us/azure/azure-arc/servers/run-command
 # https://learn.microsoft.com/en-us/azure/virtual-machines/windows/run-command-managed
 
 
-Install-Module -Name Az.ConnectedMachine -Scope allusers -Force
+Install-Module -Name Az.ConnectedMachine -Scope CurrentUser -AllowClobber -Force
+# Import-Module Az.ConnectedMachine -Force
+# Get-Command -Module Az.ConnectedMachine
 
-Get-AzConnectedMachine
+Get-AzConnectedMachine | Format-Table Name, AgentVersion, ResourceGroupName, Location -AutoSize
 
-Get-AzConnectedMachine -ResourceGroupName RG-Arc -Name winsrv2022
+Get-AzConnectedMachine -ResourceGroupName ARC-V1 -Name ArcBox-Win2K22
 
-get-help New-AzConnectedMachineRunCommand -Examples
+# get-help New-AzConnectedMachineRunCommand -Examples
 
-New-AzConnectedMachineRunCommand -ResourceGroupName RG-Arc -SourceScript 'Write-Host "Hostname: $env:COMPUTERNAME, Username: $env:USERNAME"' `
-    -RunCommandName "runGetInfo10" -MachineName winsrv2022 -Location WestUS2
+New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -SourceScript 'Write-Host "Hostname: $env:COMPUTERNAME, Username: $env:USERNAME"' `
+    -RunCommandName "runGetInfo10" -MachineName ArcBox-Win2K22 -Location EastUS
 
-get-AzConnectedMachineRunCommand -MachineName winsrv2022 -ResourceGroupName RG-Arc -RunCommandName "runGetInfo10"
+get-AzConnectedMachineRunCommand -MachineName ArcBox-Win2K22 -ResourceGroupName ARC-V1 -RunCommandName "runGetInfo10"
 
-New-AzConnectedMachineRunCommand -ResourceGroupName RG-Arc -SourceScript 'Write-Host "Hostname: $env:COMPUTERNAME, Username: $env:USERNAME"' `
-    -RunCommandName "runGetInfo11" -MachineName winsrv2022 -Location WestUS2 `
+New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -SourceScript 'Write-Host "Hostname: $env:COMPUTERNAME, Username: $env:USERNAME"' `
+    -RunCommandName "runGetInfo11" -MachineName ArcBox-Win2K22 -Location EastUS `
     -AsyncExecution
 
 #Can use -ScriptURI etc
@@ -46,7 +49,7 @@ New-AzConnectedMachineRunCommand -ResourceGroupName RG-Arc -SourceScript 'Write-
 # $report = @()
 # $reportName = "MMA_Arc.csv"
 
-# $ArcMachines = Search-AzGraph -Query "Resources | where type =~ 'microsoft.hybridcompute/machines' | extend agentversion = properties.agentVersion | project name, agentversion, location, resourceGroup, subscriptionId"
+# $ArcMachines = Search-AzGraph -Query "Resources | where type =~ 'microsoft.hybridcompute/machines' | extend agentversion = properties.agentVersion | project name, properties.osSku, agentversion, location, resourceGroup, subscriptionId"
 
 # foreach ($ArcName in $ArcMachines) { 
      
