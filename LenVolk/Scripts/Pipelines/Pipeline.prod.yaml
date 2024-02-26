@@ -1,0 +1,104 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - /kits/jumpstart-vm/*
+    exclude:
+      - /**/*.md
+      - /secret/*.*
+      - /.attachments
+
+variables:
+  - template: Variables.yaml
+
+pool: $(agent_pool)
+
+# remove this if not planning to use image builder
+resources:
+  pipelines:
+  - pipeline: image-source
+    source: jumpstart-image-builder-sig       #<--- Verify source matches name of image builder pipeline
+    trigger:
+      branches:
+        include:
+        - master
+
+stages:
+  - template: ./Layers.yaml
+    parameters:
+      environment: prod
+
+      getImageLayers: virtualmachine
+      projectName: ${{ variables.projectName }}
+      pipelineId: ${{ variables.pipelineId }}
+      runId: $(resources.pipeline.image-source.runID)
+      preferTriggeringPipeline: ${{ variables.preferTriggeringPipeline }}
+      downloadPath: ${{ variables.downloadPath }}
+
+      layers:
+        - name: resourcegroup
+          version: "2.0.22"
+          dependencies:
+            start: start
+        - name: networking
+          version: "2.0.24"
+          dependencies:
+            resourcegroup: resourcegroup
+        - name: loganalytics
+          version: "2.0.25"
+          dependencies:
+            resourcegroup: resourcegroup
+        - name: keyvault
+          version: "2.0.29"
+          dependencies:
+            networking: networking
+            loganalytics: loganalytics
+        - name: azsql
+          version: "2.0.22"
+          dependencies:
+            privateendpoints: privateendpoints
+        - name: storage
+          version: "3.0.26"
+          dependencies:
+            networking: networking            
+            privateendpoints: privateendpoints
+        - name: loadbalancer
+          version: "2.0.24"
+          dependencies:
+            networking: networking
+        # - name: applicationgateway
+        #   version: "*"
+        #   dependencies:
+        #     storage: storage
+        #     loganalytics: loganalytics
+        #     privateendpoints: privateendpoints
+        - name: virtualmachine
+          version: "2.0.22"
+          dependencies:
+            loadbalancer: loadbalancer
+            storage: storage
+            privateendpoints: privateendpoints
+            # applicationgateway: applicationgateway
+        - name: privateendpoints # reserved layer name, must go after the end or the last resource that requires pe
+          version: "2.0.26"
+          dependencies:
+            keyvault: keyvault
+        - name: privatednszone
+          version: "2.0.22"
+          dependencies:
+            privateendpoints: privateendpoints
+        - name: privatednsarecord
+          version: "2.0.22"
+          dependencies:
+            privatednszone: privatednszone
+        - name: privatelinkservice
+          version: "2.0.22"
+          dependencies:
+            loadbalancer: loadbalancer
+        - name: nsgflowlogs
+          version: "2.0.22"
+          dependencies:
+            networking: networking
+            storage: storage

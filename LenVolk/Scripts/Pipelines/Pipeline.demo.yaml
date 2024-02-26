@@ -1,0 +1,147 @@
+trigger:
+  branches:
+    include:
+      - users/demo/*
+  paths:
+    include:
+      - /kits/jumpstart-vm/*
+    exclude:
+      - /**/*.md
+      - /secret/*.*
+      - /.attachments
+
+variables:
+  - template: Variables.yaml
+
+pool: $(agent_pool)
+
+#remove this if not planning to use image builder
+resources:
+  pipelines:
+  - pipeline: image-source
+    source: jumpstart-image-builder-sig       #<--- Verify source matches name of image builder pipeline
+    trigger:
+      branches:
+        include:
+        - master
+
+stages:
+  - template: ./Layers.yaml
+    parameters:
+      environment: demo
+
+      getImageLayers: virtualmachine
+      projectName: ${{ variables.projectName }}
+      pipelineId: ${{ variables.pipelineId }}
+      runId: $(resources.pipeline.image-source.runID)
+      preferTriggeringPipeline: ${{ variables.preferTriggeringPipeline }}
+      downloadPath: ${{ variables.downloadPath }}
+
+      layers:
+        - name: resourcegroup
+          type: resourcegroup
+          version: "2.0.47"
+          skip: false
+          dependencies:
+            start: start
+
+        - name: networking
+          type: networking
+          version: "2.0.54"
+          skip: false
+          dependencies:
+            resourcegroup: resourcegroup
+
+        - name: loganalytics
+          type: loganalytics
+          version: "2.0.50"
+          skip: false
+          dependencies:
+            resourcegroup: resourcegroup
+
+        - name: keyvault
+          type: keyvault
+          version: "2.0.66"
+          skip: false
+          dependencies:
+            networking: networking
+            loganalytics: loganalytics
+
+        - name: storage
+          type: storage
+          version: "3.0.59"
+          skip: false
+          dependencies:
+            keyvault: keyvault
+            networking: networking
+     
+        - name: nsgflowlogs
+          type: nsgflowlogs
+          version: "2.0.47"
+          skip: false
+          dependencies:
+            networking: networking
+            storage: storage
+
+        - name: azsql
+          type: azsql
+          version: "2.0.47"
+          skip: false
+          dependencies:
+            resourcegroup: resourcegroup
+            keyvault: keyvault
+
+        - name: loadbalancer
+          type: loadbalancer
+          version: "2.0.60"
+          skip: false
+          dependencies:
+            networking: networking
+
+        - name: privatelinkservice
+          type: privatelinkservice
+          version: "2.0.47"
+          skip: false
+          dependencies:
+            loadbalancer: loadbalancer
+
+        - name: applicationgateway
+          type: applicationgateway
+          version: "7.0.47"
+          skip: false
+          dependencies:
+            storage: storage
+            loganalytics: loganalytics
+
+        - name: virtualmachine
+          type: virtualmachine
+          version: "2.0.88"
+          skip: false
+          dependencies:
+            loadbalancer: loadbalancer
+            storage: storage
+            privateendpoints: privateendpoints
+            applicationgateway: applicationgateway
+
+        - name: privateendpoints
+          type: privateendpoints
+          version: "2.0.90"
+          skip: false
+          dependencies:
+            keyvault: keyvault
+            storage: storage
+            azsql: azsql
+
+        - name: privatednszone
+          type: privatednszone
+          version: "2.0.47"
+          skip: false
+          dependencies:
+            privateendpoints: privateendpoints
+
+        - name: privatednsarecord
+          type: privatednsarecord
+          version: "2.0.47"
+          skip: false
+          dependencies:
+            privatednszone: privatednszone
