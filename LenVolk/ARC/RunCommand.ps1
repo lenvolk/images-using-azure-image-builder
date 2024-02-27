@@ -24,6 +24,12 @@ New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -SourceScript 'Write-
     -RunCommandName "runGetInfo11" -MachineName ArcBox-Win2K22 -Location EastUS `
     -AsyncExecution
 
+# List all runCommands
+Get-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-Win2K22
+
+# Delete Need to authenticate via az cli
+# az connectedmachine run-command delete --name runGetInfo10 --machine-name ArcBox-Win2K22 --resource-group ARC-V1
+
 #Can use -ScriptURI etc
 
 
