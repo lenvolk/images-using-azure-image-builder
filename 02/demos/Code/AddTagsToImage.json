@@ -1,0 +1,71 @@
+{
+    "mode": "Indexed",
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "exists": "false"
+          },
+          {
+            "field": "Microsoft.Compute/imagePublisher",
+            "equals": "[concat('tags[', parameters('imagePublisher'), ']')]"
+          },
+          {
+            "field": "Microsoft.Compute/imageSKU",
+            "equals": "[concat('tags[', parameters('imageSKU'), ']')]"
+          }
+        ]
+      },
+      "then": {
+        "effect": "modify",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+          ],
+          "operations": [
+            {
+              "operation": "add",
+              "field": "[concat('tags[', parameters('tagName'), ']')]",
+              "value": "[parameters('tagValue')]"
+            }
+          ]
+        }
+      }
+    },
+    "parameters": {
+      "tagName": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Name",
+          "description": "Name of the tag, such as 'environment'"
+        }
+      },
+      "tagValue": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Value",
+          "description": "Value of the tag, such as 'production'"
+        }
+      },
+      "imagePublisher": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Image Publisher",
+          "description": "Value of the Image Publisher, such as 'MicrosoftWindowsServer'"
+        }
+      },
+      "imageSKU": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Image SKU",
+          "description": "Value of the Image SKU, such as '2022-datacenter'"
+        }
+      }
+    }
+  }
+  
