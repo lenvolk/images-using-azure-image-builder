@@ -74,3 +74,5 @@ __The dashboard is ready for use!__
 
 ## Management
 [Monitoring](https://github.com/Azure/AzureMonitorStarterPacks)
+
+[Tools](https://github.com/rcarboneras/AzureArcTools)
