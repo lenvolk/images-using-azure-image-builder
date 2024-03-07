@@ -69,3 +69,5 @@ __The dashboard is ready for use!__
 
 ## Security
 [Operate SQL Server enabled by Azure Arc with least privilege](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/configure-least-privilege?view=sql-server-ver16)
+
+[Change Tracking](https://techcommunity.microsoft.com/t5/azure-arc-blog/enable-change-tracking-and-inventory-for-arc-onboarded-machines/ba-p/4062317)
