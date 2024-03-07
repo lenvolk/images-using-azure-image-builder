@@ -64,3 +64,5 @@ __The dashboard is ready for use!__
     
 ## Also workbook
 [Azure Arc for Servers.workbook](https://github.com/ElanShudnow/AzureCode/tree/main/Workbooks/Azure%20Arc%20for%20Servers)
+
+[Azure Arc SQL Server Workbooks](https://github.com/rcarboneras/sql-server-samples/blob/master/samples/features/azure-arc/workbooks/README.md)
