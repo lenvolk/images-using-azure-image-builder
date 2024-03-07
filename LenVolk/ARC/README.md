@@ -66,3 +66,6 @@ __The dashboard is ready for use!__
 [Azure Arc for Servers.workbook](https://github.com/ElanShudnow/AzureCode/tree/main/Workbooks/Azure%20Arc%20for%20Servers)
 
 [Azure Arc SQL Server Workbooks](https://github.com/rcarboneras/sql-server-samples/blob/master/samples/features/azure-arc/workbooks/README.md)
+
+## Security
+[Operate SQL Server enabled by Azure Arc with least privilege](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/configure-least-privilege?view=sql-server-ver16)
