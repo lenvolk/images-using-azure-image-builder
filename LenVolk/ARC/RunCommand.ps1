@@ -44,13 +44,13 @@ az connectedmachine run-command delete --name runGetInfo11 --machine-name ArcBox
 
 # Create or update Run Command on a machine resource using SourceScriptUri (storage blob SAS URL)
 # https://learn.microsoft.com/en-us/azure/azure-arc/servers/run-command#create-or-update-run-command-on-a-machine-resource-using-sourcescripturi-storage-blob-sas-url
-
+### 
 $LocalPath            = "c:\temparc"
 if((Test-Path $LocalPath) -eq $false) {
     New-Item -Path $LocalPath -ItemType Directory
 }
 
-Set-Location -Path "C:\temparc"
+Set-Location -Path $LocalPath
 
 $DSCOnBoard              = '<ScriptBlobURLSAS>'
 $MOFName                 = 'ArcBox-Win2K22.meta.mof'
@@ -59,9 +59,10 @@ $MOFName                 = 'ArcBox-Win2K22.meta.mof'
 Invoke-WebRequest -Uri $DSCOnBoard -OutFile "$MOFName"
 
 Set-DscLocalConfigurationManager -Path $LocalPath -Force
+###
+New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-Win2K19 -RunCommandName runGetInfo12 -Location EastUS -SourceScriptUri "https://arcboxeg2bfl3thdl36.blob.core.windows.net/scripts/arcruntst.ps1?xxxxxxxx"
 
-New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-Win2K22 -RunCommandName runGetInfo12 -Location EastUS -SourceScriptUri "https://arcboxeg2bfl3thdl36.blob.core.windows.net/scripts/arcruntst.ps1?xxxxxxx"
-New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-Win2K19 -RunCommandName runGetInfo12 -Location EastUS -SourceScriptUri "https://arcboxeg2bfl3thdl36.blob.core.windows.net/scripts/arcruntst.ps1?xxxxxxx"
+New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-Win2K22 -RunCommandName runGetInfo12 -Location EastUS -SourceScriptUri "https://arcboxeg2bfl3thdl36.blob.core.windows.net/scripts/arcruntst.ps1?xxxxxxxx"
 
 ## Graph  https://github.com/johnthebrit/RandomStuff/blob/master/AzureVMMS/run.ps1
 # $GraphSearchQuery = "Resources
