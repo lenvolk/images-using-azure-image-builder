@@ -1,4 +1,9 @@
 # Ref: https://www.youtube.com/watch?v=yJqTJh2Tgxo&t=1s  scroll to 12:00
+#
+# OR
+#
+# to add RBAC to SA https://www.youtube.com/watch?v=UI8dlKhvOl0
+# "reader and Data" Access to "windows virtual desktop ARM Provider" or "Azure virtual desktop ARM Provider"
 
 write-host "Configuring FSLogix"
 
