@@ -64,6 +64,8 @@ New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-W
 
 New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-Win2K22 -RunCommandName runGetInfo12 -Location EastUS -SourceScriptUri "https://arcboxeg2bfl3thdl36.blob.core.windows.net/scripts/arcruntst.ps1?xxxxxxxx"
 
+New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-Win2K22 -RunCommandName runGetInfo12 -Location EastUS -SourceScriptUri "https://arcboxeg2bfl3thdl36.blob.core.windows.net/scripts/DelConflictFiles.ps1?xxxxxxx"
+
 ## Graph  https://github.com/johnthebrit/RandomStuff/blob/master/AzureVMMS/run.ps1
 # $GraphSearchQuery = "Resources
 # | where type =~ 'Microsoft.Compute/virtualMachineScaleSets'
