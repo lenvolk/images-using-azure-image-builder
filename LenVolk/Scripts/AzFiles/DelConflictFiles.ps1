@@ -13,12 +13,15 @@ $directoryPath = "C:\Temp\share"
 $conflictFilePattern = "*-$env:COMPUTERNAME-*.docx"
 $conflictFiles = Get-ChildItem -Path $directoryPath -Filter $conflictFilePattern
 
-foreach ($file in $conflictFiles) {
-    if ($file.Name -match '-(\d+)\.docx$') {
-        $versionNumber = [int]$matches[1]
-        if ($versionNumber -gt 10 && $versionNumber -lt 80) {
-            #Remove-Item $file.FullName -Force
-            Write-Host "Deleted file: $($file.FullName)"
+if ($conflictFiles.Name -match "-(\d+)\.docx")
+{
+    foreach ($file in $conflictFiles) {
+        if ($file.Name -match "-(\d+)\.docx$") {
+            $versionNumber = [int]$matches[1]
+            if ($versionNumber -gt 10 -and $versionNumber -lt 80) {
+                # Do something with the file
+                Write-Host "Found file: $($file.FullName)"
+            }
         }
     }
 }
