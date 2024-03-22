@@ -1,4 +1,5 @@
 
+# Examples https://learn.microsoft.com/en-us/powershell/dsc/reference/resources/windows/scriptresource?view=dsc-1.1
 
 #######################################
 #      IMPORT THE CONFIGURATION       #

@@ -19,8 +19,8 @@ if ($conflictFiles.Name -match "-(\d+)\.docx")
         if ($file.Name -match "-(\d+)\.docx$") {
             $versionNumber = [int]$matches[1]
             if ($versionNumber -gt 10 -and $versionNumber -lt 80) {
-                # Do something with the file
-                Write-Host "Found file: $($file.FullName)"
+                 Remove-Item $file.FullName -Force
+                 Write-Host "Deleted file: $($file.FullName)"
             }
         }
     }
