@@ -1,20 +1,23 @@
 
-
+# Ref: https://learn.microsoft.com/en-us/azure/storage/files/storage-files-faq
+# For example, the first conflict of CompanyReport.docx would become CompanyReport-CentralServer.docx if CentralServer is where the older write occurred. 
+# The second conflict would be named CompanyReport-CentralServer-1.docx. Azure File Sync supports 100 conflict files per file. 
+# Once the maximum number of conflict files is reached, the file will fail to sync until the number of conflict files is less than 100.
 
 # get-addomaincontroller  -filter  *  |  %{
 #     Get-WmiObject  -Namespace  "root/microsoftdfs"  -class  dfsrreplicatedfolderinfo  -ComputerName  $_.hostname
 # }  |  ?{$_.replicationGroupName  -eq  "Domain  System  Volume"}  |  %{$_.cleanupConflictDirectory()}
 
 
-$directoryPath = "C:\Temp\Jonathan"
-$conflictFilePattern = '*-CentralServer-*.docx'
+$directoryPath = "C:\Temp\share"
+$conflictFilePattern = "*-$env:COMPUTERNAME-*.docx"
 $conflictFiles = Get-ChildItem -Path $directoryPath -Filter $conflictFilePattern
 
 foreach ($file in $conflictFiles) {
     if ($file.Name -match '-(\d+)\.docx$') {
         $versionNumber = [int]$matches[1]
-        if ($versionNumber -gt 10) {
-            Remove-Item $file.FullName -Force
+        if ($versionNumber -gt 10 && $versionNumber -lt 80) {
+            #Remove-Item $file.FullName -Force
             Write-Host "Deleted file: $($file.FullName)"
         }
     }
