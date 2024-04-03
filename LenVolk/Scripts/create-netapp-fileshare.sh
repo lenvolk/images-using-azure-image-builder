@@ -13,11 +13,17 @@ az group create --name "avd-netapp" --location $location
 # Register the netapp provider
 az provider register --namespace Microsoft.NetApp --wait
 
-# Create the NetApp Files account
+# 01 Create the NetApp Files account
 az netappfiles account create --resource-group "avd-netapp" \
   --location $location --account-name "avdnetapp"
 
-# Create an Active Directory connection
+# 02 Create the NetApp Files pool
+# Premium is recommended for production
+az netappfiles pool create --resource-group "avd-netapp" \
+  --location $location --account-name "avdnetapp" \
+  --pool-name "avdpool" --service-level "Standard" --size 2
+
+# 03 Create an Active Directory connection
 aduser="AD_USER" # username only, no domain component
 adpass='AD_PASSWORD'
 dcipaddress="DC_IP_ADDR" # IPv4 address of the domain controller
@@ -30,12 +36,6 @@ az netappfiles account ad add -g "avd-netapp" \
   --password $adpass --smb-server-name ANF \
   --dns $dcipaddress --domain $domainname \
   --site $site --organizational-unit $oupath
-
-# Create the NetApp Files pool
-# Premium is recommended for production
-az netappfiles pool create --resource-group "avd-netapp" \
-  --location $location --account-name "avdnetapp" \
-  --pool-name "avdpool" --service-level "Standard" --size 4
 
 # Create the NetApp Files volume
 vnetID="VNET_ID" # Resource ID of the VNET
