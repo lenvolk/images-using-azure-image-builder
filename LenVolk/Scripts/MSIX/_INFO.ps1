@@ -6,7 +6,7 @@
 # t-shooting MSIX app attach troubleshooting part 1
 # to add RBAC to SA https://www.youtube.com/watch?v=UI8dlKhvOl0
 # https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-overview?pivots=app-attach#identity-providers
-# "reader and Data" Access to "windows virtual desktop ARM Provider" or "Azure virtual desktop ARM Provider"
+# "reader and Data Access" to "windows virtual desktop ARM Provider" or "Azure virtual desktop ARM Provider"
 
 winget find vlc #look for "VLC UWP 9NBLGGH4VVNH"
 
