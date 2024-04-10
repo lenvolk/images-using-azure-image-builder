@@ -121,7 +121,9 @@ New-AzRoleAssignment -ObjectId $GroupId `
 
 # !!! For MSIX !!!
 # RBAC  "Reader and Data Access" to the name will either be "windows virtual desktop ARM Provider" or "Azure virtual desktop ARM Provider"
-
+#
+# https://www.youtube.com/watch?v=UI8dlKhvOl0
+#
 #!!!SA to AAD ref docs  (fslogix_regkey_AADSA.ps1)
 # Create SA          https://learn.microsoft.com/en-us/azure/virtual-desktop/create-profile-container-azure-ad
 # Enable AD Kerberos https://learn.microsoft.com/en-us/azure/storage/files/storage-files-identity-auth-azure-active-directory-enable#enable-azure-ad-kerberos-authentication-for-hybrid-user-accounts-preview
