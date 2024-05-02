@@ -23,7 +23,7 @@ az netappfiles pool create --resource-group "avd-netapp" \
   --location $location --account-name "avdnetapp" \
   --pool-name "avdpool" --service-level "Standard" --size 2
 
-# 03 Create an Active Directory connection
+# 03 Create an Active Directory connection (computer object is not yet created in AD, only after volume creation it will show up)
 aduser="AD_USER" # username only, no domain component
 adpass='AD_PASSWORD'
 dcipaddress="DC_IP_ADDR" # IPv4 address of the domain controller
