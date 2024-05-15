@@ -1,4 +1,5 @@
 # Ref https://learn.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks-faq
+# https://github.com/johnthebrit/RandomStuff/blob/master/AzureVMs/CheckCache.ps1
 
 [CmdletBinding()]
 param([Parameter(Mandatory=$true)]
