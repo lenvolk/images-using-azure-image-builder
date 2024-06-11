@@ -4,7 +4,15 @@
 # https://learn.microsoft.com/en-us/azure/azure-arc/servers/run-command
 # https://learn.microsoft.com/en-us/azure/virtual-machines/windows/run-command-managed
 
-
+######################################################################################
+### download source for Azure Arc-enabled servers extensions
+#
+# The URL https://oaasguestconfigeuss1.blob.core.windows.net [oaasguestconfigeuss1.blob.core.windows.net] is the default download source for all the extensions, and it is required for the normal operation. 
+# The extension service (gc_extension_service) tries to communicate with this URL via the Arc agent through the configured proxy.
+#
+# When using Private Link, this URL is not used. Instead, the extension service tries to communicate with a private endpoint that resolves the *.blob.core.windows.net domain. 
+# This is where the bug occurs, as the URI is malformed and the signature file cannot be validated.
+######################################################################################
 Install-Module -Name Az.ConnectedMachine -Scope CurrentUser -AllowClobber -Force
 # Import-Module Az.ConnectedMachine -Force
 # Get-Command -Module Az.ConnectedMachine
