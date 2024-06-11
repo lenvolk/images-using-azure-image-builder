@@ -41,6 +41,8 @@ az netappfiles account ad add -g "avd-netapp" \
   --site $site --organizational-unit $oupath
 
 # Create the NetApp Files volume
+# Create a dual-protocol volume for Azure NetApp Files https://learn.microsoft.com/en-us/azure/azure-netapp-files/create-volumes-dual-protocol
+
 vnetID="VNET_ID" # Resource ID of the VNET
 subnetName="SUBNET_NAME" # Name of the subnet !!! Make sure it is deligated to the NetApp Files service "Microsoft.NetApp/volumes"
 az netappfiles volume create -g "avd-netapp" \
