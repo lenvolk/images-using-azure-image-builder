@@ -42,7 +42,7 @@ az netappfiles account ad add -g "avd-netapp" \
 
 # Create the NetApp Files volume
 vnetID="VNET_ID" # Resource ID of the VNET
-subnetName="SUBNET_NAME" # Name of the subnet !!! Make sure it is deligated to the NetApp Files service
+subnetName="SUBNET_NAME" # Name of the subnet !!! Make sure it is deligated to the NetApp Files service "Microsoft.NetApp/volumes"
 az netappfiles volume create -g "avd-netapp" \
   --account-name "avdnetapp" --pool-name "avdpool" \
   --name "avd-vol01" -l $location \
