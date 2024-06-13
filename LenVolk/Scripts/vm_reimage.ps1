@@ -34,7 +34,7 @@ try {
     $vmsdown = (get-azvm -ResourceGroupName $VMresourceGroup -Status) | Where-Object { $_.PowerState -eq "VM deallocated" `
             -and $_.StorageProfile.OsDisk.OsType -eq "Windows" }
 
-    write-host "WVD VM list:"
+    write-host "AVD VM list:"
     write-host $vms.name
 }
 catch {
