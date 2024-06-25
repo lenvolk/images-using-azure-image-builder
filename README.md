@@ -121,3 +121,7 @@ https://mslearn.cloudguides.com/guides/Azure%20network%20security
 ----
 ## Labs
 [Zero Trust Lab](https://ztlabguide.com/)
+
+----
+## Entra ID Export Scripts
+[Repo](https://github.com/debaxtermsft/debaxtermsft/tree/main)
