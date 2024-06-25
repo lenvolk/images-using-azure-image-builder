@@ -17,6 +17,8 @@
 #
 # https://learn.microsoft.com/en-us/azure/virtual-desktop/create-custom-image-templates
 # !!! No per User application install
+#
+# Image Builder by Vladimir https://github.com/vladimirshvetsfl/Azure/blob/main/PowerShell/imageBuilder/image_builder_avd.ps1
 <#
 .SYNOPSIS
     This script automates the process of creating an image of an Azure VM without destroying the source, or reference VM.
