@@ -18,6 +18,6 @@ $UserPass = ConvertTo-SecureString -AsPlainText "$passWord" -Force
 for ($i=0; $i -le $numUsers; $i++) {
 $newUser = $userPrefix + $i
 New-ADUser -name $newUser -SamAccountName $newUser -UserPrincipalName $newUser@$userDomain -GivenName $newUser -Surname $newUser -DisplayName $newUser `
--AccountPassword $userPass -ChangePasswordAtLogon $false -PasswordNeverExpires $true -Enabled $true
+-AccountPassword $userPass -ChangePasswordAtLogon $false -PasswordNeverExpires $true -Enabled $true -Country "US"
 }
 
