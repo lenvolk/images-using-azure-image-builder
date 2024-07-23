@@ -90,6 +90,7 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 
 [Community-Policy](https://github.com/Azure/Community-Policy/tree/master/Policies/Compute)
 
+[Azure Capacity Reservations with Automatic Consumption](https://techcommunity.microsoft.com/t5/azure-compute-blog/azure-capacity-reservations-with-automatic-consumption/ba-p/4193167)
 ----
 ## Bicep
 [AVD Monitoring](https://github.com/jamesatighe/AVD-BICEP/blob/main/Bicep/Monitoring.bicep)
