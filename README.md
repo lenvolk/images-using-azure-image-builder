@@ -66,6 +66,7 @@
 ----
 ## AVD Planning 
 [How2](https://techcommunity.microsoft.com/t5/azure-virtual-desktop/azure-virtual-desktop-planning-a-little-guide-please-don-t/m-p/3785144)
+
 [library](https://azure.github.io/Azure-Proactive-Resiliency-Library-v2/azure-specialized-workloads/avd/#implement-a-multi-region-bcdr-plan)
 ----
 ## AVD SessionHostReplacer
