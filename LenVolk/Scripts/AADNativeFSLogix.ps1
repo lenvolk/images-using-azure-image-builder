@@ -76,8 +76,11 @@ $value = "1"
 # Add Registry value
 
 New-ItemProperty -ErrorAction Stop -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name $name -Value $value -PropertyType DWORD -Force
- 
 
+#######################################################
+#    From Portal RUN Command (if needed to execute PS)           
+#######################################################
+# PowerShell -ExecutionPolicy Bypass -file \\$($fileServer)\$($ShareName)\GoldImage_Install.ps1
 
 write-host "Configuration Complete"
 
