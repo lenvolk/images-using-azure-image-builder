@@ -80,7 +80,7 @@ New-ItemProperty -ErrorAction Stop -Path "HKLM:\SOFTWARE\Policies\Microsoft\Wind
 #######################################################
 #    From Portal RUN Command (if needed to execute PS)           
 #######################################################
-# PowerShell -ExecutionPolicy Bypass -file \\$($fileServer)\$($ShareName)\GoldImage_Install.ps1
+# PowerShell -ExecutionPolicy Bypass -file \\$($fileServer)\$($ShareName)\Custom_Install.ps1
 
 write-host "Configuration Complete"
 
