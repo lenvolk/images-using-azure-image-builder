@@ -42,16 +42,16 @@ Get-AzContext #to validate if logged in
 Connect-AzAccount
 Get-AzSubscription
 # Set subscription by Id
-Set-AzContext -SubscriptionId "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
+Set-AzContext -SubscriptionId "cb38ca72-3c1a-49c3-aeff-7a659db7110c"
 # Set subscription by Name
 Set-AzContext -SubscriptionName "AzIntConsumption"
 # to validate
 Get-AzContext
 
 #Define parameters
-$SubscriptionId = "c6aa1fdc-66a8-446e-8b37-7794cd545e44"
-$ResourceGroupName = "imageBuilderRG"
-$StorageAccountName = "imagesapilot"
+$SubscriptionId = "cb38ca72-3c1a-49c3-aeff-7a659db7110c"
+$ResourceGroupName = "AVDSA"
+$StorageAccountName = "avdsavolk"
 
 #Select the target subscription for the current session
 Select-AzSubscription -SubscriptionId $SubscriptionId 
@@ -97,7 +97,7 @@ Join-AzStorageAccount `
         -ResourceGroupName $ResourceGroupName `
         -StorageAccountName $StorageAccountName `
         -DomainAccountType "ComputerAccount" `
-        -OrganizationalUnitDistinguishedName "OU=NoComputerPwExpiration,DC=lvolk,DC=com" # If you don't provide the OU name as an input parameter, the AD identity that represents the storage account is created under the root directory.
+        -OrganizationalUnitDistinguishedName "OU=AzSA,DC=volk,DC=bike" # If you don't provide the OU name as an input parameter, the AD identity that represents the storage account is created under the root directory.
 
 #You can run the Debug-AzStorageAccountAuth cmdlet to conduct a set of basic checks on your AD configuration with the logged on AD user. This cmdlet is supported on AzFilesHybrid v0.1.2+ version. For more details on the checks performed in this cmdlet, see Azure Files Windows troubleshooting guide.
 Debug-AzStorageAccountAuth -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -Verbose
@@ -120,7 +120,7 @@ $storageAccount.AzureFilesIdentityBasedAuth.ActiveDirectoryProperties
 # Mount the file share as supper user
 
 #Define parameters
-$StorageAccountName = "imagesapilot"
+$StorageAccountName = "avdsavolk"
 $ShareName = "<share-name-here>"
 $StorageAccountKey = "<account-key-here>"
 
