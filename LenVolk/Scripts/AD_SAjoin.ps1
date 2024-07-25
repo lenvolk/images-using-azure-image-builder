@@ -139,3 +139,6 @@ else
 # Path to the file share
 # Replace drive letter, storage account name and share name with your settings
 # "\\<StorageAccountName>.file.core.windows.net\<ShareName>"
+
+# Set Password to Never Expire for Domain Accounts in Windows Server
+# https://www.top-password.com/blog/set-password-to-never-expire-for-domain-accounts-in-windows-server/
