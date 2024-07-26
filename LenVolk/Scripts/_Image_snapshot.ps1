@@ -82,7 +82,7 @@
     .\_Image_snapshot.ps1 -refVmName 'ChocoWin11m365' -refVmRg 'IMAGEBUILDERRG' -galName 'aibSig' -galDefName 'ChocoWin11m365' -vnetName 'aibVNet' -subnetName 'aibSubnet'
 #>
 ##########################################################################
-# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win10*'}
+# Get-AzVMImageSku -Location eastus2 -PublisherName MicrosoftWindowsDesktop -Offer office-365 | select Skus | Where-Object { $_.Skus -like 'win11*'}
 # Get-AzVmImageSku -Location eastus2 -PublisherName 'MicrosoftWindowsDesktop' -Offer 'Windows-11'| Select Skus   #!!! Only the -avd are multi-session
 # az vm image list --publisher MicrosoftWindowsDesktop --sku g2 --output table --all
 ##########################################################################
@@ -96,14 +96,14 @@
 
 ##########################################################################
 # Testing (marketplace Windows 11 Enterprise Multi-Session, Version 21H2 - Gen2)
-$refVmName = 'GoldenWin10' 
+$refVmName = 'GoldenWin11' 
 $refVmRg = 'AVD-Image' 
-$CompGalNameRG = 'AVDCompGalRG' 
-$CompGalName ='AVDCompGal'
-$ImageDefName = 'Win10-O365'
-$vnetRG = 'AVD-Network'
-$vnetName = 'AVD-vNet' 
-$subnetName = 'Image'
+$CompGalNameRG = 'CompGal' 
+$CompGalName ='VolkCompGal'
+$ImageDefName = 'Win11-O365'
+$vnetRG = 'AVDNetWork'
+$vnetName = 'AVDVNet' 
+$subnetName = 'PooledHP'
 $cseURI = 'https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/main/LenVolk/Scripts/Sysprep.ps1'
 $galDeploy = $true
 $delSnap = $true
@@ -199,7 +199,9 @@ Catch {
     Break
 }
 ##########################################################################
-$SubnetId=(az network vnet subnet show --resource-group $vnetRG --vnet-name $vnetName --name=$subnetName --query id -o tsv)
+# $SubnetId=(az network vnet subnet show --resource-group $vnetRG --vnet-name $vnetName --name=$subnetName --query id -o tsv)
+$vnet = Get-AzVirtualNetwork -Name $vnetName -ResourceGroupName $vnetRG
+$SubnetId = (Get-AzVirtualNetworkSubnetConfig -Name $subnetName -VirtualNetwork $vnet).id
 ##########################################################################
 #Create tempNIC for tempVM
 Try {
