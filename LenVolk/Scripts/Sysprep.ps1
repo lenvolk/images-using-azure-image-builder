@@ -33,14 +33,9 @@ function Write-Log {
 
 # Delete the panther directory (C:\Windows\Panther).
 
-try{
     write-output "Deleting Panther foleder"
-    Remove-Item C:\Windows\Panther -Recurse -Force -Verbose
-}
-catch {
-    $ErrorMessage = $_.Exception.message
-    write-log "Error Deleting Panther folder: $ErrorMessage"
-}
+    Remove-Item C:\Windows\Panther -Recurse -Force -Verbose -ErrorAction SilentlyContinue
+
 
 # Removing AVD RegKey
 $CheckRegistry = Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\RDInfraAgent" -ErrorAction SilentlyContinue
