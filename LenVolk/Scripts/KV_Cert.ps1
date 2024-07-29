@@ -1,3 +1,5 @@
+Ref: https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificate?tabs=apex#authorize-app-service-to-read-from-the-vault
+
 # Variables
 $resourceGroupName = "KV-Infra"
 $appServiceName = "YourAppServiceName"
