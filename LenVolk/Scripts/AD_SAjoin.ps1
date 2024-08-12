@@ -52,6 +52,7 @@ Get-AzContext
 $SubscriptionId = "4f70665a-02a0-48a0-a949-f3f645294566"
 $ResourceGroupName = "DFS"
 $StorageAccountName = "fileservervolk"
+$DomainAccountType = "ServiceLogonAccount"
 
 #Select the target subscription for the current session
 Select-AzSubscription -SubscriptionId $SubscriptionId 
@@ -97,9 +98,9 @@ Select-AzSubscription -SubscriptionId $SubscriptionId
 Join-AzStorageAccount `
         -ResourceGroupName $ResourceGroupName `
         -StorageAccountName $StorageAccountName `
-        #-DomainAccountType "ComputerAccount" `
-        -DomainAccountType "ServiceLogonAccount" `
-        -OrganizationalUnitDistinguishedName "OU=AzSA,DC=volk,DC=bike" # If you don't provide the OU name as an input parameter, the AD identity that represents the storage account is created under the root directory.
+        -DomainAccountType $DomainAccountType
+        -OrganizationalUnitDistinguishedName "OU=AzSA,DC=volk,DC=bike" `
+        -OverwriteExistingADObject
 
 #You can run the Debug-AzStorageAccountAuth cmdlet to conduct a set of basic checks on your AD configuration with the logged on AD user. This cmdlet is supported on AzFilesHybrid v0.1.2+ version. For more details on the checks performed in this cmdlet, see Azure Files Windows troubleshooting guide.
 Debug-AzStorageAccountAuth -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -Verbose
