@@ -98,7 +98,7 @@ Select-AzSubscription -SubscriptionId $SubscriptionId
 Join-AzStorageAccount `
         -ResourceGroupName $ResourceGroupName `
         -StorageAccountName $StorageAccountName `
-        -DomainAccountType $DomainAccountType
+        -DomainAccountType $DomainAccountType `
         -OrganizationalUnitDistinguishedName "OU=AzSA,DC=volk,DC=bike" `
         -OverwriteExistingADObject
 
