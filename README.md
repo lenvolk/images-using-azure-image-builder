@@ -71,7 +71,7 @@
 [library](https://azure.github.io/Azure-Proactive-Resiliency-Library-v2/azure-specialized-workloads/avd/#implement-a-multi-region-bcdr-plan)
 ----
 ## AVD SessionHostReplacer
-(https://aka.ms/avdshr)
+[Repo](https://aka.ms/avdshr)
 
 [Permissions](https://github.com/Azure/AVDSessionHostReplacer/blob/main/docs/Permissions.md)
 
