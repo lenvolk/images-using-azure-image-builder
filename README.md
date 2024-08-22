@@ -69,6 +69,15 @@
 [HowTo](https://techcommunity.microsoft.com/t5/azure-virtual-desktop/azure-virtual-desktop-planning-a-little-guide-please-don-t/m-p/3785144)
 
 [library](https://azure.github.io/Azure-Proactive-Resiliency-Library-v2/azure-specialized-workloads/avd/#implement-a-multi-region-bcdr-plan)
+
+----
+### Security
+
+[Azure Network Security](https://mslearn.cloudguides.com/guides/Azure%20network%20security)
+
+[Zero Trust](https://learn.microsoft.com/en-us/security/zero-trust/azure-infrastructure-avd)
+
+[Security Recommendations](https://learn.microsoft.com/en-us/azure/virtual-desktop/security-recommendations)
 ----
 ## AVD SessionHostReplacer
 [Repo](https://aka.ms/avdshr)
@@ -101,10 +110,6 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 ----
 ## Bicep
 [AVD Monitoring](https://github.com/jamesatighe/AVD-BICEP/blob/main/Bicep/Monitoring.bicep)
-
-----
-### Azure Network Security
-https://mslearn.cloudguides.com/guides/Azure%20network%20security
 
 ----
 ## Monitoring & Alerting
