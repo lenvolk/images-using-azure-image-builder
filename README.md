@@ -78,13 +78,16 @@
 [Zero Trust](https://learn.microsoft.com/en-us/security/zero-trust/azure-infrastructure-avd)
 
 [Security Recommendations](https://learn.microsoft.com/en-us/azure/virtual-desktop/security-recommendations)
+
 ----
 ## AVD SessionHostReplacer
+
 [Repo](https://aka.ms/avdshr)
 
 [Permissions](https://github.com/Azure/AVDSessionHostReplacer/blob/main/docs/Permissions.md)
 
 [Teams](https://teams.microsoft.com/l/team/19%3ARheg9LOv-qL0m-S6xodbd7nsTxI5E-O9psZdB58urC01%40thread.tacv2/conversations?groupId=f554eade-aec6-4795-9376-02eafdb36c16&tenantId=72f988bf-86f1-41af-91ab-2d7cd011db47)
+
 ----
 ## TLS 1.2
 [ref doc](https://learn.microsoft.com/en-us/mem/configmgr/core/plan-design/security/enable-tls-1-2-client#configure-for-strong-cryptography)
