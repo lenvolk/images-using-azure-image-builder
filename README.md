@@ -21,16 +21,19 @@
 [04 adjust fslogix profile](/LenVolk/Scripts/000_invoke_command.ps1#L29-L42)
 
 ----
+
 ## Images-using-azure-image-builder, sample of the pipeline 
 (https://dev.azure.com/chrysalis-innersource/_git/Enterprise-scale%20Azure%20Data%20Factory%20Pipelines?path=/azure-pipelines.yml)
 
 [AVD Image Creation](https://dev.azure.com/Supportability/WindowsVirtualDesktop/_wiki/wikis/WindowsVirtualDesktop/810747/AVD-Image-Creation)
 
 ----
+
 ## Unlock The Secret of Image Builder
 (https://www.youtube.com/watch?v=UEOZsNBjGJc&t=138s)
 
 ----
+
 ## You've never seen an Image Pipeline like this one | Azure Image Builder
 (https://www.youtube.com/watch?v=zIdOutv0doE)
 
@@ -40,10 +43,12 @@
 (https://github.com/danielsollondon/azvmimagebuilder/tree/master/solutions/14_Building_Images_WVD)
 
 ----
+
 ## Office
 [Install Office in shared computer activation mode](https://learn.microsoft.com/en-us/azure/virtual-desktop/install-office-on-wvd-master-image#install-office-in-shared-computer-activation-mode)
 
 ----
+
 ## AAD Joined VM
 (https://learn.microsoft.com/en-us/azure/architecture/example-scenario/wvd/azure-virtual-desktop-azure-active-directory-join)
 
@@ -53,9 +58,13 @@
 (https://techcommunity.microsoft.com/t5/azure-architecture-blog/setup-hybrid-joined-avd-single-sign-on/ba-p/3643845)
 
 (https://rozemuller.com/how-to-join-azure-ad-automated/)
+
 ----
+
 [Sync between two Azure file shares](https://github.com/Azure-Samples/azure-files-samples/tree/master/SyncBetweenTwoAzureFileSharesForDR)
+
 ----
+
 ## Bicep
 (https://github.com/fberson/Azure-Virtual-Desktop-as-a-gaming-console)
 
