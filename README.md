@@ -72,6 +72,8 @@
 ## AVD LZ
 (https://github.com/Azure/avdaccelerator)
 
+[Brownfield](https://github.com/yshafner/avdaccelerator?tab=readme-ov-file#brownfield-scenarios)
+
 ----
 ## AVD Planning
 
