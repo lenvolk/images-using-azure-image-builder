@@ -129,6 +129,8 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name
 ## Monitoring & Alerting
 [Alerts](https://github.com/JCoreMS/AVDAlerts)
 
+[Availability alert rule](https://learn.microsoft.com/en-us/azure/azure-monitor/vm/tutorial-monitor-vm-alert-availability)
+
 ----
 ## Debugging Azure Virtual Desktop - WorkBook
 [Link](https://blog.itprocloud.de/AVD-Azure-Virtual-Desktop-Error-Drill-Down-Workbook/)
