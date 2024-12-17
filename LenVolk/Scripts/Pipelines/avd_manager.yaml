@@ -141,16 +141,16 @@ stages:
             -blob $(blob) 
           azurePowerShellVersion: 'LatestVersion'
 
-  - stage: wvd_add_2_hp
-    displayName: wvd_add_2_hp
+  - stage: AADNativeFSLogix
+    displayName: AADNativeFSLogix
     jobs:
-    - job: wvd_add_2_hp
+    - job: AADNativeFSLogix
       steps:
       - task: AzurePowerShell@5
         inputs:
           azureSubscription: 'DemoSub01'
           ScriptType: 'FilePath'
-          ScriptPath: '../hp_pipeline_ops/wvd_add_2_hp_pp.ps1'
+          ScriptPath: '../AADNativeFSLogix.ps1'
           ScriptArguments: 
             -HPresourceGroup ${{ parameters.HPresourceGroup }}
             -VMresourceGroup ${{ parameters.VMresourceGroup }}
