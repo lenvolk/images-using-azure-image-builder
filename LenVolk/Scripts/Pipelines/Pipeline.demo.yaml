@@ -1,10 +1,10 @@
 trigger:
   branches:
     include:
-      - users/demo/*
+      - main # branch name
   paths:
     include:
-      - /kits/jumpstart-vm/*
+      - /LenVolk/Scripts/* # lines 1-7 on the commit the pipeline is triggered, only the scripts folder is checked out
     exclude:
       - /**/*.md
       - /secret/*.*
@@ -19,7 +19,7 @@ pool: $(agent_pool)
 resources:
   pipelines:
   - pipeline: image-source
-    source: jumpstart-image-builder-sig       #<--- Verify source matches name of image builder pipeline
+    source: IMAGES-USING-AZURE-IMAGE-BUILDER       #<--- Verify source matches name of image builder pipeline
     trigger:
       branches:
         include:

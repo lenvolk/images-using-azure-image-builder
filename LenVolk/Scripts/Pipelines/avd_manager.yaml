@@ -36,7 +36,8 @@ parameters:
 trigger: none
 pr: none
  
-pool: avdagent
+pool: 
+  vmImage: 'windows-latest'
  
 variables:
 - name: 'vms_sku'  
@@ -100,7 +101,7 @@ stages:
         inputs:
           azureSubscription: 'DemoSub01'
           ScriptType: 'FilePath'
-          ScriptPath: './wvd/hp_pipeline_ops/invoke_command.ps1'
+          ScriptPath: '../hp_pipeline_ops/invoke_command.ps1'
           ScriptArguments: 
             -ResourceGroup ${{ parameters.VMresourceGroup }} `
             -hostPoolName ${{ parameters.hostPoolName }}
@@ -116,7 +117,7 @@ stages:
         inputs:
           azureSubscription: 'DemoSub01'
           ScriptType: 'FilePath'
-          ScriptPath: './wvd/hp_pipeline_ops/vms_sku.ps1'
+          ScriptPath: '../hp_pipeline_ops/vms_sku.ps1'
           ScriptArguments: 
             -ResourceGroup ${{ parameters.VMresourceGroup }} `
             -vms_sku $(vms_sku) 
@@ -131,7 +132,7 @@ stages:
         inputs:
           azureSubscription: 'DemoSub01'
           ScriptType: 'FilePath'
-          ScriptPath: './wvd/hp_pipeline_ops/wvd_new_binary_pp.ps1'
+          ScriptPath: '../hp_pipeline_ops/wvd_new_binary_pp.ps1'
           ScriptArguments: 
             -VMresourceGroup ${{ parameters.VMresourceGroup }} `
             -SAresourceGroup $(SAresourceGroup) `
@@ -149,7 +150,7 @@ stages:
         inputs:
           azureSubscription: 'DemoSub01'
           ScriptType: 'FilePath'
-          ScriptPath: './wvd/hp_pipeline_ops/wvd_add_2_hp_pp.ps1'
+          ScriptPath: '../hp_pipeline_ops/wvd_add_2_hp_pp.ps1'
           ScriptArguments: 
             -HPresourceGroup ${{ parameters.HPresourceGroup }}
             -VMresourceGroup ${{ parameters.VMresourceGroup }}
@@ -165,7 +166,7 @@ stages:
         inputs:
           azureSubscription: 'DemoSub01'
           ScriptType: 'FilePath'
-          ScriptPath: './wvd/hp_pipeline_ops/vm_reimage.ps1'
+          ScriptPath: '../hp_pipeline_ops/vm_reimage.ps1'
           ScriptArguments: 
             -VMresourceGroup ${{ parameters.VMresourceGroup }}
             -ImageId $(ImageId)
@@ -180,7 +181,7 @@ stages:
         inputs:
           azureSubscription: 'DemoSub01'
           ScriptType: 'FilePath'
-          ScriptPath: './wvd/hp_pipeline_ops/wvd_new_hp.ps1'
+          ScriptPath: '../hp_pipeline_ops/wvd_new_hp.ps1'
           ScriptArguments: 
             -ResourceGroup $(newhprg)
             -hostPool $(newhpname)

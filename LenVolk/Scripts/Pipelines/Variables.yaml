@@ -14,6 +14,6 @@ variables:
   - name: basedOnStratumKitName           # Only needed when running kit from Stratum
     value: jumpstart-vm
   - name: artifactFeedCredentials         # PAT based service connection to Azure Artifacts feed
-    value: 'ACC-Azure-00 Stratum Feed'
+    value: 'MyCredentials'
   - name: artifactFeed
     value: 'Stratum'
