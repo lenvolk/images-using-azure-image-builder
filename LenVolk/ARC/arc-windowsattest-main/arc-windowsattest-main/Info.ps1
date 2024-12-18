@@ -1,7 +1,7 @@
 
 
 # https://github.com/lenvolk/arc-windowsattest
-
+# Contact cobeyerrett@microsoft.com
 Connect-AzAccount -UseDeviceAuthentication
 
 git clone https://github.com/cobeyerrett/arc-windowsattest.git
