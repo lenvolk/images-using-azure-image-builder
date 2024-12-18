@@ -1,0 +1,17 @@
+resources
+| where type == 'microsoft.hybridcompute/machines'  
+| where properties.osType =~ 'windows'
+| extend cores = properties.detectedProperties.coreCount
+| extend licenseProfile = properties.licenseProfile
+| extend licenseStatus = tostring(licenseProfile.licenseStatus)
+| extend licenseChannel = tostring(licenseProfile.licenseChannel)
+| extend softwareAssurance = licenseProfile.softwareAssurance
+| extend productSubscriptionStatus = tostring(licenseProfile.productProfile.subscriptionStatus)
+| extend softwareAssuranceCustomer = licenseProfile.softwareAssurance.softwareAssuranceCustomer
+| extend benefitsStatus = case(
+    softwareAssuranceCustomer == true, "Activated",
+    (licenseStatus =~ "Licensed" and licenseChannel =~ "PGS:TB") or productSubscriptionStatus =~ "Enabled", "Activated via Pay-as-you-go",
+    isnull(softwareAssurance) or isnull(softwareAssuranceCustomer) or softwareAssuranceCustomer == false, "Not activated",
+    "Not activated")
+| where benefitsStatus == "Activated"
+| summarize TotalCores = sum(toint(cores)), ArcConnectedServers = count()

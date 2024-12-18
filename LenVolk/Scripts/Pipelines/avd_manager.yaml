@@ -67,7 +67,7 @@ stages:
   #     steps:
   #     - task: AzurePowerShell@5
   #       inputs:
-  #         azureSubscription: 'DemoSub01'
+  #         azureSubscription: 'devops_spn'
   #         ScriptType: 'FilePath'
   #         ScriptPath: './wvd/hp_pipeline_ops/wvd_remove_hp.ps1'
   #         ScriptArguments: 
@@ -83,7 +83,7 @@ stages:
       steps:
       - task: AzurePowerShell@5
         inputs:
-          azureSubscription: 'DemoSub01'
+          azureSubscription: 'devops_spn'
           ScriptType: 'FilePath'
           ScriptPath: './wvd/hp_pipeline_ops/vm_state.ps1'
           ScriptArguments: 
@@ -99,7 +99,7 @@ stages:
       steps:
       - task: AzurePowerShell@5
         inputs:
-          azureSubscription: 'DemoSub01'
+          azureSubscription: 'devops_spn'
           ScriptType: 'FilePath'
           ScriptPath: '../hp_pipeline_ops/invoke_command.ps1'
           ScriptArguments: 
@@ -115,7 +115,7 @@ stages:
       steps:
       - task: AzurePowerShell@5
         inputs:
-          azureSubscription: 'DemoSub01'
+          azureSubscription: 'devops_spn'
           ScriptType: 'FilePath'
           ScriptPath: '../hp_pipeline_ops/vms_sku.ps1'
           ScriptArguments: 
@@ -130,7 +130,7 @@ stages:
       steps:
       - task: AzurePowerShell@5
         inputs:
-          azureSubscription: 'DemoSub01'
+          azureSubscription: 'devops_spn'
           ScriptType: 'FilePath'
           ScriptPath: '../hp_pipeline_ops/wvd_new_binary_pp.ps1'
           ScriptArguments: 
@@ -148,7 +148,7 @@ stages:
       steps:
       - task: AzurePowerShell@5
         inputs:
-          azureSubscription: 'DemoSub01'
+          azureSubscription: 'devops_spn'
           ScriptType: 'FilePath'
           ScriptPath: '../AADNativeFSLogix.ps1'
           ScriptArguments: 
@@ -164,7 +164,7 @@ stages:
       steps:
       - task: AzurePowerShell@5
         inputs:
-          azureSubscription: 'DemoSub01'
+          azureSubscription: 'devops_spn'
           ScriptType: 'FilePath'
           ScriptPath: '../hp_pipeline_ops/vm_reimage.ps1'
           ScriptArguments: 
@@ -179,7 +179,7 @@ stages:
       steps:
       - task: AzurePowerShell@5
         inputs:
-          azureSubscription: 'DemoSub01'
+          azureSubscription: 'devops_spn'
           ScriptType: 'FilePath'
           ScriptPath: '../hp_pipeline_ops/wvd_new_hp.ps1'
           ScriptArguments: 

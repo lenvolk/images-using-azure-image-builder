@@ -1,0 +1,26 @@
+resources
+| where type =~ "microsoft.hybridcompute/machines" and isempty(kind)
+| extend status = properties.status
+| extend operatingSystem = properties.osSku
+| where properties.osType =~ 'windows'
+| extend licenseProfile = properties.licenseProfile
+| extend licenseStatus = tostring(licenseProfile.licenseStatus)
+| extend licenseChannel = tostring(licenseProfile.licenseChannel)
+| extend productSubscriptionStatus = tostring(licenseProfile.productProfile.subscriptionStatus)
+| extend softwareAssurance = licenseProfile.softwareAssurance
+| extend softwareAssuranceCustomer = licenseProfile.softwareAssurance.softwareAssuranceCustomer
+| extend benefitsStatus = case(
+    softwareAssuranceCustomer == true, "Activated",
+    (licenseStatus =~ "Licensed" and licenseChannel =~ "PGS:TB") or productSubscriptionStatus =~ "Enabled", "Activated via Pay-as-you-go",
+    isnull(softwareAssurance) or isnull(softwareAssuranceCustomer) or softwareAssuranceCustomer == false, "Not activated",
+    "Not activated")
+| extend benefitsStatusIcon = case(
+ softwareAssuranceCustomer == true, "8",
+    softwareAssuranceCustomer == true, "8",
+    (licenseStatus =~ "Licensed" and licenseChannel =~ "PGS:TB") or productSubscriptionStatus =~ "Enabled", "8",
+    isnull(softwareAssurance) or isnull(softwareAssuranceCustomer) or softwareAssuranceCustomer == false, "7",
+    "7")
+| project name, status, benefitsStatus, benefitsStatusIcon, resourceGroup, subscriptionId, operatingSystem, id, type, location, kind, tags
+| where (type in~ ('Microsoft.HybridCompute/machinesSoftwareAssurance','Microsoft.HybridCompute/machines'))
+| where benefitsStatus in~ ('Not activated')
+| sort by (tolower(tostring(name))) asc
