@@ -39,15 +39,41 @@ az login --identity
 
 az storage account show -n fileservervolk --query networkRuleSet
 
+# create test file
+fsutil file createnew testfile.txt 104857600
+
 #upload single file
-az storage blob upload --account-name fileservervolk --container-name sharepoint --name example2.txt --file C:\temp\example.txt --auth-mode login
+
+$start = Get-Date
+az storage blob upload --account-name volkarchive --container-name sharepoint --name testfile.txt --file C:\Temp\sharepoint\testfile.txt --auth-mode login
+$end = Get-Date
+$duration = $end - $start
+
+$fileSizeMB = 100 # Size of the file in MB
+$uploadSpeedMbps = ($fileSizeMB * 8) / $duration.TotalSeconds
+Write-Output "Upload Speed: $uploadSpeedMbps Mbps"
 
 #upload folder
 az storage blob upload-batch --account-name fileservervolk --destination sharepoint --source C:\temp --overwrite --auth-mode login
 
-#sync folder
+
+###################
+# azcopy
 # .\azcopy -h
+.\azcopy logout
 .\azcopy login --identity
+
+$start = Get-Date
+.\azcopy sync "C:\Temp\sharepoint" "https://volkarchive.blob.core.windows.net/sharepoint"
+$end = Get-Date
+$duration = $end - $start
+
+$fileSizeMB = 100 # Size of the file in MB
+$uploadSpeedMbps = ($fileSizeMB * 8) / $duration.TotalSeconds
+Write-Output "Upload Speed: $uploadSpeedMbps Mbps"
+
+
+# sync folder
 .\azcopy sync "C:\Temp\sharepoint" "https://fileservervolk.blob.core.windows.net/sharepoint"
 
 
