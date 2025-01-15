@@ -22,3 +22,33 @@
 .\azcopy.exe logout
 
 schtasks /CREATE /SC minute /MO 5 /TN "AzCopy Script" /TR "C:\Temp\azcopy.bat"
+
+
+######
+
+
+az role assignment create --assignee <managed-identity-id> --role "Storage Blob Data Contributor" --scope /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>
+
+az role assignment create --assignee <managed-identity-id> --role "Reader" --scope /subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>
+
+(might need to add role Storage Blob Data Reader to RG where SA is for arc MSI
+Add your login account to the SA with Storage Blob Data Reader )
+
+az account clear
+az login --identity
+
+az storage account show -n fileservervolk --query networkRuleSet
+
+#upload single file
+az storage blob upload --account-name fileservervolk --container-name sharepoint --name example2.txt --file C:\temp\example.txt --auth-mode login
+
+#upload folder
+az storage blob upload-batch --account-name fileservervolk --destination sharepoint --source C:\temp --overwrite --auth-mode login
+
+#sync folder
+# .\azcopy -h
+.\azcopy login --identity
+.\azcopy sync "C:\Temp\sharepoint" "https://fileservervolk.blob.core.windows.net/sharepoint"
+
+
+az storage blob list --account-name fileservervolk --container-name sharepoint --output table --auth-mode login
