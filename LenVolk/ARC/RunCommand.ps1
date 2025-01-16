@@ -137,17 +137,23 @@ $filteredServers = $arcServers | Where-Object {
 
 # Loop through the filtered servers and execute the run command
 foreach ($server in $filteredServers) {
-    New-AzConnectedMachineRunCommand -ResourceGroupName $server.ResourceGroupName -MachineName $server.Name -RunCommandName "arcagupd02" -Location $server.Location -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D"
+    New-AzConnectedMachineRunCommand -ResourceGroupName $server.ResourceGroupName `
+    -MachineName $server.Name `
+    -RunCommandName "arcagupd03" `
+    -Location $server.Location `
+    -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D" `
+    -AsJob
 }
 
-# $filteredServers | ForEach-Object -Parallel {
-#     New-AzConnectedMachineRunCommand `
-#         -ResourceGroupName $_.ResourceGroupName `
-#         -MachineName $_.Name `
-#         -RunCommandName "arcagupd01" `
-#         -Location $_.Location `
-#         -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D"
-# }
+$filteredServers | ForEach-Object -Parallel {
+    New-AzConnectedMachineRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -MachineName $_.Name `
+        -RunCommandName "arcagupd04" `
+        -Location $_.Location `
+        -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D" `
+        -AsJob
+}
 
 
 # Get-AzConnectedMachineRunCommand -ResourceGroupName ARC -MachineName PUB2
