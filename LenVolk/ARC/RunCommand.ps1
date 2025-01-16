@@ -37,8 +37,8 @@ $RCom = Get-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName 
 
 # Delete Need to authenticate via az cli
 az login --only-show-errors -o table --query Dummy
-$subscription = "On-Prem"
-az account set -s $subscription
+# $subscription = "ARC-Demo"
+# az account set -s $subscription
 # az logout
 az connectedmachine run-command delete --name runGetInfo10 --machine-name ArcBox-Win2K22 --resource-group ARC-V1
 az connectedmachine run-command delete --name runGetInfo11 --machine-name ArcBox-Win2K22 --resource-group ARC-V1
@@ -115,3 +115,51 @@ New-AzConnectedMachineRunCommand -ResourceGroupName ARC-V1 -MachineName ArcBox-W
  
 # #Change the path based on your convenience
 # $report | Export-CSV  "c:\temp\$reportName" –NoTypeInformation
+
+#### Update ARC Agent
+
+# Login to Azure
+Connect-AzAccount
+
+# Set the subscription context
+Set-AzContext -SubscriptionName "ARC-Demo"
+# Get all Azure Arc servers in the specified resource group
+$arcServers = Get-AzConnectedMachine -ResourceGroupName "ARC"
+# Filter servers with agent version below 1.48.02881.1941 and status "connected"
+$filteredServers = $arcServers | Where-Object {
+    [version]$_.AgentVersion -lt [version]"1.48.02881.1941" -and $_.Status -eq "connected"
+}
+
+# Output the filtered servers
+#$filteredServers | Select-Object Name, AgentVersion, Status
+
+# New-AzConnectedMachineRunCommand -ResourceGroupName ARC -MachineName PUB2 -RunCommandName arcagupd01 -Location CentralUS  -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D"
+
+$filteredServers | ForEach-Object -Parallel {
+    New-AzConnectedMachineRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -MachineName $_.Name `
+        -RunCommandName "arcagupd01" `
+        -Location $_.Location `
+        -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D"
+}
+
+
+# Get-AzConnectedMachineRunCommand -ResourceGroupName ARC -MachineName PUB2
+# get-AzConnectedMachineRunCommand -ResourceGroupName ARC -MachineName PUB2 -RunCommandName arcagupd2
+# az connectedmachine run-command delete --name arcagupd2 --machine-name PUB2 --resource-group ARC
+
+# Define the URL and file path   https://img.volk.bike/arcagent.ps1
+# $msiUrl = "https://aka.ms/AzureConnectedMachineAgent"
+# $msiPath = "C:\Support\Logs\AzureConnectedMachineAgent.msi"
+
+# # Create the folder if it doesn't exist
+# if (-not (Test-Path -Path "C:\Support\Logs")) {
+#     New-Item -ItemType Directory -Path "C:\Support\Logs"
+# }
+
+# # Download the MSI file
+# Invoke-WebRequest -Uri $msiUrl -OutFile $msiPath
+
+# # Execute the MSI file
+# Start-Process msiexec.exe -ArgumentList "/i $msiPath /qn /l*v `"C:\Support\Logs\azcmagentupgradesetup.log`"" -Wait
