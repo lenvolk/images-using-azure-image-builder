@@ -145,6 +145,14 @@ foreach ($server in $filteredServers) {
     -AsJob
 }
 
+Get-Job -State Running
+# Get the status of a job by its ID
+$jobId = <YourJobId>
+$jobStatus = Get-Job -Id $jobId
+
+# Display the job status
+$jobStatus
+
 # $filteredServers | ForEach-Object -Parallel {
 #     New-AzConnectedMachineRunCommand `
 #         -ResourceGroupName $_.ResourceGroupName `
@@ -156,7 +164,7 @@ foreach ($server in $filteredServers) {
 # }
 
 
-# Get-AzConnectedMachineRunCommand -ResourceGroupName ARC -MachineName PUB2
+# Get-AzConnectedMachineRunCommand -ResourceGroupName ARC -MachineName WITNESS
 # get-AzConnectedMachineRunCommand -ResourceGroupName ARC -MachineName PUB2 -RunCommandName arcagupd2
 # az connectedmachine run-command delete --name arcagupd2 --machine-name PUB2 --resource-group ARC
 
