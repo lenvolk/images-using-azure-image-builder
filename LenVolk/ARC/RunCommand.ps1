@@ -141,7 +141,7 @@ foreach ($server in $filteredServers) {
     -MachineName $server.Name `
     -RunCommandName "arcagupd03" `
     -Location $server.Location `
-    -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D" `
+    -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1" `
     -AsJob
 }
 
@@ -159,7 +159,7 @@ $jobStatus
 #         -MachineName $_.Name `
 #         -RunCommandName "arcagupd04" `
 #         -Location $_.Location `
-#         -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1?sp=r&st=2025-01-16T19:28:19Z&se=2025-01-30T03:28:19Z&spr=https&sv=2022-11-02&sr=b&sig=E%2F0Y8pH%2FbirvP1Te0XJtbNGB%2FH38vcsZ4O%2FJZ2bDdl8%3D" `
+#         -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1" `
 #         -AsJob
 # }
 
