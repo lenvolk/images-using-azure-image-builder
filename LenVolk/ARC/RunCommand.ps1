@@ -194,9 +194,9 @@ $filteredServers | ForEach-Object -Parallel {
     New-AzConnectedMachineRunCommand `
         -ResourceGroupName $_.ResourceGroupName `
         -MachineName $_.Name `
-        -RunCommandName "arcchrome01" `
+        -RunCommandName "arcchrome03" `
         -Location $_.Location `
         -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/ChromeInstall.ps1" `
-        -AsJob
+        -NoWait
 }
 
