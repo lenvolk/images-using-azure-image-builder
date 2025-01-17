@@ -210,7 +210,7 @@ foreach ($server in $filteredServers) {
         $RCom = Get-AzConnectedMachineRunCommand -ResourceGroupName $server.ResourceGroupName -MachineName $server.Name
         
         $RCom | ForEach-Object -Parallel {
-            Write-Host "Removing command: $($_.Name) from server: $($using:server.Name)"
+            Write-Host "Removing command: $($_.Name) from server: $($using:server.Name)" -ForegroundColor Yellow
             Remove-AzConnectedMachineRunCommand `
              -RunCommandName $_.Name `
              -MachineName $($using:server.Name) `
