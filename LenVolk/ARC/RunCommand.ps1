@@ -200,3 +200,22 @@ $filteredServers | ForEach-Object -Parallel {
         -NoWait
 }
 
+# Clean up Run Commands
+
+foreach ($server in $filteredServers) {
+    if ($null -eq $server.Name) {
+        Write-Host "Server name is null or empty for resource group: $($server.ResourceGroupName)"
+    } else {
+        Write-Host "Processing server: $($server.Name)"
+        $RCom = Get-AzConnectedMachineRunCommand -ResourceGroupName $server.ResourceGroupName -MachineName $server.Name
+        
+        $RCom | ForEach-Object -Parallel {
+            Write-Host "Removing command: $($_.Name) from server: $($using:server.Name)"
+            Remove-AzConnectedMachineRunCommand `
+             -RunCommandName $_.Name `
+             -MachineName $($using:server.Name) `
+             -ResourceGroupName $($using:server.ResourceGroupName)
+        }
+
+    }
+}
