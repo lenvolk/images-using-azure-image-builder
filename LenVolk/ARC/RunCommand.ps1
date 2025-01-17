@@ -182,3 +182,21 @@ $jobStatus
 
 # # Execute the MSI file
 # Start-Process msiexec.exe -ArgumentList "/i $msiPath /qn /l*v `"C:\Support\Logs\azcmagentupgradesetup.log`"" -Wait
+
+
+# Chrome Install
+$arcServers = Get-AzConnectedMachine -ResourceGroupName "ARC"
+# Filter servers with agent version below 1.48.02881.1941 and status "connected"
+$filteredServers = $arcServers | Where-Object {
+    $_.Status -eq "connected"
+}
+$filteredServers | ForEach-Object -Parallel {
+    New-AzConnectedMachineRunCommand `
+        -ResourceGroupName $_.ResourceGroupName `
+        -MachineName $_.Name `
+        -RunCommandName "arcchrome01" `
+        -Location $_.Location `
+        -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/ChromeInstall.ps1" `
+        -AsJob
+}
+
