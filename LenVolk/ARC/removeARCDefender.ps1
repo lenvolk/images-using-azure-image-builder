@@ -9,6 +9,22 @@ $filteredServers = $arcServers | Where-Object {
 }
 
 
+
+# foreach ($server in $filteredServers) {
+#     $extensions = Get-AzConnectedMachineExtension -ResourceGroupName "ARC" -MachineName $server.Name
+#     $mdeExtension = $extensions | Where-Object { $_.Name -eq "MDE.Windows" }
+
+#     if ($mdeExtension) {
+#         Remove-AzConnectedMachineExtension -ResourceGroupName "ARC" -MachineName $server.Name -Name "MDE.Windows"
+#         Write-Output "Removed MDE.Windows extension from $($server.Name)"
+#     } else {
+#         Write-Output "MDE.Windows extension not found on $($server.Name)"
+#     }
+# }
+
+
+
+
 $filteredServers | ForEach-Object -Parallel {
     Remove-AzConnectedMachineExtension `
         -ResourceGroupName $_.ResourceGroupName `
