@@ -2,7 +2,7 @@
 # Set Subscription, RG Name etc.
 . '.\00 Variables.ps1'
 
-# Set Image Name
+# Set Image Name 
 $imageName="aibDataClient"
 
 # Build addl. resource Names 
