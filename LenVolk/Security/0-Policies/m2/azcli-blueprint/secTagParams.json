@@ -1,8 +1,0 @@
-{
-    "tagName": {
-        "value": "Security Owner"
-    },
-    "tagValue": {
-        "value": "[parameters('security_owner_tagValue')]"
-    }
-}

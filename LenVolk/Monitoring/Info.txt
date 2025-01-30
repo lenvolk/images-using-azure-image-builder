@@ -1,5 +1,0 @@
-
-
-The Ultimate Azure Inventory Dashboard
-https://www.youtube.com/watch?v=Kglnm_jDoQ4
-https://github.com/scautomation/Azure-Inventory-Workbook
