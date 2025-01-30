@@ -1,0 +1,11 @@
+variables:
+  - name: serviceConnectionApp
+    value: DevOps-Patterns-Base-Infrastructure-SPN # <--- CHANGE TO DEVOPS SERVICE CONNECTION NAME
+
+# Terraform Backend Setup
+  - name: backendResourceGroupName
+    value: $(motsId)-eastus2-devops-rg
+  - name: backendStorageAccountName
+    value: $(motsId)devopsstdgatt001
+  - name: backendContainerName
+    value: jstart-vm-demo-tfstate

@@ -1,0 +1,5 @@
+Follow the <a href='https://learn.microsoft.com/en-us/azure/azure-arc/servers/license-extended-security-updates' target='_blank'>Extended Security Updates Licensing guidelines </a> when provisioning WS2012 ESU licenses, you need to specify:
+ - Standard or Datacenter license
+ - Either virtual core or physical core license
+  - license based on physical cores, the licensing requires a minimum of 16 physical cores per license.
+- license based on virtual cores, the licensing requires a minimum of eight virtual cores per Virtual Machine

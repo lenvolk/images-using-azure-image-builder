@@ -1,0 +1,14 @@
+{
+    "vnetName": {
+        "value": "[parameters('vnetName')]"
+    },
+    "vnetAddressPrefix": {
+        "value": "[parameters('vnetAddressPrefix')]"
+    },
+    "subnet1Prefix": {
+        "value": "[parameters('subnet1Prefix')]"
+    },
+    "subnet1Name": {
+        "value": "[parameters('subnet1Name')]"
+    }
+}

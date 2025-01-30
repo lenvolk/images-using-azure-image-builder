@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "WEBSITE_SLOT_NAME": "Production",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "ScmType": "None",
+    "WEBSITE_AUTH_ENABLED": "False",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=953fcfa3-68ce-4126-aa65-7d0b336e15fd;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "953fcfa3-68ce-4126-aa65-7d0b336e15fd",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=autoonautooffaba4;AccountKey=CEWmO4qw6VSmLirqY9gIfUkwFrtR7o2EPyDpbAeJzyubC5vMq0y/8K4hO50gtl7rRVhsDTFURxCQ+AStr85qvQ==;EndpointSuffix=core.windows.net",
+    "WEBSITE_CONTENTSHARE": "luke-auto-powerbad0",
+    "FUNCTIONS_WORKER_RUNTIME": "powershell",
+    "WEBSITE_SITE_NAME": "luke-auto-power",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=autoonautooffaba4;AccountKey=CEWmO4qw6VSmLirqY9gIfUkwFrtR7o2EPyDpbAeJzyubC5vMq0y/8K4hO50gtl7rRVhsDTFURxCQ+AStr85qvQ==;EndpointSuffix=core.windows.net"
+  }
+}

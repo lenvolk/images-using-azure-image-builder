@@ -1,0 +1,71 @@
+{
+    "name": "Org-Baseline",
+    "type": "Microsoft.Authorization/policySetDefinitions",
+    "apiVersion": "2021-06-01",
+    "scope": null,
+    "properties": {
+        "policyType": "Custom",
+        "displayName": "Org Baseline",
+        "description": "Contains the core policies applicable to the org that need to be assigned at the Root Management Group",
+        "metadata": {
+        "version": "1.0.0",
+        "category": "General"
+        },
+        "parameters": {
+        "Azure Cosmos DB accounts should have firewall rules - Effect Type": {
+            "type": "String",
+            "defaultValue": "Audit",
+            "allowedValues": [
+                "Audit",
+                "Deny",
+                "Disabled"
+            ],
+            "metadata": {
+                "displayName": "Azure Cosmos DB accounts should have firewall rules",
+                "description": "Firewall rules should be defined on your Azure Cosmos DB accounts to prevent traffic from unauthorized sources. Accounts that have at least one IP rule defined with the virtual network filter enabled are deemed compliant. Accounts disabling public access are also deemed compliant."
+            }
+        },
+        "Deny NSG NIC - Effect Type": {
+            "type": "String",
+            "defaultValue": "deny",
+            "allowedValues": [
+                "audit",
+                "deny",
+                "disabled"
+            ],
+            "metadata": {
+                "displayName": "Enable or disable the execution of the policy",
+                "description": "This policy will prevent NSGs from being applied to network interface cards."
+            }
+        }
+        },
+        "policyDefinitions": [
+        {
+            "policyDefinitionReferenceId": "Audit VMs that do not use managed disks",
+            "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/06a78e20-9358-41c9-923c-fb736d382a4d",
+            "groupNames": []
+        },
+        {
+            "policyDefinitionReferenceId": "Azure Cosmos DB accounts should have firewall rules",
+            "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/862e97cf-49fc-4a5c-9de4-40d4e2e7c8eb",
+            "parameters": {
+                "effect": {
+                "value": "[parameters('Azure Cosmos DB accounts should have firewall rules - Effect Type')]"
+                }
+            },
+            "groupNames": []
+        },
+        {
+            "policyDefinitionReferenceId": "Deny NSG NIC",
+            "policyDefinitionId": "${root_scope_resource_id}/providers/Microsoft.Authorization/policyDefinitions/Deny-NIC-NSG",
+            "parameters": {
+                "effectType": {
+                "value": "[parameters('Deny NSG NIC - Effect Type')]"
+                }
+            },
+            "groupNames": []
+        }
+        ],
+        "policyDefinitionGroups": null
+    }
+}  

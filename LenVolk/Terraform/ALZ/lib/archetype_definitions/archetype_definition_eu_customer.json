@@ -1,0 +1,29 @@
+{
+    "eu_customer": {
+      "policy_assignments": ["Deny-Resource-Locations", "Deny-RSG-Locations","Deny-NIC-NSG"],
+      "policy_definitions": [],
+      "policy_set_definitions": [],
+      "role_definitions": [],
+      "archetype_config": {
+        "parameters": { 
+          "Deny-Resource-Locations": {
+            "listOfAllowedLocations": [
+              "eastus",
+              "westus"
+            ]
+          },
+          "Deny-RSG-Locations": {
+            "listOfAllowedLocations": [
+              "eastus",
+              "westus"
+            ]
+          }     
+        },
+        "access_control": {
+          "Owner":[
+                   "8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+                  ]
+        }
+      }
+    }
+  }

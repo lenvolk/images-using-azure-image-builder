@@ -1,0 +1,57 @@
+parameters:
+- name: projectName
+  type: string
+  displayName: 'The name of the Azure DevOps project'
+
+- name: pipelineId
+  type: string
+  displayName: 'The Azure DevOps Pipeline ID'
+
+- name: runId
+  type: string
+  displayName: 'The build from which to download the artifacts'
+
+- name: preferTriggeringPipeline
+  type: string
+  default: true
+  displayName: 'A boolean specifying whether to download artifacts from a triggering build.'
+
+- name: downloadPath
+  type: string
+  default: $(Build.ArtifactStagingDirectory)
+  displayName: 'Directory to download the artifact files. Can be relative to the pipeline workspace directory or absolute. If multi-download option is applied (by leaving an empty artifact name), a sub-directory will be created for each.'
+
+- name: layerName
+  type: string
+  displayName: 'Name of the layer. This will be used to change directory into the corresponding layer folder'
+
+steps:
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download Pipeline Artifact'
+  condition: succeeded()
+  inputs:
+    source: specific
+    project: ${{ parameters.projectName }}
+    pipeline: ${{ parameters.pipelineId }}
+    preferTriggeringPipeline: ${{ parameters.preferTriggeringPipeline }}
+    buildVersionToDownload: 'specific'
+    runId:  ${{ parameters.runId }}
+    path: ${{ parameters.downloadPath }}
+
+- task: CopyFiles@2
+  displayName: "Copy tfvars"
+  condition: succeeded()
+  inputs:
+    sourceFolder: ${{ parameters.downloadPath }}
+    contents: '*.artifact/*.auto.tfvars'
+    targetFolder: ./layer-${{ parameters.layerName }}
+    flattenFolders: true
+
+- script: |
+
+      cd ./layer-${{ parameters.layerName }}
+      echo "auto.tfvars contents:"
+      cat *.auto.tfvars 
+
+  displayName: "Display tfvars"
+  condition: succeeded()
