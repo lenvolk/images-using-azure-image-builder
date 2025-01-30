@@ -3,8 +3,9 @@
 # Has to be run from folder: images-using-azure-image-builder\LenVolk\packer
 
 ## Validate Image
-
 packer validate -var-file ./secret/secret_packer.json -var-file packer-var.json packer.json
+# via MSI
+packer validate -var-file packer-var.json packer.json
 
 ## Inspect
 
@@ -13,6 +14,8 @@ packer inspect -var-file ./secret/secret_packer.json -var-file packer-var.json p
 ## Build Image
 # only run this
 packer build -force -var-file ./secret/secret_packer.json -var-file packer-var.json packer.json
+# via MSI
+packer build -force -var-file packer-var.json packer.json
 # 
 packer build -debug -force -var-file ./secret/secret_packer.json -var-file packer-var.json packer.json
 
