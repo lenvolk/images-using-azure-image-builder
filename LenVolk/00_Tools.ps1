@@ -187,6 +187,8 @@ $vm = Set-AzVmUefi -VM $vm `
    -EnableVtpm $true `
    -EnableSecureBoot $true 
 
+$vm = Set-AzVMBootDiagnostic -VM $vm -Disable
+
 New-AzVM -ResourceGroupName $rgName -Location $location -VM $vm -LicenseType "Windows_Client"
 
 #RDP to the vm
