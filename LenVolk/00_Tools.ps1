@@ -168,6 +168,9 @@ $vm = Set-AzVMSourceImage -VM $vm `
    -Offer $offer `
    -Skus $sku `
    -Version $version 
+### Optionally with Comp Gallary Image ID
+# $imageVersion = Get-AzGalleryImageVersion -ResourceGroupName $CompGalRg -GalleryName $galleryName -GalleryImageDefinitionName $imageDefinitionName | Sort-Object -Property PublishedDate -Descending | Select-Object -First 1
+# $vm = Set-AzVMSourceImage -VM $vm -Id $imageVersion.Id
 
 # Delete option for Disk
 $vm = Set-AzVMOSDisk -VM $vm `
