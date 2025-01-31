@@ -141,7 +141,7 @@ foreach ($server in $filteredServers) {
     -MachineName $server.Name `
     -RunCommandName "arcagupd03" `
     -Location $server.Location `
-    -SourceScriptUri "https://sharexvolkbike.blob.core.windows.net/scripts/arcagent.ps1" `
+    -SourceScriptUri "https://raw.githubusercontent.com/lenvolk/images-using-azure-image-builder/refs/heads/main/LenVolk/ARC/ChromeInstall.ps1" `
     -AsJob
 }
 
