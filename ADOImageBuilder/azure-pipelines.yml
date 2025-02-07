@@ -1,0 +1,137 @@
+parameters:
+- name: cleanup
+  displayName: Cleanup after deployment
+  type: boolean
+  default: false
+- name: choclatey
+  displayName: Choclatey custom installs
+  type: boolean
+  default: false
+- name: winget
+  displayName: Winget custom installs
+  type: boolean
+  default: false  
+
+trigger:
+- none
+
+# parameterize common vars in each script
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: PrepareComputeGallery
+  displayName: Prepare Compute Gallery
+  jobs:
+  - job: GalleryAndDefinition
+    displayName: Gallery and Definition
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '01-ComputeGallery.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: CreateReferenceImage
+  displayName: Create Reference Image
+  jobs:
+  - job: CreateAndPublishImage
+    displayName: Create and Publish Image
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '02-ReferenceVM.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: CustomizeImage
+  displayName: Customize Image
+  jobs:
+  - job: ChoclateyInstalls
+    displayName: Choclatey Installs
+    condition: and(succeeded(), ${{ eq(parameters.choclatey, true) }})
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '03-Customization.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+        ScriptArguments: '-choclatey 1 -winget 0'
+
+  - job: WingetInstalls
+    displayName: Winget Installs
+    condition: and(succeeded(), ${{ eq(parameters.winget, true) }})
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '03-Customization.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+        ScriptArguments: '-choclatey 0 -winget 1'
+
+- stage: CloneAndCapture
+  displayName: Clone and Capture
+  jobs:
+  - job: CloneAndCaptureImage
+    displayName: Clone and Capture Custom Image
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '04-Image_snapshot.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: TestImage
+  displayName: Test Image
+  jobs:
+  - job: TestImage
+    displayName: Test Image
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        addSpnToEnvironment: true
+        ScriptType: 'FilePath'
+        ScriptPath: '05-Test_Image.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: Cleanup
+  displayName: Cleanup
+  condition: and(succeeded(), ${{ eq(parameters.cleanup, true) }})
+  jobs:
+  - job: CleanupTempVms
+    displayName: Cleanup Temp VMs
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '06-Cleanup.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: AIB
+  displayName: AIB
+  jobs:
+  - job: AIB
+    displayName: AIB
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        scriptType: 'pscore'
+        scriptLocation: 'scriptPath'
+        scriptPath: '_AIB-CompGallery-ExistingVNET-Win11.ps1'
+        addSpnToEnvironment: true

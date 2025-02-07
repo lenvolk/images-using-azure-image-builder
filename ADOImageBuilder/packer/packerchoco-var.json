@@ -1,0 +1,15 @@
+{
+	"managed_image_rg": "imageBuilderRG",
+	"managed_image_name": "win11-packer",
+	"vm_size": "Standard_D8s_v3",
+	"src_img_pub": "microsoftwindowsdesktop",
+	"scr_img_offer": "office-365",
+	"scr_img_sku": "win11-22h2-avd-m365",
+	"dst_sig_rg": "imageBuilderRG",
+	"dst_sig_name": "aibSig",
+	"dst_sig_image": "win11packer",
+	"dst_sig_version": "0.1.1",
+	"virtual_network_resource_group_name": "imageBuilderRG",
+	"virtual_network_name": "aibVNet",
+	"virtual_network_subnet_name": "aibSubnet"
+}

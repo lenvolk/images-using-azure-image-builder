@@ -1,0 +1,98 @@
+{
+  "variables": {
+    "clientid": "",
+    "clientsecret": "",
+    "tenantid": "",
+    "subid": "",
+    "winrm_password": "",
+    "managed_image_rg": "",
+    "managed_image_name": "",
+    "vm_size": "",
+    "src_img_pub": "",
+    "scr_img_offer": "",
+    "scr_img_sku": "",
+    "dst_sig_rg": "",
+    "dst_sig_name": "",
+    "dst_sig_image": "",
+    "dst_sig_version": "",
+    "virtual_network_resource_group_name": "",
+    "virtual_network_name": "",
+    "virtual_network_subnet_name": ""
+  },
+  "sensitive-variables": [
+    "client_id",
+    "client_secret",
+    "tenantid",
+    "subid",
+    "winrm_password"
+  ],
+  "builders": [
+    {
+      "type": "azure-arm",
+      "client_id": "{{user `clientid`}}",
+      "client_secret": "{{user `clientsecret`}}",
+      "tenant_id": "{{user `tenantid`}}",
+      "subscription_id": "{{user `subid`}}",
+      "communicator": "winrm",
+      "winrm_use_ssl": "true",
+      "winrm_insecure": "true",
+      "winrm_timeout": "30m",
+      "winrm_username": "packer",
+      "winrm_password": "{{user `winrm_password`}}",
+      "shared_image_gallery_timeout": "2h",
+      "shared_image_gallery_destination": {
+        "resource_group": "{{user `dst_sig_rg`}}",
+        "gallery_name": "{{user `dst_sig_name`}}",
+        "image_name": "{{user `dst_sig_image`}}",
+        "image_version": "{{user `dst_sig_version`}}",
+        "replication_regions": [
+          "east us 2"
+        ]
+      },
+      "os_type": "Windows",
+      "image_publisher": "{{user `src_img_pub`}}",
+      "image_offer": "{{user `scr_img_offer`}}",
+      "image_sku": "{{user `scr_img_sku`}}",
+      "managed_image_resource_group_name": "{{user `managed_image_rg`}}",
+      "managed_image_name": "{{user `managed_image_name`}}",
+      "location": "East US 2",
+      "vm_size": "{{user `vm_size`}}",
+      "virtual_network_resource_group_name": "{{user `virtual_network_resource_group_name`}}",
+      "virtual_network_name": "{{user `virtual_network_name`}}",
+      "virtual_network_subnet_name": "{{user `virtual_network_subnet_name`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "elevated_user": "SYSTEM",
+      "elevated_password": "",
+      "execution_policy": "bypass",
+      "scripts": [
+        ".\\Choco.ps1"
+      ]
+    },
+    {
+      "type": "windows-restart",
+      "restart_check_command": "powershell -command \"& {Write-Output 'restarted.'}\"",
+      "restart_timeout": "1m"
+    },
+    {
+      "type": "breakpoint",
+      "note": "Let's login to the system before sysprep"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "manifest.json"
+    },
+    {
+      "type": "shell-local",
+      "tempfile_extension": ".cmd",
+      "inline": [
+        "type .\\manifest.json"
+      ]
+    }
+  ]
+}

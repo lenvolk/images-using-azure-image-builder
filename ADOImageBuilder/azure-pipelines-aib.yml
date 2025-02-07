@@ -1,0 +1,74 @@
+parameters:
+- name: cleanup
+  displayName: Cleanup after deployment
+  type: boolean
+  default: false
+
+trigger:
+- none
+
+# parameterize common vars in each script
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: PrepareComputeGallery
+  displayName: Prepare Compute Gallery
+  jobs:
+  - job: GalleryAndDefinition
+    displayName: Gallery and Definition
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '01-ComputeGallery.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: AzureImageBuilder
+  displayName: Azure Image Builder
+  jobs:
+  - job: AzureImageBuilder
+    displayName: Azure Image Builder
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        scriptType: 'pscore'
+        scriptLocation: 'scriptPath'
+        scriptPath: '_AIB-CompGallery-ExistingVNET-Win11.ps1'
+        addSpnToEnvironment: true
+
+- stage: TestImage
+  displayName: Test Image
+  jobs:
+  - job: TestImage
+    displayName: Test Image
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        addSpnToEnvironment: true
+        ScriptType: 'FilePath'
+        ScriptPath: '05-Test_Image.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: Cleanup
+  displayName: Cleanup
+  condition: and(succeeded(), ${{ eq(parameters.cleanup, true) }})
+  jobs:
+  - job: CleanupTempVms
+    displayName: Cleanup Temp VMs
+    steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'ADOImageBuilderConnection'
+        ScriptType: 'FilePath'
+        ScriptPath: '06-Cleanup.ps1'
+        FailOnStandardError: true
+        azurePowerShellVersion: 'LatestVersion'
+
+
