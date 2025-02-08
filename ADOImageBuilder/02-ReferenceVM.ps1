@@ -35,6 +35,7 @@ if (-not (Get-AzVm -ResourceGroupName $rgName -Name $vmName -ErrorAction Silentl
     $VirtualMachine = Set-AzVMOSDisk -Windows -VM $VirtualMachine -CreateOption FromImage -DiskSizeInGB $DiskSizeGB
     $VirtualMachine = Set-AzVMSourceImage -VM $VirtualMachine -PublisherName $ImagePublisher -Offer $ImageOffer -Skus $ImageSku -Version latest 
     $VirtualMachine = Set-AzVMBootDiagnostic -VM $VirtualMachine -Disable
+    New-AzVM -ResourceGroupName $rgName -Location $location -VM $VirtualMachine -LicenseType "Windows_Client"
     $job = New-AzVM -ResourceGroupName $rgName -Location $location -VM $VirtualMachine -LicenseType "Windows_Client" -AsJob
 
     ### Wait for VM to be ready, display job status "Completed"
@@ -53,3 +54,12 @@ if (-not (Get-AzVm -ResourceGroupName $rgName -Name $vmName -ErrorAction Silentl
 } else {
     Start-AzVm -ResourceGroupName $rgName -Name $vmName
 }
+
+
+# # Check if the VM is running
+# $vm = Get-AzVM -ResourceGroupName $rgName -Name $vmName
+# if ($vm.ProvisioningState -eq "Succeeded" -and $vm.PowerState -eq "VM running") {
+#     Write-Host "VM is running and ready."
+# } else {
+#     Write-Host "VM is not in the expected state. ProvisioningState: $($vm.ProvisioningState), PowerState: $($vm.PowerState)"
+# }
