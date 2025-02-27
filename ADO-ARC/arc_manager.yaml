@@ -1,0 +1,116 @@
+# Ref C:\Temp\BackUP\Terraform\WVD\ACC-Windows-Images\wvd\hp_pipeline_ops\wvd_manager.yaml
+
+parameters: 
+  - name: 'ARCresourceGroup'
+    displayName: 'ARC ResourceGroup'
+    type: string
+    default: 'ARC'
+    values: 
+      - 'ARC'
+      - 'arcbox-it-pro'   
+  - name: 'OSType'
+    displayName: 'Operating System Type'
+    type: string
+    default: Windows
+    values: 
+      - Windows
+      - Linux
+  - name: 'ArcAgentVer'
+    displayName: 'Arc agent version'
+    type: string
+    default: '1.48.02881.1941'
+
+# trigger:
+# - master
+trigger: none
+pr: none
+ 
+pool:
+  vmImage: ubuntu-latest
+ 
+variables:
+- name: 'ExtensionNameDefWin'
+  value: 'MDE.Windows'
+
+stages:
+  - stage: removeARCDefender
+    displayName: removeARCDefender
+    jobs:
+    - job: Remove_Extension
+      displayName: Remove MDE Extension
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'ARC-ADO-SPN'
+          ScriptType: 'FilePath'
+          ScriptPath: 'removeArcWinDefender.ps1'
+          ScriptArguments: 
+            -ARCresourceGroup ${{ parameters.ARCresourceGroup }} `
+            -OSType ${{ parameters.OSType }} `
+            -ExtensionNameDefWin $(ExtensionNameDefWin)
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: ArcChromeInstall
+    displayName: ArcChromeInstall
+    jobs:
+    - job: InstallChrome
+      displayName: Installing Chrome
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'ARC-ADO-SPN'
+          ScriptType: 'FilePath'
+          ScriptPath: 'ArcChromeInstall.ps1'
+          ScriptArguments: 
+            -ARCresourceGroup ${{ parameters.ARCresourceGroup }} `
+            -OSType ${{ parameters.OSType }} 
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: ArcAgentUpdate
+    displayName: ArcAgentUpdate
+    jobs:
+    - job: UpdateingAgent
+      displayName: Updating Agent
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'ARC-ADO-SPN'
+          ScriptType: 'FilePath'
+          ScriptPath: 'ArcAgentUpdate.ps1'
+          ScriptArguments: 
+            -ARCresourceGroup ${{ parameters.ARCresourceGroup }} `
+            -OSType ${{ parameters.OSType }} `
+            -ArcAgentVer ${{parameters.ArcAgentVer}}
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: ARCNanoLinuxInstall
+    displayName: ARCNanoLinuxInstall
+    jobs:
+    - job: ARCNanoLinuxInstall
+      displayName: ARCNanoLinuxInstall
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'ARC-ADO-SPN'
+          ScriptType: 'FilePath'
+          ScriptPath: 'NanoLinux.ps1'
+          ScriptArguments: 
+            -ARCresourceGroup ${{ parameters.ARCresourceGroup }} `
+            -OSType ${{ parameters.OSType }} `
+            -ArcAgentVer ${{parameters.ArcAgentVer}}
+          azurePowerShellVersion: 'LatestVersion'
+
+  - stage: CleanupArcRunCommands
+    displayName: CleanupArcRunCommands
+    jobs:
+    - job: Cleanup
+      displayName: Cleanup Run Commands
+      steps:
+      - task: AzurePowerShell@5
+        inputs:
+          azureSubscription: 'ARC-ADO-SPN'
+          ScriptType: 'FilePath'
+          ScriptPath: 'CleanupArcRunCommands.ps1'
+          ScriptArguments: 
+            -ARCresourceGroup ${{ parameters.ARCresourceGroup }}
+          azurePowerShellVersion: 'LatestVersion'
