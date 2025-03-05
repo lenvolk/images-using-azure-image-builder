@@ -1,0 +1,231 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "metadata": {
+      "_generator": {
+        "name": "bicep",
+        "version": "0.13.1.58284",
+        "templateHash": "10621375572792662296"
+      }
+    },
+    "parameters": {
+      "resourceGroupName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the existing resource group"
+        }
+      },
+      "nsgName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the Network Security Group"
+        }
+      },
+      "subnetId": {
+        "type": "string",
+        "metadata": {
+          "description": "Resource ID of the existing subnet to associate with the NSG"
+        }
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]",
+        "metadata": {
+          "description": "Azure region for NSG"
+        }
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "apiVersion": "2022-07-01",
+        "name": "[parameters('nsgName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "securityRules": [
+            {
+              "name": "AllowHttpsInBound",
+              "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "Internet",
+                "destinationPortRange": "443",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowGatewayManagerInBound",
+              "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "GatewayManager",
+                "destinationPortRange": "443",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 110,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowLoadBalancerInBound",
+              "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "AzureLoadBalancer",
+                "destinationPortRange": "443",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 120,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowBastionHostCommunicationInBound",
+              "properties": {
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationPortRanges": [
+                  "8080",
+                  "5701"
+                ],
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 130,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "DenyAllInBound",
+              "properties": {
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationPortRange": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Deny",
+                "priority": 1000,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowSshRdpOutBound",
+              "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationPortRanges": [
+                  "22",
+                  "3389"
+                ],
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Outbound"
+              }
+            },
+            {
+              "name": "AllowAzureCloudCommunicationOutBound",
+              "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationPortRange": "443",
+                "destinationAddressPrefix": "AzureCloud",
+                "access": "Allow",
+                "priority": 110,
+                "direction": "Outbound"
+              }
+            },
+            {
+              "name": "AllowBastionHostCommunicationOutBound",
+              "properties": {
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationPortRanges": [
+                  "8080",
+                  "5701"
+                ],
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 120,
+                "direction": "Outbound"
+              }
+            },
+            {
+              "name": "AllowGetSessionInformationOutBound",
+              "properties": {
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "Internet",
+                "destinationPortRanges": [
+                  "80",
+                  "443"
+                ],
+                "access": "Allow",
+                "priority": 130,
+                "direction": "Outbound"
+              }
+            },
+            {
+              "name": "DenyAllOutBound",
+              "properties": {
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Deny",
+                "priority": 1000,
+                "direction": "Outbound"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2022-09-01",
+        "name": "AssociateNsgToSubnet",
+        "resourceGroup": "[parameters('resourceGroupName')]",
+        "properties": {
+          "mode": "Incremental",
+          "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "resources": [
+              {
+                "type": "Microsoft.Network/virtualNetworks/subnets",
+                "apiVersion": "2022-07-01",
+                "name": "[concat(split(parameters('subnetId'), '/')[8], '/', split(parameters('subnetId'), '/')[10])]",
+                "properties": {
+                  "addressPrefix": "[reference(parameters('subnetId'), '2022-07-01').addressPrefix]",
+                  "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                  },
+                  "serviceEndpoints": "[if(contains(reference(parameters('subnetId'), '2022-07-01'), 'serviceEndpoints'), reference(parameters('subnetId'), '2022-07-01').serviceEndpoints, json('[]'))]",
+                  "delegations": "[if(contains(reference(parameters('subnetId'), '2022-07-01'), 'delegations'), reference(parameters('subnetId'), '2022-07-01').delegations, json('[]'))]",
+                  "privateEndpointNetworkPolicies": "[if(contains(reference(parameters('subnetId'), '2022-07-01', 'Full'), 'privateEndpointNetworkPolicies'), reference(parameters('subnetId'), '2022-07-01', 'Full').privateEndpointNetworkPolicies, null())]",
+                  "privateLinkServiceNetworkPolicies": "[if(contains(reference(parameters('subnetId'), '2022-07-01', 'Full'), 'privateLinkServiceNetworkPolicies'), reference(parameters('subnetId'), '2022-07-01', 'Full').privateLinkServiceNetworkPolicies, null())]"
+                }
+              }
+            ]
+          }
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+        ]
+      }
+    ],
+    "outputs": {
+      "nsgId": {
+        "type": "string",
+        "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+      }
+    }
+}
