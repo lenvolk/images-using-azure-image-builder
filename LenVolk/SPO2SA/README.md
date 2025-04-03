@@ -31,32 +31,39 @@ This guide provides instructions for deploying the ARM template that creates the
 
 ```mermaid
 graph TD
-    subgraph "Virtual Network (10.151.0.0/24)"
-        subgraph "Servers Subnet (10.151.0.0/28)"
-            VM[Windows Server 2022 VM]
-        end
-        
-        subgraph "Private Endpoint Subnet (10.151.0.16/28)"
-            KV_PE[Key Vault Private Endpoint]
-            SA_PE[Storage Account Private Endpoint]
-        end
-        
-        subgraph "AzureBastionSubnet (10.151.0.64/26)"
-            BASTION[Azure Bastion Host]
-        end
+    %% Define the virtual network boundary
+    subgraph VNet["Virtual Network (10.151.0.0/24)"]
+        ServersSubnet["Servers Subnet (10.151.0.0/28)"]
+        PrivateEndpointSubnet["Private Endpoint Subnet (10.151.0.16/28)"]
+        BastionSubnet["Azure Bastion Subnet (10.151.0.64/26)"]
     end
     
+    %% Define VM and network components
+    VM[Windows Server 2022 VM]
+    KV_PE[Key Vault Private Endpoint]
+    SA_PE[Storage Account Private Endpoint]
+    BASTION[Azure Bastion Host]
+    
+    %% Place components in their subnets using positioning
+    ServersSubnet --- VM
+    PrivateEndpointSubnet --- KV_PE
+    PrivateEndpointSubnet --- SA_PE
+    BastionSubnet --- BASTION
+    
+    %% Define Azure Resources
     subgraph "Azure Resources"
         KV[Key Vault]
         SA[Storage Account]
         CONTAINER[Blob Container]
     end
     
+    %% Define Private DNS Zones
     subgraph "Private DNS Zones"
         KV_DNS[privatelink.vaultcore.azure.net]
         SA_DNS[privatelink.blob.core.windows.net]
     end
 
+    %% Define relationships
     User--"HTTPS/RDP via Bastion"-->BASTION
     BASTION-->VM
     VM-- "Uses Managed Identity" -->SA
