@@ -2,15 +2,17 @@
 
 This guide provides instructions for deploying the ARM template that creates the following resources in a single resource group:
 
-1. Virtual Network with three subnets:
-   - Servers subnet
-   - Private Endpoint subnet
-   - Azure Bastion subnet
+1. Virtual Network with three subnets, each with dedicated Network Security Group:
+   - Servers subnet with server-nsg
+   - Private Endpoint subnet with pe-nsg
+   - Azure Bastion subnet with bastion-nsg
 
 2. Azure Bastion (Standard SKU)
 
 3. Virtual Machine:
-   - Windows Server 2022 Datacenter x64 Gen2
+   - Windows Server 2022 Datacenter Gen2
+   - Using existing Windows Server license with Software Assurance (Azure Hybrid Benefit)
+   - No infrastructure redundancy required (availability option)
    - System-assigned managed identity
    - Microsoft Entra ID login enabled
    - No public IP
@@ -20,12 +22,18 @@ This guide provides instructions for deploying the ARM template that creates the
 4. Key Vault (Standard SKU):
    - Private endpoint enabled
    - Public access disabled
+   - Prepared for future disk encryption setup
 
 5. Storage Account:
    - Private endpoint enabled
    - Public access disabled
    - Container for SharePoint content created automatically
    - VM has Storage Blob Data Owner and Storage Account Contributor access
+
+6. Network Security Groups:
+   - bastion-nsg: Specific rules for Azure Bastion service
+   - server-nsg: Rules for VM access and communication
+   - pe-nsg: Rules for private endpoint access
 
 ## Architecture Diagram
 

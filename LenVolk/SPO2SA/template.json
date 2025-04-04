@@ -119,6 +119,9 @@
   "variables": {
     "bastionSubnetName": "AzureBastionSubnet",
     "bastionPublicIpName": "[concat(parameters('bastionName'), '-pip')]",
+    "bastionNsgName": "bastion-nsg",
+    "serverNsgName": "server-nsg",
+    "peNsgName": "pe-nsg",
     "vmNicName": "[concat(parameters('vmName'), '-nic')]",
     "osDiskName": "[concat(parameters('vmName'), '-osdisk')]",
     "dataDiskName": "[concat(parameters('vmName'), '-datadisk')]",
@@ -135,10 +138,278 @@
   },
   "resources": [
     {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-05-01",
+      "name": "[variables('bastionNsgName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AllowHttpsInBound",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "Internet",
+              "destinationPortRange": "443",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowGatewayManagerInBound",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "GatewayManager",
+              "destinationPortRange": "443",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowLoadBalancerInBound",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "AzureLoadBalancer",
+              "destinationPortRange": "443",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowBastionHostCommunicationInBound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationPortRanges": [
+                "8080",
+                "5701"
+              ],
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllInBound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationPortRange": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowSshRdpOutBound",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationPortRanges": [
+                "22",
+                "3389"
+              ],
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "AllowAzureCloudCommunicationOutBound",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationPortRange": "443",
+              "destinationAddressPrefix": "AzureCloud",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "AllowBastionHostCommunicationOutBound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationPortRanges": [
+                "8080",
+                "5701"
+              ],
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "AllowGetSessionInformationOutBound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "destinationPortRanges": [
+                "80",
+                "443"
+              ],
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "DenyAllOutBound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 1000,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-05-01",
+      "name": "[variables('serverNsgName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AllowRDPInbound",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowVNetInbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 200,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllInbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowAllOutbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-05-01",
+      "name": "[variables('peNsgName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AllowVNetInbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllInbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowAllOutbound",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2021-05-01",
       "name": "[parameters('vnetName')]",
       "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('bastionNsgName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('serverNsgName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('peNsgName'))]"
+      ],
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -151,7 +422,10 @@
             "properties": {
               "addressPrefix": "[parameters('subnet1Prefix')]",
               "privateEndpointNetworkPolicies": "Disabled",
-              "privateLinkServiceNetworkPolicies": "Enabled"
+              "privateLinkServiceNetworkPolicies": "Enabled",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('serverNsgName'))]"
+              }
             }
           },
           {
@@ -159,7 +433,10 @@
             "properties": {
               "addressPrefix": "[parameters('subnet2Prefix')]",
               "privateEndpointNetworkPolicies": "Disabled",
-              "privateLinkServiceNetworkPolicies": "Enabled"
+              "privateLinkServiceNetworkPolicies": "Enabled",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('peNsgName'))]"
+              }
             }
           },
           {
@@ -167,7 +444,10 @@
             "properties": {
               "addressPrefix": "[parameters('bastionSubnetPrefix')]",
               "privateEndpointNetworkPolicies": "Enabled",
-              "privateLinkServiceNetworkPolicies": "Enabled"
+              "privateLinkServiceNetworkPolicies": "Enabled",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('bastionNsgName'))]"
+              }
             }
           }
         ]
@@ -296,6 +576,7 @@
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
+        "licenseType": "Windows_Server",
         "storageProfile": {
           "imageReference": {
             "publisher": "MicrosoftWindowsServer",
@@ -382,7 +663,7 @@
             "typeHandlerVersion": "1.10",
             "autoUpgradeMinorVersion": true,
             "protectedSettings": {
-              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -Command \"$azCopyPath = 'C:\\AzCopy'; if (-not (Test-Path -Path $azCopyPath)) { New-Item -Path $azCopyPath -ItemType Directory }; $azCopyUrl = 'https://aka.ms/downloadazcopy-v10-windows'; $azCopyZipPath = \"$azCopyPath\\azcopy.zip\"; Invoke-WebRequest -Uri $azCopyUrl -OutFile $azCopyZipPath; Expand-Archive -Path $azCopyZipPath -DestinationPath $azCopyPath -Force; Remove-Item -Path $azCopyZipPath; $envPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine); if ($envPath -notlike \"*$azCopyPath*\") { $newPath = \"$envPath;$azCopyPath\"; [System.Environment]::SetEnvironmentVariable('Path', $newPath, [System.EnvironmentVariableTarget]::Machine) }\""
+              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -Command \"$ErrorActionPreference = 'Stop'; $downloadUrl = 'https://aka.ms/downloadazcopy-v10-windows'; $installParentDir = 'C:\\Program Files'; $azcopyFolderName = 'AzCopy'; $installDir = Join-Path -Path $installParentDir -ChildPath $azcopyFolderName; $tempZipPath = Join-Path -Path $env:TEMP -ChildPath 'azcopy_v10_windows.zip'; try { if (-not (Test-Path -Path $installDir -PathType Container)) { New-Item -Path $installDir -ItemType Directory -Force | Out-Null }; Invoke-WebRequest -Uri $downloadUrl -OutFile $tempZipPath -UseBasicParsing; Expand-Archive -Path $tempZipPath -DestinationPath $installDir -Force; $azcopySubFolder = Get-ChildItem -Path $installDir -Directory -Filter 'azcopy_windows_*' | Select-Object -First 1; if ($null -eq $azcopySubFolder) { throw 'Could not find the extracted AzCopy subfolder inside ''$installDir''.'; }; $azcopyExeDir = $azcopySubFolder.FullName; $azcopyExePath = Join-Path -Path $azcopyExeDir -ChildPath 'azcopy.exe'; if (-not (Test-Path -Path $azcopyExePath -PathType Leaf)) { throw 'azcopy.exe not found in the expected location: ''$azcopyExePath''.'; }; $regKey = 'Registry::HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Session Manager\\Environment'; $currentPath = (Get-ItemProperty -Path $regKey -Name PATH).Path; $pathEntries = $currentPath -split ';' | Where-Object { $_ -ne '' } | Select-Object -Unique; if (-not ($pathEntries -contains $azcopyExeDir)) { $newPath = ($pathEntries + $azcopyExeDir) -join ';'; Set-ItemProperty -Path $regKey -Name PATH -Value $newPath; }; } catch { Write-Error 'AzCopy installation failed: $($_.Exception.Message)'; if (Test-Path -Path $tempZipPath -PathType Leaf) { Remove-Item -Path $tempZipPath -Force -ErrorAction SilentlyContinue }; Exit 1; } finally { if (Test-Path -Path $tempZipPath -PathType Leaf) { Remove-Item -Path $tempZipPath -Force -ErrorAction SilentlyContinue }; }; Exit 0;\""
             }
           }
         }
