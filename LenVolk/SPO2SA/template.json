@@ -382,7 +382,7 @@
             "typeHandlerVersion": "1.10",
             "autoUpgradeMinorVersion": true,
             "protectedSettings": {
-              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -Command \"$azCopyPath = 'C:\\AzCopy'; if (-not (Test-Path -Path $azCopyPath)) { New-Item -Path $azCopyPath -ItemType Directory }; $azCopyUrl = 'https://aka.ms/downloadazcopy-v10-windows'; $azCopyZipPath = '$azCopyPath\\azcopy.zip'; Invoke-WebRequest -Uri $azCopyUrl -OutFile $azCopyZipPath; Expand-Archive -Path $azCopyZipPath -DestinationPath $azCopyPath -Force; Remove-Item -Path $azCopyZipPath; $envPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine); if ($envPath -notlike '*$azCopyPath*') { $newPath = '$envPath;$azCopyPath'; [System.Environment]::SetEnvironmentVariable('Path', $newPath, [System.EnvironmentVariableTarget]::Machine) }\""
+              "commandToExecute": "powershell -ExecutionPolicy Unrestricted -Command \"$azCopyPath = 'C:\\AzCopy'; if (-not (Test-Path -Path $azCopyPath)) { New-Item -Path $azCopyPath -ItemType Directory }; $azCopyUrl = 'https://aka.ms/downloadazcopy-v10-windows'; $azCopyZipPath = \"$azCopyPath\\azcopy.zip\"; Invoke-WebRequest -Uri $azCopyUrl -OutFile $azCopyZipPath; Expand-Archive -Path $azCopyZipPath -DestinationPath $azCopyPath -Force; Remove-Item -Path $azCopyZipPath; $envPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine); if ($envPath -notlike \"*$azCopyPath*\") { $newPath = \"$envPath;$azCopyPath\"; [System.Environment]::SetEnvironmentVariable('Path', $newPath, [System.EnvironmentVariableTarget]::Machine) }\""
             }
           }
         }
