@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "myVNet"
+    },
+    "vnetAddressPrefix": {
+      "value": "10.151.0.0/24"
+    },
+    "subnet1Name": {
+      "value": "servers"
+    },
+    "subnet1Prefix": {
+      "value": "10.151.0.0/28"
+    },
+    "subnet2Name": {
+      "value": "PrivateEndpoint"
+    },
+    "subnet2Prefix": {
+      "value": "10.151.0.16/28"
+    },
+    "bastionSubnetPrefix": {
+      "value": "10.151.0.64/26"
+    },
+    "vmName": {
+      "value": "myVM"
+    },
+    "vmSize": {
+      "value": "Standard_D4s_v3"
+    },
+    "dataDiskSizeGB": {
+      "value": 128
+    },
+    "keyVaultName": {
+      "value": "volk071kv2029"
+    },
+    "storageAccountName": {
+      "value": "volk071sa2027"
+    },
+    "containerName": {
+      "value": "spoarchive"
+    },
+    "bastionName": {
+      "value": "myBastion"
+    },
+    "adminUsername": {
+      "value": "AzureUser"
+    },
+    "adminPassword": {
+      "value": "P@ssw0rd1234!"
+    }
+  }
+}
