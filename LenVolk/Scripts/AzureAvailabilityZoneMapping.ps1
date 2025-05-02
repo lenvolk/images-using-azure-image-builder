@@ -3,12 +3,64 @@
 # It requires the Az PowerShell module and sufficient Azure RBAC permissions
 
 ### Ref
-# https://medium.com/@siwibowo/azure-physical-availability-zones-1813ddb2516f
-# az rest --method get --uri '/subscriptions/c29da00a-953c-4188-894e-70657319863a/locations?api-version=2022-12-01' --query 'value' | jq '.[] | .availabilityZoneMappings | .[]? | select(.physicalZone | contains("australiaeast"))'
+# https://github.com/ElanShudnow/AzureCode/tree/main/PowerShell/AvailabilityZoneMapping
 
+# AzureAvailabilityZoneMapping.ps1
+# This script maps Azure Availability Zones to their physical zone locations for all accessible subscriptions
+# It requires the Az PowerShell module and sufficient Azure RBAC permissions
+
+<#
+.SYNOPSIS
+    Maps Azure Availability Zones to their physical zone locations for all accessible subscriptions.
+
+.DESCRIPTION
+    This script queries the Azure REST API to obtain information about the mapping between logical and 
+    physical availability zones for specified regions across one or more Azure subscriptions.
+    
+.PARAMETER Region
+    One or more Azure region names to check for availability zones.
+    Example: -Region "eastus", "westeurope"
+    
+.PARAMETER SubscriptionId
+    Specific Azure subscription ID to query. If not provided, all subscriptions will be checked.
+    Example: -SubscriptionId "00000000-0000-0000-0000-000000000000"
+    
+.PARAMETER SearchPhysicalZone
+    Filter results to show only availability zones matching the specified physical zone pattern.
+    Example: -SearchPhysicalZone "australiaeast"
+    
+.PARAMETER ExportOnly
+    When specified, results will only be exported to files without detailed console output.
+    
+.EXAMPLE
+    # Check all regions in all subscriptions
+    .\AzureAvailabilityZoneMapping.ps1
+    
+.EXAMPLE
+    # Check specific regions in all subscriptions
+    .\AzureAvailabilityZoneMapping.ps1 -Region "eastus", "westus2"
+    
+.EXAMPLE
+    # Check all regions in a specific subscription
+    .\AzureAvailabilityZoneMapping.ps1 -SubscriptionId "00000000-0000-0000-0000-000000000000"
+    
+.EXAMPLE
+    # Search for a specific physical zone pattern
+    .\AzureAvailabilityZoneMapping.ps1 -SearchPhysicalZone "australiaeast"
+    
+.EXAMPLE
+    # Export only without console output
+    .\AzureAvailabilityZoneMapping.ps1 -Region "eastus" -ExportOnly
+#>
 
 # Script Parameters
 param (
+    [Parameter(Mandatory = $false)]
+    [string[]]$Region,
+    
+    [Parameter(Mandatory = $false)]
+    [string]$SubscriptionId,
+    
     [Parameter(Mandatory = $false)]
     [string]$SearchPhysicalZone,
     
@@ -86,6 +138,76 @@ function Get-AllAzureSubscriptions {
         $errorMessage = $_.Exception.Message
         Write-Log "Error retrieving subscriptions: $errorMessage" "Error"
         return $null
+    }
+}
+
+# Function to verify if a region exists and supports availability zones
+function Test-RegionAvailabilityZoneSupport {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Region,
+        
+        [Parameter(Mandatory = $true)]
+        [string]$SubscriptionId
+    )
+    
+    try {
+        # Set the current subscription context
+        $null = Set-AzContext -Subscription $SubscriptionId -ErrorAction Stop
+        
+        # Get all locations for this subscription
+        $locations = Get-AzLocation -ErrorAction Stop
+        
+        # Check if region exists
+        $regionExists = $locations | Where-Object { $_.Location -eq $Region }
+        if (-not $regionExists) {
+            return @{
+                Exists = $false
+                SupportsAZ = $false
+                Message = "Region '$Region' does not exist or is not accessible in subscription '$SubscriptionId'."
+            }
+        }
+        
+        # Get available providers for the region
+        $providers = Get-AzResourceProvider -Location $Region
+        
+        # Check if region supports availability zones
+        # Most reliable way is to check through compute provider
+        $computeProvider = $providers | Where-Object { $_.ProviderNamespace -eq "Microsoft.Compute" }
+        $vmProvider = $computeProvider.ResourceTypes | Where-Object { $_.ResourceTypeName -eq "virtualMachines" }
+        
+        if ($vmProvider -and $vmProvider.Locations -contains $regionExists.Location) {
+            if ($vmProvider.ZoneMappings -and $vmProvider.ZoneMappings.Count -gt 0) {
+                return @{
+                    Exists = $true
+                    SupportsAZ = $true
+                    Message = "Region '$Region' exists and supports availability zones."
+                }
+            }
+            else {
+                return @{
+                    Exists = $true
+                    SupportsAZ = $false
+                    Message = "Region '$Region' exists but does not support availability zones."
+                }
+            }
+        }
+        
+        # Fallback - if we can't determine AZ support from provider info,
+        # assume it's supported if we've detected zones in the region via REST API
+        return @{
+            Exists = $true
+            SupportsAZ = $true # We'll check this with the REST API anyway
+            Message = "Region '$Region' exists. Availability zone support will be checked via REST API."
+        }
+    }
+    catch {
+        $errorMessage = $_.Exception.Message
+        return @{
+            Exists = $false
+            SupportsAZ = $false
+            Message = "Error verifying region '$Region': $errorMessage"
+        }
     }
 }
 
@@ -176,15 +298,52 @@ function Get-PhysicalZoneMapping {
 function Get-RegionAvailabilityZones {
     param (
         [Parameter(Mandatory = $true)]
-        [string]$SubscriptionId
+        [string]$SubscriptionId,
+        
+        [Parameter(Mandatory = $false)]
+        [string[]]$FilterRegions
     )
     
     try {
         # Set the current subscription context
         $null = Set-AzContext -Subscription $SubscriptionId -ErrorAction Stop
-        
-        # Get all locations for this subscription
+          # Get all locations for this subscription
         $locations = Get-AzLocation -ErrorAction Stop
+        
+        # Filter regions if specified
+        if ($FilterRegions -and $FilterRegions.Count -gt 0) {
+            $validRegions = @()
+            foreach ($regionName in $FilterRegions) {
+                # Check if region exists and supports AZs
+                $regionCheck = Test-RegionAvailabilityZoneSupport -Region $regionName -SubscriptionId $SubscriptionId
+                
+                if ($regionCheck.Exists) {
+                    if ($regionCheck.SupportsAZ) {
+                        $foundRegion = $locations | Where-Object { $_.Location -eq $regionName }
+                        if ($foundRegion) {
+                            $validRegions += $foundRegion
+                            Write-Log $regionCheck.Message "Info"
+                        }
+                    }
+                    else {
+                        Write-Log $regionCheck.Message "Warning"
+                        Write-Log "For more information about regions that support Availability Zones, see: https://learn.microsoft.com/en-us/azure/reliability/availability-zones-region-support" "Info"
+                    }
+                }
+                else {
+                    Write-Log $regionCheck.Message "Warning"
+                    $availableRegions = ($locations | Select-Object -ExpandProperty Location) -join ", "
+                    Write-Log "Available regions in this subscription: $availableRegions" "Info"
+                }
+            }
+            
+            if ($validRegions.Count -eq 0) {
+                Write-Log "No valid regions with Availability Zone support found for subscription '$SubscriptionId'. Skipping this subscription." "Warning"
+                return @()
+            }
+            
+            $locations = $validRegions
+        }
         
         $results = @()
         
@@ -296,6 +455,35 @@ function Find-PhysicalZoneMatches {
 try {
     Write-Log "Starting Azure Availability Zone mapping script" "Info"
     
+    # Display welcome message with information about parameters passed
+    Write-Host "`nAzure Availability Zone Mapping Tool" -ForegroundColor Cyan
+    Write-Host "====================================" -ForegroundColor Cyan
+    Write-Host "This script maps Azure Availability Zones to their physical zone locations`n" -ForegroundColor White
+    
+    if ($Region -and $Region.Count -gt 0) {
+        Write-Host "Specified regions: $($Region -join ", ")" -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "No regions specified. Will check all available regions." -ForegroundColor Yellow
+    }
+    
+    if ($SubscriptionId) {
+        Write-Host "Processing single subscription: $SubscriptionId" -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "Processing all accessible subscriptions" -ForegroundColor Yellow
+    }
+    
+    if ($SearchPhysicalZone) {
+        Write-Host "Will search for physical zones matching: $SearchPhysicalZone" -ForegroundColor Yellow
+    }
+    
+    if ($ExportOnly) {
+        Write-Host "Export-only mode. Output will be written to files, limited console output." -ForegroundColor Yellow
+    }
+    
+    Write-Host "`n"
+    
     # Check for Az module
     if (-not (Test-AzModule)) {
         exit 1
@@ -306,11 +494,20 @@ try {
         exit 1
     }
     
-    # Get all subscriptions
-    $subscriptions = Get-AllAzureSubscriptions
-    if ($null -eq $subscriptions -or $subscriptions.Count -eq 0) {
-        Write-Log "No subscriptions available. Exiting." "Error"
-        exit 1
+    # Get all subscriptions or filter by the provided subscription ID
+    if ($SubscriptionId) {
+        $subscriptions = Get-AzSubscription -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
+        if (-not $subscriptions) {
+            Write-Log "Subscription with ID '$SubscriptionId' not found or not accessible. Exiting." "Error"
+            exit 1
+        }
+    }
+    else {
+        $subscriptions = Get-AllAzureSubscriptions
+        if ($null -eq $subscriptions -or $subscriptions.Count -eq 0) {
+            Write-Log "No subscriptions available. Exiting." "Error"
+            exit 1
+        }
     }
     
     # Create an array to store the results
@@ -318,10 +515,15 @@ try {
     
     # Process each subscription
     foreach ($subscription in $subscriptions) {
+        # If specific subscription ID was provided, skip those that don't match
+        if ($SubscriptionId -and $subscription.Id -ne $SubscriptionId) {
+            continue
+        }
+        
         Write-Log "Processing subscription: $($subscription.Name) ($($subscription.Id))" "Info"
         
-        # Get region AZ information for this subscription
-        $regionResults = Get-RegionAvailabilityZones -SubscriptionId $subscription.Id
+        # Get region AZ information for this subscription, filtering by specified regions if any
+        $regionResults = Get-RegionAvailabilityZones -SubscriptionId $subscription.Id -FilterRegions $Region
         
         # Add subscription details to each result
         foreach ($result in $regionResults) {
@@ -408,6 +610,23 @@ try {
             $matches | ConvertTo-Json -Depth 4 | Out-File -FilePath $searchOutputPath
             Write-Log "Search results exported to $searchOutputPath" "Info"
         }
+    }
+    
+    # Display summary statistics
+    $totalSubscriptions = ($allResults | Select-Object -Property SubscriptionId -Unique).Count
+    $totalRegions = ($allResults | Select-Object -Property RegionCode -Unique).Count
+    $regionsWithAZCount = ($regionsWithAZ | Select-Object -Property RegionCode -Unique).Count
+    
+    Write-Host "`n====== SUMMARY ======" -ForegroundColor Magenta
+    Write-Host "Subscriptions processed: $totalSubscriptions" -ForegroundColor Cyan
+    Write-Host "Total regions checked: $totalRegions" -ForegroundColor Cyan
+    Write-Host "Regions with Availability Zones: $regionsWithAZCount" -ForegroundColor Cyan
+    Write-Host "Output files:" -ForegroundColor Cyan
+    Write-Host "  - CSV: $OutputCsv" -ForegroundColor White
+    Write-Host "  - JSON: $jsonOutputPath" -ForegroundColor White
+    
+    if (-not [string]::IsNullOrEmpty($SearchPhysicalZone)) {
+        Write-Host "  - Search results: $searchOutputPath" -ForegroundColor White
     }
     
     Write-Log "Script execution completed successfully" "Info"
