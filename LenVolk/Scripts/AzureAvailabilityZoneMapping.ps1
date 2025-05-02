@@ -4,7 +4,8 @@
 
 ### Ref
 # https://github.com/ElanShudnow/AzureCode/tree/main/PowerShell/AvailabilityZoneMapping
-
+# https://github.com/ElanShudnow/AzureCode/tree/main/PowerShell/VMRegionZonalAvailability
+#
 # AzureAvailabilityZoneMapping.ps1
 # This script maps Azure Availability Zones to their physical zone locations for all accessible subscriptions
 # It requires the Az PowerShell module and sufficient Azure RBAC permissions
