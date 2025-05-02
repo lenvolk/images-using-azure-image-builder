@@ -2,6 +2,20 @@
 # This script maps Azure Availability Zones to their physical zone locations for all accessible subscriptions
 # It requires the Az PowerShell module and sufficient Azure RBAC permissions
 
+### Ref
+# https://medium.com/@siwibowo/azure-physical-availability-zones-1813ddb2516f
+# az rest --method get --uri '/subscriptions/c29da00a-953c-4188-894e-70657319863a/locations?api-version=2022-12-01' --query 'value' | jq '.[] | .availabilityZoneMappings | .[]? | select(.physicalZone | contains("australiaeast"))'
+
+
+# Script Parameters
+param (
+    [Parameter(Mandatory = $false)]
+    [string]$SearchPhysicalZone,
+    
+    [Parameter(Mandatory = $false)]
+    [switch]$ExportOnly
+)
+
 # Script Configuration
 $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $LogFile = Join-Path $PSScriptRoot "AzAvailabilityZoneMapping_$timestamp.log"
@@ -76,63 +90,86 @@ function Get-AllAzureSubscriptions {
 }
 
 # Function to get physical zone mapping for a given region
-# Note: This is a simplified mapping based on available documentation
-# Physical zone mappings are not directly exposed via public Azure APIs
+# This uses the Azure REST API to retrieve the actual physical zone mappings
 function Get-PhysicalZoneMapping {
     param (
         [Parameter(Mandatory = $true)]
         [string]$Region,
         
         [Parameter(Mandatory = $true)]
-        [int]$ZoneCount
+        [string]$SubscriptionId,
+        
+        [Parameter(Mandatory = $false)]
+        [int]$ZoneCount = 0
     )
-    
-    # This is a simplified representation as actual physical mappings aren't exposed by Azure APIs
-    # In reality, this would need to be based on Microsoft's published documentation
-    # Reference: https://learn.microsoft.com/en-us/azure/availability-zones/az-overview
-    
-    $mappingInfo = switch ($Region) {
-        "eastus" {
-            @{
-                "PhysicalMapping" = "Mapped to separate physical data centers in East US region"
-                "ZoneRedundancy" = "Each zone has independent power, cooling, and networking"
+      try {
+        # Get an access token for the REST API call
+        # Using -AsSecureString parameter to avoid the breaking change warning
+        $secureToken = (Get-AzAccessToken -AsSecureString)
+        
+        # Convert SecureString to plain text for use in the header
+        $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureToken.Token)
+        $token = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+        [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($BSTR)
+        
+        $headers = @{
+            'Authorization' = "Bearer $token"
+            'Content-Type' = 'application/json'
+        }
+        
+        # Call the Azure REST API to get location information
+        $apiVersion = "2022-12-01"
+        $uri = "https://management.azure.com/subscriptions/$SubscriptionId/locations?api-version=$apiVersion"
+        
+        $response = Invoke-RestMethod -Uri $uri -Method Get -Headers $headers
+        
+        # Find our target region
+        $locationData = $response.value | Where-Object { $_.name -eq $Region }
+        
+        if ($null -eq $locationData) {
+            return @{
+                "PhysicalMapping" = "No location data available for region $Region"
+                "ZoneRedundancy" = "N/A"
+                "AvailabilityZoneMappings" = @()
             }
         }
-        "eastus2" {
-            @{
-                "PhysicalMapping" = "Mapped to separate physical data centers in East US 2 region"
-                "ZoneRedundancy" = "Each zone has independent power, cooling, and networking"
+        
+        # Extract availability zone mappings
+        $azMappings = $locationData.availabilityZoneMappings
+        
+        if ($null -eq $azMappings -or $azMappings.Count -eq 0) {
+            return @{
+                "PhysicalMapping" = "No availability zone mappings found for region $Region"
+                "ZoneRedundancy" = "N/A"
+                "AvailabilityZoneMappings" = @()
             }
         }
-        "westus2" {
-            @{
-                "PhysicalMapping" = "Mapped to separate physical data centers in West US 2 region"
-                "ZoneRedundancy" = "Each zone has independent power, cooling, and networking"
+        
+        # Create a detailed mapping
+        $physicalMappingDetails = $azMappings | ForEach-Object {
+            [PSCustomObject]@{
+                LogicalZone = $_.logicalZone
+                PhysicalZone = $_.physicalZone
             }
         }
-        "centralus" {
-            @{
-                "PhysicalMapping" = "Mapped to separate physical data centers in Central US region"
-                "ZoneRedundancy" = "Each zone has independent power, cooling, and networking"
-            }
-        }
-        default {
-            if ($ZoneCount -gt 0) {
-                @{
-                    "PhysicalMapping" = "Mapped to $ZoneCount separate physical data centers in $Region region"
-                    "ZoneRedundancy" = "Each zone has independent power, cooling, and networking"
-                }
-            }
-            else {
-                @{
-                    "PhysicalMapping" = "No AZ information available for this region"
-                    "ZoneRedundancy" = "N/A"
-                }
-            }
+        
+        return @{
+            "PhysicalMapping" = "Availability Zones in $Region are mapped to physical zones"
+            "ZoneRedundancy" = "Each zone has independent power, cooling, and networking infrastructure"
+            "AvailabilityZoneMappings" = $physicalMappingDetails
         }
     }
-    
-    return $mappingInfo
+    catch {
+        $errorMessage = $_.Exception.Message
+        Write-Log "Error retrieving physical zone mappings for region ${Region}: $errorMessage" "Warning"
+        
+        return @{
+            "PhysicalMapping" = "Error retrieving physical mapping data for region $Region"
+            "ZoneRedundancy" = "N/A"
+            "AvailabilityZoneMappings" = @()
+            "Error" = $errorMessage
+        }
+    }
 }
 
 # Function to get available regions and their AZ information for a subscription
@@ -169,9 +206,10 @@ function Get-RegionAvailabilityZones {
                 $zoneCount = if ($uniqueZones.Count -gt 0) { $uniqueZones.Count } else { 0 }
                 
                 # Get the physical zone mapping
-                $physicalMapping = Get-PhysicalZoneMapping -Region $location.Location -ZoneCount $zoneCount
+                $physicalMapping = Get-PhysicalZoneMapping -Region $location.Location -SubscriptionId $SubscriptionId -ZoneCount $zoneCount
                 
-                $results += [PSCustomObject]@{
+                # Create the result object
+                $resultObj = [PSCustomObject]@{
                     RegionName = $location.DisplayName
                     RegionCode = $location.Location
                     AvailableZoneCount = $zoneCount
@@ -179,6 +217,24 @@ function Get-RegionAvailabilityZones {
                     PhysicalMapping = $physicalMapping.PhysicalMapping
                     ZoneRedundancy = $physicalMapping.ZoneRedundancy
                 }
+                
+                # Add physical zone mappings if available
+                if ($physicalMapping.AvailabilityZoneMappings -and $physicalMapping.AvailabilityZoneMappings.Count -gt 0) {
+                    $azMappingsFormatted = $physicalMapping.AvailabilityZoneMappings | ForEach-Object {
+                        "Logical Zone $($_.LogicalZone) → Physical Zone: $($_.PhysicalZone)"
+                    }
+                    Add-Member -InputObject $resultObj -MemberType NoteProperty -Name "ZoneMappings" -Value ($azMappingsFormatted -join "; ")
+                    
+                    # Add individual mappings as separate properties for CSV export
+                    foreach ($mapping in $physicalMapping.AvailabilityZoneMappings) {
+                        Add-Member -InputObject $resultObj -MemberType NoteProperty -Name "Zone$($mapping.LogicalZone)_PhysicalZone" -Value $mapping.PhysicalZone
+                    }
+                }
+                else {
+                    Add-Member -InputObject $resultObj -MemberType NoteProperty -Name "ZoneMappings" -Value "No zone mappings found"
+                }
+                
+                $results += $resultObj
             }            catch {
                 $errorMessage = $_.Exception.Message
                 Write-Log "Error retrieving AZ information for region $($location.DisplayName): $errorMessage" "Warning"
@@ -189,6 +245,7 @@ function Get-RegionAvailabilityZones {
                     Zones = "Error retrieving information"
                     PhysicalMapping = "Error retrieving information"
                     ZoneRedundancy = "Error retrieving information"
+                    ZoneMappings = "Error: $errorMessage"
                 }
             }
         }
@@ -197,6 +254,42 @@ function Get-RegionAvailabilityZones {
         Write-Log "Error retrieving region information for subscription ${SubscriptionId}: $errorMessage" "Error"
         return @()
     }
+}
+
+# Function to filter physical zones matching a pattern
+function Find-PhysicalZoneMatches {
+    param (
+        [Parameter(Mandatory = $true)]
+        [array]$Results,
+        
+        [Parameter(Mandatory = $true)]
+        [string]$Pattern
+    )
+    
+    $matchingRegions = @()
+    
+    foreach ($region in $Results) {
+        # Extract mapping properties
+        $propNames = $region.PSObject.Properties.Name | Where-Object { $_ -like "Zone*_PhysicalZone" }
+        
+        if ($propNames.Count -gt 0) {
+            foreach ($prop in $propNames) {
+                $physicalZone = $region.$prop
+                if ($physicalZone -like "*$Pattern*") {
+                    $logicalZone = $prop -replace "Zone", "" -replace "_PhysicalZone", ""
+                    
+                    $matchingRegions += [PSCustomObject]@{
+                        RegionName = $region.RegionName
+                        RegionCode = $region.RegionCode
+                        LogicalZone = $logicalZone
+                        PhysicalZone = $physicalZone
+                    }
+                }
+            }
+        }
+    }
+    
+    return $matchingRegions
 }
 
 # Main script execution
@@ -239,14 +332,83 @@ try {
         
         Write-Log "Completed processing for subscription: $($subscription.Name)" "Info"
     }
-    
-    # Display results in console
+      # Display results in console
     Write-Log "Availability Zone Mapping Results:" "Info"
-    $allResults | Format-Table -AutoSize
+    
+    # First display regions with AZ support
+    Write-Log "Regions with Availability Zone support:" "Info"
+    $regionsWithAZ = $allResults | Where-Object { $_.AvailableZoneCount -gt 0 } | Sort-Object RegionName
+    
+    foreach ($region in $regionsWithAZ) {
+        Write-Host "`n=== Region: $($region.RegionName) ($($region.RegionCode)) ===" -ForegroundColor Cyan
+        Write-Host "Available Zones: $($region.Zones)" -ForegroundColor Yellow
+        Write-Host "Zone Redundancy: $($region.ZoneRedundancy)"
+        
+        if ($region.ZoneMappings -ne "No zone mappings found") {
+            Write-Host "Physical Zone Mappings:" -ForegroundColor Green
+            
+            # Extract individual mappings
+            $mappings = $region.ZoneMappings -split '; '
+            foreach ($mapping in $mappings) {
+                Write-Host "  $mapping"
+            }
+        }
+        else {
+            Write-Host "Physical Zone Mappings: Not available for this region" -ForegroundColor Gray
+        }
+    }
     
     # Export results to CSV
     $allResults | Export-Csv -Path $OutputCsv -NoTypeInformation
     Write-Log "Results exported to $OutputCsv" "Info"
+    
+    # Export physical zone mappings in JSON format (similar to az CLI output)
+    $physicalZoneMappings = @()
+    foreach ($region in $regionsWithAZ) {
+        # Extract mapping properties
+        $propNames = $region.PSObject.Properties.Name | Where-Object { $_ -like "Zone*_PhysicalZone" }
+        if ($propNames.Count -gt 0) {
+            $regionMapping = @{
+                region = $region.RegionCode
+                mappings = @()
+            }
+            
+            foreach ($prop in $propNames) {
+                $logicalZone = $prop -replace "Zone", "" -replace "_PhysicalZone", ""
+                $regionMapping.mappings += @{
+                    logicalZone = $logicalZone
+                    physicalZone = $region.$prop
+                }
+            }
+            
+            $physicalZoneMappings += $regionMapping
+        }
+    }
+      # Export JSON file with physical zone mappings
+    $jsonOutputPath = Join-Path $PSScriptRoot "AzAvailabilityZoneMappings_$timestamp.json"
+    $physicalZoneMappings | ConvertTo-Json -Depth 4 | Out-File -FilePath $jsonOutputPath
+    Write-Log "Physical zone mappings exported to $jsonOutputPath" "Info"
+    
+    # If a search pattern was provided, filter and display matching physical zones
+    if (-not [string]::IsNullOrEmpty($SearchPhysicalZone)) {
+        Write-Host "`n====== PHYSICAL ZONE SEARCH RESULTS =====" -ForegroundColor Magenta
+        Write-Host "Searching for physical zones matching pattern: $SearchPhysicalZone" -ForegroundColor Yellow
+        
+        $matches = Find-PhysicalZoneMatches -Results $allResults -Pattern $SearchPhysicalZone
+        
+        if ($matches.Count -eq 0) {
+            Write-Host "No matching physical zones found." -ForegroundColor Red
+        }
+        else {
+            Write-Host "Found $($matches.Count) matching physical zones:" -ForegroundColor Green
+            $matches | Format-Table -AutoSize
+            
+            # Export search results
+            $searchOutputPath = Join-Path $PSScriptRoot "AzAvailabilityZoneSearch_$SearchPhysicalZone`_$timestamp.json"
+            $matches | ConvertTo-Json -Depth 4 | Out-File -FilePath $searchOutputPath
+            Write-Log "Search results exported to $searchOutputPath" "Info"
+        }
+    }
     
     Write-Log "Script execution completed successfully" "Info"
 }
