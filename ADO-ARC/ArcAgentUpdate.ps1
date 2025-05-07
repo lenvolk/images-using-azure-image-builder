@@ -11,7 +11,6 @@ Install-Module -Name Az.ResourceGraph -Verbose -Force
 
 Write-Host "Looking for $OSType Servers in the RG $ARCresourceGroup which have agent version less than: $ArcAgentVer" -ForegroundColor Yellow
 
-# Chrome Install
 $arcServers = Get-AzConnectedMachine -ResourceGroupName $ARCresourceGroup
 # Filter servers with agent version below 1.48.02881.1941 and status "connected"
 $filteredServers = $arcServers | Where-Object {
