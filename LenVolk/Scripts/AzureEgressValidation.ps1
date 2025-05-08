@@ -19,7 +19,6 @@
 .NOTES
     Version: 2.1 (Corrected parser error, improved PowerState retrieval)
     Original Author: Len Volk (GitHub: lenvolk)
-    Modified by: AI Assistant based on user feedback.
 
     Prerequisites:
     - Azure PowerShell 'Az' module installed and updated.
@@ -29,10 +28,12 @@
     Considerations for large environments:
     - This script uses Get-Az* cmdlets iteratively, which can be slow.
     - For faster initial assessments in large environments, Azure Resource Graph queries are recommended.
-
+    
     Ref See: https://learn.microsoft.com/en-us/azure/virtual-network/ip-services/default-outbound-access
-             https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/how-to-identify-azure-resources-using-default-outbound-internet-access/4400755
-             https://azure.microsoft.com/en-us/updates?id=default-outbound-access-for-vms-in-azure-will-be-retired-transition-to-a-new-method-of-internet-access
+
+    https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/how-to-identify-azure-resources-using-default-outbound-internet-access/4400755
+
+    https://azure.microsoft.com/en-us/updates?id=default-outbound-access-for-vms-in-azure-will-be-retired-transition-to-a-new-method-of-internet-access
 #>
 
 param (
