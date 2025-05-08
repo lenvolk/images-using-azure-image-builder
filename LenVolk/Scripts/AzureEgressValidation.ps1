@@ -1,627 +1,420 @@
-# AzureEgressValidation.ps1
-# This script validates Azure network egress configurations across all subscriptions
-# It identifies VMs that may be impacted by changes to default outbound access
-#
-# IMPORTANT: Default outbound access for new deployments will be retired on September 30, 2025
-# This script helps identify resources that need explicit outbound connectivity configured before the retirement date
-# See: https://learn.microsoft.com/en-us/azure/virtual-network/ip-services/default-outbound-access
-# https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/how-to-identify-azure-resources-using-default-outbound-internet-access/4400755
-# https://azure.microsoft.com/en-us/updates?id=default-outbound-access-for-vms-in-azure-will-be-retired-transition-to-a-new-method-of-internet-access
+<#
+.SYNOPSIS
+    Identifies Azure VMs and VM Scale Sets that might be using default outbound access,
+    which is scheduled for retirement.
+.DESCRIPTION
+    This script iterates through Azure subscriptions, resource groups, VMs, and VM Scale Sets
+    to check their network configurations for explicit outbound connectivity methods.
+    It flags resources that appear to be relying on the implicit default outbound SNAT.
 
+    Explicit outbound methods checked:
+    1. NAT Gateway associated with the subnet.
+    2. User Defined Route (UDR) for 0.0.0.0/0 to a Network Virtual Appliance (NVA).
+    3. Standard SKU Public IP address directly associated with the VM/VMSS NIC.
+    4. VM/VMSS instance is in the backend pool of a Standard SKU Public Load Balancer
+       that has defined outbound rules.
 
-#region Script Parameters and Variables
-[CmdletBinding()]
-param(
-    [Parameter(Mandatory = $false)]
-    [switch]$ExportCsv, # Default is false
-    
-    [Parameter(Mandatory = $false)]
-    [string]$ExportPath = "C:\temp",
-    
-    [Parameter(Mandatory = $false)]
-    [string]$ExportFileName = "AzureEgressValidation_$(Get-Date -Format 'yyyyMMdd_HHmmss').csv"
+    The script generates a report of potentially affected resources.
+
+.NOTES
+    Version: 2.1 (Corrected parser error, improved PowerState retrieval)
+    Original Author: Len Volk (GitHub: lenvolk)
+    Modified by: AI Assistant based on user feedback.
+
+    Prerequisites:
+    - Azure PowerShell 'Az' module installed and updated.
+    - Connected to Azure with Connect-AzAccount.
+    - Sufficient permissions to read network and compute resources.
+
+    Considerations for large environments:
+    - This script uses Get-Az* cmdlets iteratively, which can be slow.
+    - For faster initial assessments in large environments, Azure Resource Graph queries are recommended.
+
+    Ref See: https://learn.microsoft.com/en-us/azure/virtual-network/ip-services/default-outbound-access
+             https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/how-to-identify-azure-resources-using-default-outbound-internet-access/4400755
+             https://azure.microsoft.com/en-us/updates?id=default-outbound-access-for-vms-in-azure-will-be-retired-transition-to-a-new-method-of-internet-access
+#>
+
+param (
+    [Parameter(Mandatory = $false, HelpMessage = "Optional: Specify a single Subscription ID to scan. If not provided, all accessible subscriptions will be scanned.")]
+    [string]$SubscriptionId,
+
+    [Parameter(Mandatory = $false, HelpMessage = "Optional: Path to export the report as a CSV file. Example: C:\temp\EgressReport.csv")]
+    [string]$CsvExportPath
 )
 
-# Initialize results collection
-$global:allImpactedWorkloads = @()
-$global:processedSubscriptions = @()
-$global:failedSubscriptions = @()
+$ErrorActionPreference = "SilentlyContinue" # Can be changed to "Stop" for debugging
+
+# --- Script Initialization ---
+Write-Host "Starting Azure Egress Validation Script..."
 $startTime = Get-Date
-#endregion
+$report = @()
 
-#region Helper Functions
-function Write-LogMessage {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message,
-        
-        [Parameter(Mandatory = $false)]
-        [ValidateSet('Info', 'Warning', 'Error', 'Success')]
-        [string]$Level = 'Info'
-    )
-    
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $color = switch ($Level) {
-        'Info'    { 'White' }
-        'Warning' { 'Yellow' }
-        'Error'   { 'Red' }
-        'Success' { 'Green' }
-        default   { 'White' }
-    }
-    
-    Write-Host "[$timestamp] [$Level] $Message" -ForegroundColor $color
-}
-
-function Test-AzureConnection {
-    try {
-        $context = Get-AzContext -ErrorAction Stop
-        if ($null -eq $context.Account) {
-            return $false
-        }
-        return $true
-    }
-    catch {
-        return $false
-    }
-}
-
-function Connect-ToAzure {
-    try {
-        Write-LogMessage "Checking Azure authentication status..." -Level Info
-        
-        if (-not (Test-AzureConnection)) {
-            Write-LogMessage "You are not authenticated to Azure. Please sign in." -Level Warning
-            $connection = Connect-AzAccount -ErrorAction Stop
-            
-            if ($null -eq $connection) {
-                Write-LogMessage "Authentication failed or was cancelled. Exiting script." -Level Error
-                exit 1
-            }
-            else {
-                Write-LogMessage "Successfully authenticated to Azure as $($connection.Context.Account.Id)" -Level Success
-            }
-        }
-        else {
-            $currentContext = Get-AzContext
-            Write-LogMessage "Already authenticated to Azure as $($currentContext.Account.Id)" -Level Success
-            Write-LogMessage "Current subscription: $($currentContext.Subscription.Name) ($($currentContext.Subscription.Id))" -Level Info
-        }
-        return $true
-    }
-    catch {
-        Write-LogMessage "Error during authentication: $_" -Level Error
-        return $false
-    }
-}
-
-function Export-ResultsToCsv {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]$Results,
-        
-        [Parameter(Mandatory = $true)]
-        [string]$FilePath
-    )
-    
-    try {
-        # Ensure export directory exists
-        $directory = [System.IO.Path]::GetDirectoryName($FilePath)
-        if (-not (Test-Path -Path $directory)) {
-            New-Item -ItemType Directory -Path $directory -Force | Out-Null
-            Write-LogMessage "Created directory: $directory" -Level Info
-        }
-        
-        # Add execution summary to the results
-        $executionSummary = [PSCustomObject]@{
-            ReportType = "SUMMARY"
-            ExecutionDateTime = $startTime
-            TotalSubscriptions = $global:processedSubscriptions.Count + $global:failedSubscriptions.Count
-            SuccessfulSubscriptions = $global:processedSubscriptions.Count
-            FailedSubscriptions = $global:failedSubscriptions.Count
-            TotalImpactedVMs = ($Results | Where-Object { $_.ReportType -ne "SUMMARY" }).Count
-            ElapsedTime = "$(((Get-Date) - $startTime).ToString("hh\:mm\:ss"))"
-        }
-        
-        $Results.Add($executionSummary) | Out-Null
-        
-        # Export to CSV
-        $Results | Export-Csv -Path $FilePath -NoTypeInformation -Force
-        
-        Write-LogMessage "Results exported to $FilePath" -Level Success
-        return $true
-    }
-    catch {
-        Write-LogMessage "Error exporting results to CSV: $_" -Level Error
-        return $false
-    }
-}
-
-function Get-VmsInSubnet {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory = $true)]
-        [Microsoft.Azure.Commands.Network.Models.PSVirtualNetwork]$VNet,
-        
-        [Parameter(Mandatory = $true)]
-        [Microsoft.Azure.Commands.Network.Models.PSSubnet]$Subnet
-    )
-    
-    try {
-        # Get all VMs in the resource group, including stopped/deallocated VMs
-        # No -Status parameter is needed as Get-AzVM returns all VMs regardless of their power state
-        $vms = Get-AzVM -ResourceGroupName $VNet.ResourceGroupName -Status -ErrorAction Stop
-        $vmsInSubnet = @()
-        
-        # Filter VMs to find those in the subnet
-        foreach ($vm in $vms) {
-            # Handle null NetworkProfile or NetworkInterfaces
-            if ($null -eq $vm.NetworkProfile -or $null -eq $vm.NetworkProfile.NetworkInterfaces) {
-                Write-LogMessage "    Warning: VM $($vm.Name) has no network interfaces" -Level Warning
-                continue
-            }
-            
-            foreach ($nicRef in $vm.NetworkProfile.NetworkInterfaces) {
-                $vmNics = Get-AzNetworkInterface -ResourceId $nicRef.Id -ErrorAction SilentlyContinue
-                
-                foreach ($nic in $vmNics) {
-                    foreach ($ipConfig in $nic.IpConfigurations) {
-                        if ($ipConfig.Subnet.Id -eq $Subnet.Id) {
-                            # Add power state to VM object
-                            $powerState = ($vm.Statuses | Where-Object { $_.Code -match 'PowerState' }).Code -replace 'PowerState/', ''
-                            $vm | Add-Member -NotePropertyName PowerState -NotePropertyValue $powerState -Force -ErrorAction SilentlyContinue
-                            $vmsInSubnet += $vm
-                            break
-                        }
-                    }
-                }
-            }
-        }
-          # Also check for VMSS instances in this subnet
-        try {
-            # Get all VMSS across the subscription to be thorough (not just in this resource group)
-            $vmssSet = Get-AzVmss -ResourceGroupName $VNet.ResourceGroupName -ErrorAction SilentlyContinue
-            
-            foreach ($vmss in $vmssSet) {
-                # Check if this VMSS uses the subnet
-                $vmssSubnetId = $null
-                
-                # Handle different VMSS network configurations
-                if ($vmss.VirtualMachineProfile -and $vmss.VirtualMachineProfile.NetworkProfile) {
-                    if ($vmss.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations) {
-                        foreach ($nicConfig in $vmss.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations) {
-                            if ($nicConfig.IpConfigurations) {
-                                foreach ($ipConfig in $nicConfig.IpConfigurations) {
-                                    if ($ipConfig.Subnet -and $ipConfig.Subnet.Id -eq $Subnet.Id) {
-                                        $vmssSubnetId = $Subnet.Id
-                                        break
-                                    }
-                                }
-                            }
-                            if ($vmssSubnetId) { break }
-                        }
-                    }
-                }
-                
-                if ($vmssSubnetId -eq $Subnet.Id) {
-                    # Get all VM instances including stopped ones
-                    $vmssVMs = Get-AzVmssVM -ResourceGroupName $VNet.ResourceGroupName -VMScaleSetName $vmss.Name -InstanceView -ErrorAction SilentlyContinue
-                    
-                    # Add VMSS parent info to each instance
-                    foreach ($vmssInstance in $vmssVMs) {
-                        # Add VMSS properties to identify this is a VMSS instance
-                        $vmssInstance | Add-Member -NotePropertyName IsVmssInstance -NotePropertyValue $true -Force -ErrorAction SilentlyContinue
-                        $vmssInstance | Add-Member -NotePropertyName VmssName -NotePropertyValue $vmss.Name -Force -ErrorAction SilentlyContinue
-                        $vmssInstance | Add-Member -NotePropertyName VmssCapacity -NotePropertyValue $vmss.Sku.Capacity -Force -ErrorAction SilentlyContinue
-                        $vmssInstance | Add-Member -NotePropertyName VmssOrchestrationMode -NotePropertyValue $vmss.OrchestrationMode -Force -ErrorAction SilentlyContinue
-                        
-                        # Try to get power state
-                        try {
-                            $vmssInstanceView = Get-AzVmssVM -ResourceGroupName $VNet.ResourceGroupName -VMScaleSetName $vmss.Name -InstanceId $vmssInstance.InstanceId -InstanceView -ErrorAction SilentlyContinue
-                            $powerState = ($vmssInstanceView.Statuses | Where-Object { $_.Code -match 'PowerState' }).Code -replace 'PowerState/', ''
-                            $vmssInstance | Add-Member -NotePropertyName PowerState -NotePropertyValue $powerState -Force -ErrorAction SilentlyContinue
-                        }
-                        catch {
-                            $vmssInstance | Add-Member -NotePropertyName PowerState -NotePropertyValue "Unknown" -Force -ErrorAction SilentlyContinue
-                        }
-                    }
-                    
-                    $vmsInSubnet += $vmssVMs
-                    Write-LogMessage "    Found VMSS '$($vmss.Name)' with $($vmssVMs.Count) instances in this subnet" -Level Info
-                }
-            }
-        }
-        catch {
-            Write-LogMessage "Warning: Error checking VMSS instances: $_" -Level Warning
-        }
-        
-        # Include the power state in the log
-        if ($vmsInSubnet.Count -gt 0) {
-            Write-LogMessage "    VM count by power state: $($vmsInSubnet | Group-Object -Property PowerState | ForEach-Object { "$($_.Name): $($_.Count)" })" -Level Info
-        }
-        
-        return $vmsInSubnet
-    }
-    catch {
-        Write-LogMessage "Error finding VMs in subnet: $_" -Level Error
-        return @()
-    }
-}
-#endregion
-
-#region Main Script Execution
-# Get current context before script runs
-$originalContext = Get-AzContext
-
-# Verify authentication
-if (-not (Connect-ToAzure)) {
-    Write-LogMessage "Failed to authenticate to Azure. Exiting script." -Level Error
-    exit 1
-}
-
-# Get all subscriptions
-try {
-    Write-LogMessage "Retrieving available Azure subscriptions..." -Level Info
-    $subscriptions = Get-AzSubscription -ErrorAction Stop
-    
-    if ($null -eq $subscriptions -or $subscriptions.Count -eq 0) {
-        Write-LogMessage "No subscriptions found. Please check your permissions and try again." -Level Error
+# Get subscriptions to process
+if (-not [string]::IsNullOrEmpty($SubscriptionId)) {
+    $subscriptions = Get-AzSubscription -SubscriptionId $SubscriptionId -ErrorAction Stop
+    if (-not $subscriptions) {
+        Write-Error "Subscription with ID '$SubscriptionId' not found or not accessible."
         exit 1
     }
-    
-    Write-LogMessage "Found $($subscriptions.Count) subscriptions." -Level Success
-}
-catch {
-    Write-LogMessage "Error retrieving subscriptions: $_" -Level Error
-    exit 1
+} else {
+    $subscriptions = Get-AzSubscription | Where-Object {$_.State -eq "Enabled"}
+    if (-not $subscriptions) {
+        Write-Warning "No enabled subscriptions found or accessible."
+        exit 1
+    }
 }
 
-# Initialize results array for all subscriptions
-$allResults = [System.Collections.ArrayList]@()
+Write-Host "Found $($subscriptions.Count) subscription(s) to process."
 
-# Process each subscription
+# --- Main Processing Loop ---
 foreach ($subscription in $subscriptions) {
-    Write-LogMessage "Processing subscription: $($subscription.Name) ($($subscription.Id))" -Level Info
-    
-    try {
-        # Set context to current subscription
-        Set-AzContext -Subscription $subscription.Id -ErrorAction Stop | Out-Null
-        
-        # Initialize results for this subscription
-        $impactedWorkloads = @()
-        
-        # Get all VNets in subscription
-        $vnets = Get-AzVirtualNetwork -ErrorAction Stop
-        Write-LogMessage "Found $($vnets.Count) virtual networks in subscription $($subscription.Name)" -Level Info
-          foreach ($vnet in $vnets) {
-            Write-LogMessage "Analyzing VNet: $($vnet.Name) in resource group $($vnet.ResourceGroupName)" -Level Info
-              foreach ($subnet in $vnet.Subnets) {
-                $subnetIsCompliant = $false
-                $subnetReason = ""
-                $egressMethod = "Default" # Default, NATGateway, UDRtoNVA, UDRtoInternet, etc.
-                
-                Write-LogMessage "  Checking Subnet: $($subnet.Name)" -Level Info
-                
-                # 1. Check NAT Gateway (properly handle reference vs. full resource)
-                $hasNatGateway = $false
-                if ($null -ne $subnet.NatGateway -and $subnet.NatGateway.Id) {
-                    # Try to get the NAT Gateway resource to confirm it exists
-                    try {
-                        $natGatewayId = $subnet.NatGateway.Id
-                        # Extract resource group from the NAT Gateway ID
-                        $natParts = $natGatewayId -split '/'
-                        $natRgIndex = [array]::IndexOf($natParts, 'resourceGroups')
-                        $natNameIndex = [array]::IndexOf($natParts, 'natGateways')
-                        
-                        if ($natRgIndex -ge 0 -and $natNameIndex -ge 0) {
-                            $natRg = $natParts[$natRgIndex + 1]
-                            $natName = $natParts[$natNameIndex + 1]
-                            
-                            $natGateway = Get-AzNatGateway -ResourceGroupName $natRg -Name $natName -ErrorAction SilentlyContinue
-                            if ($natGateway) {                                $subnetIsCompliant = $true
-                                $egressMethod = "NATGateway"
-                                $subnetReason = "Associated with NAT Gateway: $natName"
-                                Write-LogMessage "    Subnet is compliant: $subnetReason" -Level Success
-                                continue # Next subnet
+    Write-Host "Processing Subscription: $($subscription.Name) ($($subscription.Id))"
+    Set-AzContext -SubscriptionId $subscription.Id -ErrorAction Stop | Out-Null
+
+    $resourceGroups = Get-AzResourceGroup
+    Write-Host "Found $($resourceGroups.Count) resource groups in subscription '$($subscription.Name)'."
+
+    foreach ($rg in $resourceGroups) {
+        Write-Host "--- Scanning Resource Group: $($rg.ResourceGroupName) ---"
+
+        # --- Process Virtual Machines ---
+        $vms = Get-AzVM -ResourceGroupName $rg.ResourceGroupName
+        if ($vms) {
+            Write-Host "Found $($vms.Count) VMs in RG '$($rg.ResourceGroupName)'."
+        }
+
+        foreach ($vm in $vms) {
+            Write-Verbose "Processing VM: $($vm.Name)"
+            $vmNetworkInterfaces = Get-AzNetworkInterface -ResourceGroupName $vm.ResourceGroupName | Where-Object { $_.VirtualMachine.Id -eq $vm.Id }
+
+            foreach ($nic in $vmNetworkInterfaces) {
+                Write-Verbose "  NIC: $($nic.Name)"
+                foreach ($ipConfig in $nic.IpConfigurations) {
+                    Write-Verbose "    IP Config: $($ipConfig.Name)"
+                    $isDefaultEgress = $true # Assume default egress initially
+                    $reason = "No explicit outbound method found yet."
+                    $explicitMethodFoundForIpConfig = $false
+
+                    if ($ipConfig.PublicIpAddress) {
+                        $pip = Get-AzPublicIpAddress -ResourceId $ipConfig.PublicIpAddress.Id
+                        if ($pip) {
+                            if ($pip.Sku.Name -eq "Standard") {
+                                $isDefaultEgress = $false
+                                $reason = "VM NIC has a Standard Public IP: $($pip.Name)"
+                                $explicitMethodFoundForIpConfig = $true
+                            } elseif ($pip.Sku.Name -eq "Basic") {
+                                $isDefaultEgress = $false
+                                $reason = "VM NIC has a Basic Public IP: $($pip.Name). (Note: Standard SKU is recommended. This is an explicit method.)"
+                                $explicitMethodFoundForIpConfig = $true
+                            } else {
+                                $reason = "VM NIC has a Public IP with unknown SKU: $($pip.Name) ($($pip.Sku.Name)). Further investigation needed."
                             }
-                        }
-                    }
-                    catch {
-                        Write-LogMessage "    Warning: Error checking NAT Gateway: $_" -Level Warning
-                    }
-                }
-                
-                # 2. Check Route Table (UDR)
-                $routeTable = $null
-                if ($null -ne $subnet.RouteTable) {
-                    try {
-                        $routeTable = Get-AzRouteTable -ResourceId $subnet.RouteTable.Id -ErrorAction Stop
-                    }
-                    catch {
-                        Write-LogMessage "    Warning: Cannot retrieve route table: $_" -Level Warning
-                    }
-                }
-                
-                if ($null -ne $routeTable) {
-                    $internetRoute = $routeTable.Routes | Where-Object { $_.AddressPrefix -eq "0.0.0.0/0" }
-                    
-                    if ($null -ne $internetRoute) {                        if ($internetRoute.NextHopType -eq "VirtualAppliance") {
-                            $subnetIsCompliant = $true
-                            $egressMethod = "UDR to NVA"
-                            $subnetReason = "UDR 0.0.0.0/0 to Virtual Appliance: $($internetRoute.NextHopIpAddress)"
-                            Write-LogMessage "    Subnet is compliant: $subnetReason" -Level Success
-                        }
-                        elseif ($internetRoute.NextHopType -eq "Internet") {
-                            $egressMethod = "UDR to Internet"
-                            $subnetReason = "UDR 0.0.0.0/0 to Internet (will be impacted)"
-                            Write-LogMessage "    Subnet will be impacted: $subnetReason" -Level Warning
-                        }
-                        else {
-                            # Other specific next hop types for 0.0.0.0/0, may need analysis
-                            $egressMethod = "UDR to $($internetRoute.NextHopType)"
-                            $subnetReason = "UDR 0.0.0.0/0 to $($internetRoute.NextHopType) (not NVA, potentially default or other)"
-                            Write-LogMessage "    Subnet may be impacted: $subnetReason" -Level Warning
-                        }
-                    }                    else {
-                        # UDR exists, but no 0.0.0.0/0 route, so system route to Internet applies
-                        $egressMethod = "Default (UDR without 0.0.0.0/0)"
-                        $subnetReason = "UDR exists but no 0.0.0.0/0 route (uses system default)"
-                        Write-LogMessage "    Subnet relies on default: $subnetReason" -Level Warning
-                    }
-                }
-                else {
-                    # No UDR, uses system route to Internet
-                    $egressMethod = "Default (No UDR)"
-                    $subnetReason = "No UDR associated (uses system default)"
-                    Write-LogMessage "    Subnet relies on default: $subnetReason" -Level Warning
-                }
-                
-                # If subnet is not compliant via NAT GW or UDR to NVA, check VMs
-                if (-not $subnetIsCompliant) {
-                    # Get VMs in this subnet (more targeted than getting all VMs)
-                    $vmsInSubnet = Get-VmsInSubnet -VNet $vnet -Subnet $subnet
-                    Write-LogMessage "    Found $($vmsInSubnet.Count) VMs in subnet" -Level Info
-                      foreach ($vm in $vmsInSubnet) {
-                        # Get network interfaces from VM's properties instead of using VMId parameter
-                        $vmNics = @()
-                        if ($null -ne $vm.NetworkProfile -and $null -ne $vm.NetworkProfile.NetworkInterfaces) {
-                            foreach ($nicRef in $vm.NetworkProfile.NetworkInterfaces) {
-                                $nic = Get-AzNetworkInterface -ResourceId $nicRef.Id -ErrorAction SilentlyContinue
-                                if ($null -ne $nic) {
-                                    $vmNics += $nic
-                                }
-                            }
-                        }
-                        $vmIsExplicitlyOutbound = $false
-                        
-                        foreach ($nic in $vmNics) {
-                            # Check for Standard Public IP
-                            $publicIPs = $nic.IpConfigurations | ForEach-Object { $_.PublicIpAddress }
-                            
-                            foreach ($publicIP in $publicIPs) {
-                                if ($null -ne $publicIP) {
-                                    # Get the actual public IP resource to check its SKU
-                                    try {
-                                        $pipResource = Get-AzPublicIpAddress -ResourceId $publicIP.Id -ErrorAction SilentlyContinue
-                                        if ($null -ne $pipResource -and $pipResource.Sku.Name -eq "Standard") {
-                                            $vmIsExplicitlyOutbound = $true
-                                            break
-                                        }
-                                    }
-                                    catch {
-                                        Write-LogMessage "      Warning: Could not check public IP details: $_" -Level Warning
-                                    }
-                                }
-                            }
-                            
-                            # Check for Standard Load Balancer with Outbound Rules
-                            if (-not $vmIsExplicitlyOutbound) {
-                                $lbBackendPools = $nic.IpConfigurations.LoadBalancerBackendAddressPools
-                                
-                                if ($null -ne $lbBackendPools) {
-                                    foreach ($pool in $lbBackendPools) {
-                                        try {
-                                            # Parse the backend pool ID to get LB details
-                                            $poolParts = $pool.Id -split '/'
-                                            $lbIndex = [array]::IndexOf($poolParts, 'loadBalancers')
-                                            
-                                            if ($lbIndex -ge 0 -and $lbIndex + 1 -lt $poolParts.Length) {
-                                                $lbName = $poolParts[$lbIndex + 1]
-                                                $lbResourceGroup = $poolParts[[array]::IndexOf($poolParts, 'resourceGroups') + 1]
-                                                
-                                                # Get the load balancer
-                                                $lb = Get-AzLoadBalancer -Name $lbName -ResourceGroupName $lbResourceGroup -ErrorAction SilentlyContinue
-                                                
-                                                # Check if it's a Standard SKU LB with outbound rules
-                                                if ($null -ne $lb -and $lb.Sku.Name -eq "Standard" -and $null -ne $lb.OutboundRules -and $lb.OutboundRules.Count -gt 0) {
-                                                    $vmIsExplicitlyOutbound = $true
-                                                    break
-                                                }
-                                            }
-                                        }
-                                        catch {
-                                            Write-LogMessage "      Warning: Error checking LB for outbound rules: $_" -Level Warning
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            if ($vmIsExplicitlyOutbound) {
-                                break  # No need to check other NICs if we found explicit outbound
-                            }
-                        }                        # Get additional VM properties
-                        $vmType = if ($vm.PSObject.Properties.Name -contains "IsVmssInstance" -and $vm.IsVmssInstance) { "VMSS Instance" } else { "VM" }
-                        $powerState = if ($vm.PSObject.Properties.Name -contains "PowerState") { $vm.PowerState } else { "Unknown" }
-                        
-                        # Include all VMs in the report, but mark if they're impacted or not
-                        $isImpacted = -not $vmIsExplicitlyOutbound
-                        $vmStatus = if ($isImpacted) { "Impacted" } else { "Compliant" }
-                        $vmReason = if ($isImpacted) {
-                            "VM in subnet with '$($subnetReason)' and lacks its own Standard PIP or LB outbound rule."
                         } else {
-                            "VM has explicit outbound connectivity (Standard PIP or LB outbound rule)"
-                        }
-                        
-                        $vmDetails = [PSCustomObject]@{
-                            ReportType = "VM"
-                            SubscriptionId = $subscription.Id
-                            SubscriptionName = $subscription.Name
-                            VMName = $vm.Name
-                            VMId = $vm.Id
-                            VMType = $vmType
-                            PowerState = $powerState
-                            SubnetName = $subnet.Name
-                            VNetName = $vnet.Name
-                            ResourceGroup = $vnet.ResourceGroupName
-                            Location = $vnet.Location
-                            EgressMethod = $egressMethod
-                            Status = $vmStatus
-                            Reason = $vmReason
-                            IsImpacted = $isImpacted
-                        }
-                        
-                        # Add to results array
-                        $null = $allResults.Add($vmDetails)
-                        
-                        # Only add impacted workloads to the separate tracking array
-                        if ($isImpacted) {
-                            $impactedWorkloads += $vmDetails
-                            Write-LogMessage "      Impacted VM: $($vm.Name) - $($vmDetails.Reason)" -Level Warning
-                        }
-                        else {
-                            Write-LogMessage "      OK: VM $($vm.Name) has explicit outbound connectivity" -Level Success
+                             $reason = "Public IP resource $($ipConfig.PublicIpAddress.Id) not found or inaccessible."
                         }
                     }
+
+                    if (-not $explicitMethodFoundForIpConfig -and $ipConfig.LoadBalancerBackendAddressPools) {
+                        foreach ($backendPool in $ipConfig.LoadBalancerBackendAddressPools) {
+                            $lbIdParts = $backendPool.Id -split '/'
+                            $lbRg = $lbIdParts[4]
+                            $lbName = $lbIdParts[8]
+                            
+                            $lb = Get-AzLoadBalancer -ResourceGroupName $lbRg -Name $lbName
+                            if ($lb) {
+                                if ($lb.Sku.Name -eq "Standard" -and $lb.FrontendIPConfigurations.PublicIpAddress) {
+                                    if ($lb.OutboundRules.Count -gt 0) {
+                                        $isDefaultEgress = $false
+                                        $reason = "VM NIC is in backend pool of Standard Public LB '$($lb.Name)' with outbound rules."
+                                        $explicitMethodFoundForIpConfig = $true
+                                        break 
+                                    } else {
+                                        $reason = "VM NIC is in backend pool of Standard Public LB '$($lb.Name)' but it has NO explicit outbound rules. This LB might rely on default SNAT (being retired) if DisableOutboundSnat is not true."
+                                    }
+                                } else {
+                                     $reason = "VM NIC is in backend pool of LB '$($lb.Name)' which is not a Standard Public SKU or has no Public IP."
+                                }
+                            } else {
+                                $reason = "Load Balancer for backend pool ID $($backendPool.Id) not found or inaccessible."
+                            }
+                            if ($explicitMethodFoundForIpConfig) { break }
+                        }
+                    }
+
+                    if (-not $explicitMethodFoundForIpConfig) {
+                        $subnetId = $ipConfig.Subnet.Id
+                        $subnetObject = Get-AzVirtualNetworkSubnetConfig -ResourceId $subnetId
+                        
+                        if ($subnetObject) {
+                            if ($subnetObject.NatGateway) {
+                                $isDefaultEgress = $false
+                                $reason = "Subnet '$($subnetObject.Name)' is configured with NAT Gateway: $($subnetObject.NatGateway.Id)"
+                                $explicitMethodFoundForIpConfig = $true
+                            }
+
+                            if (-not $explicitMethodFoundForIpConfig -and $subnetObject.RouteTable) {
+                                $routeTable = Get-AzRouteTable -ResourceId $subnetObject.RouteTable.Id
+                                if ($routeTable) {
+                                    $defaultRoute = $routeTable.Routes | Where-Object { $_.AddressPrefix -eq "0.0.0.0/0" }
+                                    if ($defaultRoute) {
+                                        if ($defaultRoute.NextHopType -eq "VirtualAppliance") {
+                                            $isDefaultEgress = $false
+                                            $reason = "Subnet '$($subnetObject.Name)' has UDR 0.0.0.0/0 to NVA: $($defaultRoute.NextHopIpAddress)"
+                                            $explicitMethodFoundForIpConfig = $true
+                                        } elseif ($defaultRoute.NextHopType -eq "Internet") {
+                                            $isDefaultEgress = $true
+                                            $reason = "Subnet '$($subnetObject.Name)' has UDR 0.0.0.0/0 directly to Internet. This will be impacted by default outbound retirement."
+                                        } else {
+                                            $isDefaultEgress = $true
+                                            $reason = "Subnet '$($subnetObject.Name)' has UDR 0.0.0.0/0 to $($defaultRoute.NextHopType). Review needed; potentially relies on default outbound."
+                                        }
+                                    } else {
+                                        $isDefaultEgress = $true
+                                        $reason = "Subnet '$($subnetObject.Name)' has a UDR, but no 0.0.0.0/0 route. Uses system default to Internet."
+                                    }
+                                } else {
+                                     $reason = "Route table $($subnetObject.RouteTable.Id) for subnet '$($subnetObject.Name)' not found or inaccessible."
+                                }
+                            } elseif (-not $explicitMethodFoundForIpConfig) {
+                                $isDefaultEgress = $true
+                                $reason = "Subnet '$($subnetObject.Name)' has no NAT Gateway and no UDR. Uses system default to Internet."
+                            }
+                        } else {
+                             $reason = "Subnet with ID $($subnetId) for NIC '$($nic.Name)' not found or inaccessible."
+                        }
+                    }
+
+                    if ($isDefaultEgress) {
+                        $vmPowerState = "N/A (error retrieving)" # Default
+                        try {
+                            $vmStatus = Get-AzVM -ResourceId $vm.Id -Status -ErrorAction SilentlyContinue
+                            if ($vmStatus -and $vmStatus.Statuses.Count -ge 2) {
+                                $vmPowerState = $vmStatus.Statuses[1].DisplayStatus
+                            } elseif ($vmStatus -and $vmStatus.Statuses.Count -eq 1) { # Handle cases where only one status element (e.g. provisioning state)
+                                $vmPowerState = $vmStatus.Statuses[0].DisplayStatus
+                            } elseif ($vm.ProvisioningState -eq 'Deallocated' -or $vm.ProvisioningState -eq 'Succeeded' -and ($vmStatus.PowerState -eq 'VM deallocated' -or !$vmStatus)) { # More explicit check for deallocated
+                                $vmPowerState = "VM deallocated"
+                            } else {
+                                $vmPowerState = "N/A (status unavailable or unexpected)"
+                            }
+                        } catch {
+                            $vmPowerState = "N/A (exception getting status)"
+                        }
+
+                        $reportItem = [PSCustomObject]@{
+                            Timestamp           = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+                            SubscriptionName    = $subscription.Name
+                            SubscriptionId      = $subscription.Id
+                            ResourceGroupName   = $rg.ResourceGroupName
+                            ResourceType        = "VM"
+                            ResourceName        = $vm.Name
+                            PowerState          = $vmPowerState
+                            NIC                 = $nic.Name
+                            IPConfiguration     = $ipConfig.Name
+                            PrivateIPAddress    = $ipConfig.PrivateIpAddress
+                            SubnetName          = ($ipConfig.Subnet.Id -split '/')[-1]
+                            VirtualNetwork      = ($ipConfig.Subnet.Id -split '/')[-3]
+                            IsLikelyDefaultEgress = $isDefaultEgress
+                            Reason              = $reason
+                        }
+                        $report += $reportItem
+                        Write-Warning "VM '$($vm.Name)' (NIC '$($nic.Name)', IPConfig '$($ipConfig.Name)') in RG '$($rg.ResourceGroupName)' is potentially using default outbound access. Reason: $reason"
+                    } else {
+                         Write-Verbose "VM '$($vm.Name)' (NIC '$($nic.Name)', IPConfig '$($ipConfig.Name)') has explicit outbound. Reason: $reason"
+                    }
+                } 
+            } 
+        } 
+
+        $vmsses = Get-AzVmss -ResourceGroupName $rg.ResourceGroupName
+        if ($vmsses) {
+            Write-Host "Found $($vmsses.Count) VM Scale Sets in RG '$($rg.ResourceGroupName)'."
+        }
+        foreach ($vmss in $vmsses) {
+            Write-Verbose "Processing VMSS: $($vmss.Name)"
+            $vmssInstances = Get-AzVmssVM -ResourceGroupName $vmss.ResourceGroupName -VMScaleSetName $vmss.Name 
+
+            foreach ($instance in $vmssInstances) {
+                Write-Verbose "  VMSS Instance: $($instance.Name)"
+                $instanceView = Get-AzVmssVM -ResourceGroupName $vmss.ResourceGroupName -VMScaleSetName $vmss.Name -InstanceId $instance.InstanceId -InstanceView
+                $instanceNics = $null
+                if($instanceView.NetworkProfile){ # Check if NetworkProfile exists
+                    $instanceNics = $instanceView.NetworkProfile.NetworkInterfaces
+                } else {
+                    Write-Warning "NetworkProfile not found for VMSS instance $($instance.Name) in VMSS $($vmss.Name). Skipping NIC checks for this instance."
+                    Continue # Skip to next instance if no network profile
                 }
-            }
-        }
-        
-        # Record processed subscriptions
-        $global:processedSubscriptions += $subscription.Id
-        
-        Write-LogMessage "Completed analysis of subscription $($subscription.Name). Found $($impactedWorkloads.Count) impacted workloads." -Level Info
-    }
-    catch {
-        Write-LogMessage "Error processing subscription $($subscription.Name): $_" -Level Error
-        $global:failedSubscriptions += $subscription.Id
-    }
-}
 
-# Restore original context
-if ($null -ne $originalContext) {
-    Set-AzContext -Context $originalContext | Out-Null
-    Write-LogMessage "Restored original context to subscription: $($originalContext.Subscription.Name)" -Level Info
-}
 
-# Display summary
-$totalVMs = ($allResults | Where-Object { $_.ReportType -eq "VM" }).Count
-$totalImpactedVMs = ($allResults | Where-Object { $_.ReportType -eq "VM" -and $_.IsImpacted -eq $true }).Count
-$totalCompliantVMs = $totalVMs - $totalImpactedVMs
+                foreach ($nicRef in $instanceNics) { 
+                    $nic = Get-AzNetworkInterface -ResourceId $nicRef.Id
+                    if (-not $nic) { Write-Warning "Could not retrieve NIC with ID $($nicRef.Id) for VMSS instance $($instance.Name). Skipping."; continue }
 
-# Group VMs by type and power state
-$vmsByType = $allResults | Where-Object { $_.ReportType -eq "VM" } | Group-Object -Property VMType
-$vmsByPowerState = $allResults | Where-Object { $_.ReportType -eq "VM" } | Group-Object -Property PowerState
+                    Write-Verbose "    NIC: $($nic.Name)"
+                    foreach ($ipConfig in $nic.IpConfigurations) {
+                        Write-Verbose "      IP Config: $($ipConfig.Name)"
+                        $isDefaultEgress = $true 
+                        $reason = "No explicit outbound method found yet for VMSS instance."
+                        $explicitMethodFoundForIpConfig = $false
 
-# Create detailed summary
-Write-LogMessage "Analysis complete. Found $totalVMs total VMs across $($global:processedSubscriptions.Count) subscriptions." -Level Info
-Write-LogMessage "  - Impacted VMs: $totalImpactedVMs" -Level Info
-Write-LogMessage "  - Compliant VMs: $totalCompliantVMs" -Level Info
-Write-LogMessage "VM types:" -Level Info
-foreach ($typeGroup in $vmsByType) {
-    Write-LogMessage "  - $($typeGroup.Name): $($typeGroup.Count)" -Level Info
-}
-Write-LogMessage "VM power states:" -Level Info
-foreach ($stateGroup in $vmsByPowerState) {
-    Write-LogMessage "  - $($stateGroup.Name): $($stateGroup.Count)" -Level Info
-}
+                        if ($ipConfig.PublicIpAddress) {
+                             $pip = Get-AzPublicIpAddress -ResourceId $ipConfig.PublicIpAddress.Id
+                             if ($pip) {
+                                if ($pip.Sku.Name -eq "Standard") {
+                                    $isDefaultEgress = $false
+                                    $reason = "VMSS instance '$($instance.Name)' NIC has a Standard Public IP: $($pip.Name)"
+                                    $explicitMethodFoundForIpConfig = $true
+                                } elseif ($pip.Sku.Name -eq "Basic") {
+                                    $isDefaultEgress = $false
+                                    $reason = "VMSS instance '$($instance.Name)' NIC has a Basic Public IP: $($pip.Name). (Note: Standard SKU is recommended. This is an explicit method.)"
+                                    $explicitMethodFoundForIpConfig = $true
+                                } else {
+                                    $reason = "VMSS instance '$($instance.Name)' NIC has a Public IP with unknown SKU: $($pip.Name) ($($pip.Sku.Name))."
+                                }
+                             } else {
+                                $reason = "Public IP resource $($ipConfig.PublicIpAddress.Id) for VMSS instance not found."
+                             }
+                        }
 
-if ($global:failedSubscriptions.Count -gt 0) {
-    Write-LogMessage "Failed to process $($global:failedSubscriptions.Count) subscriptions." -Level Warning
-}
+                        if (-not $explicitMethodFoundForIpConfig -and $ipConfig.LoadBalancerBackendAddressPools) {
+                            foreach ($backendPool in $ipConfig.LoadBalancerBackendAddressPools) {
+                                $lbIdParts = $backendPool.Id -split '/'
+                                $lbRg = $lbIdParts[4]
+                                $lbName = $lbIdParts[8]
+                                
+                                $lb = Get-AzLoadBalancer -ResourceGroupName $lbRg -Name $lbName
+                                if ($lb) {
+                                    if ($lb.Sku.Name -eq "Standard" -and $lb.FrontendIPConfigurations.PublicIpAddress) {
+                                        if ($lb.OutboundRules.Count -gt 0) {
+                                            $isDefaultEgress = $false
+                                            $reason = "VMSS instance '$($instance.Name)' NIC is in backend pool of Standard Public LB '$($lb.Name)' with outbound rules."
+                                            $explicitMethodFoundForIpConfig = $true
+                                            break 
+                                        } else {
+                                            $reason = "VMSS instance '$($instance.Name)' NIC is in backend pool of Standard Public LB '$($lb.Name)' but it has NO explicit outbound rules. This LB might rely on default SNAT if DisableOutboundSnat is not true."
+                                        }
+                                    } else {
+                                        $reason = "VMSS instance '$($instance.Name)' NIC is in backend pool of LB '$($lb.Name)' which is not a Standard Public SKU or has no Public IP."
+                                    }
+                                } else {
+                                     $reason = "Load Balancer for backend pool ID $($backendPool.Id) for VMSS instance not found."
+                                }
+                                if ($explicitMethodFoundForIpConfig) { break }
+                            }
+                        }
+                        
+                        if (-not $explicitMethodFoundForIpConfig) {
+                            $subnetId = $ipConfig.Subnet.Id
+                            $subnetObject = Get-AzVirtualNetworkSubnetConfig -ResourceId $subnetId
+                            
+                            if ($subnetObject) {
+                                if ($subnetObject.NatGateway) {
+                                    $isDefaultEgress = $false
+                                    $reason = "VMSS instance '$($instance.Name)' in Subnet '$($subnetObject.Name)' configured with NAT Gateway: $($subnetObject.NatGateway.Id)"
+                                    $explicitMethodFoundForIpConfig = $true
+                                }
 
-# Always export results to CSV unless explicitly disabled
-if ($PSBoundParameters.ContainsKey('ExportCsv') -eq $false -or $ExportCsv) {
-    $exportFullPath = Join-Path -Path $ExportPath -ChildPath $ExportFileName
-    
-    # Ensure export directory exists
-    if (-not (Test-Path -Path $ExportPath)) {
+                                if (-not $explicitMethodFoundForIpConfig -and $subnetObject.RouteTable) {
+                                    $routeTable = Get-AzRouteTable -ResourceId $subnetObject.RouteTable.Id
+                                    if ($routeTable) {
+                                        $defaultRoute = $routeTable.Routes | Where-Object { $_.AddressPrefix -eq "0.0.0.0/0" }
+                                        if ($defaultRoute) {
+                                            if ($defaultRoute.NextHopType -eq "VirtualAppliance") {
+                                                $isDefaultEgress = $false
+                                                $reason = "VMSS instance '$($instance.Name)' in Subnet '$($subnetObject.Name)' has UDR 0.0.0.0/0 to NVA: $($defaultRoute.NextHopIpAddress)"
+                                                $explicitMethodFoundForIpConfig = $true
+                                            } elseif ($defaultRoute.NextHopType -eq "Internet") {
+                                                $isDefaultEgress = $true
+                                                $reason = "VMSS instance '$($instance.Name)' in Subnet '$($subnetObject.Name)' has UDR 0.0.0.0/0 directly to Internet. This will be impacted."
+                                            } else {
+                                                $isDefaultEgress = $true
+                                                $reason = "VMSS instance '$($instance.Name)' in Subnet '$($subnetObject.Name)' has UDR 0.0.0.0/0 to $($defaultRoute.NextHopType). Review needed."
+                                            }
+                                        } else {
+                                            $isDefaultEgress = $true
+                                            $reason = "VMSS instance '$($instance.Name)' in Subnet '$($subnetObject.Name)' has a UDR, but no 0.0.0.0/0 route. Uses system default."
+                                        }
+                                    } else {
+                                        $reason = "Route table $($subnetObject.RouteTable.Id) for VMSS subnet '$($subnetObject.Name)' not found."
+                                    }
+                                } elseif (-not $explicitMethodFoundForIpConfig) {
+                                    $isDefaultEgress = $true
+                                    $reason = "VMSS instance '$($instance.Name)' in Subnet '$($subnetObject.Name)' has no NAT Gateway and no UDR. Uses system default."
+                                }
+                            } else {
+                                 $reason = "Subnet with ID $($subnetId) for VMSS instance NIC '$($nic.Name)' not found."
+                            }
+                        }
+
+                        if ($isDefaultEgress) {
+                            $instancePowerState = "N/A (error retrieving)"
+                            try {
+                                if ($instanceView -and $instanceView.Statuses.Count -ge 2) {
+                                    $instancePowerState = $instanceView.Statuses[1].DisplayStatus
+                                } elseif ($instanceView -and $instanceView.Statuses.Count -eq 1) {
+                                     $instancePowerState = $instanceView.Statuses[0].DisplayStatus
+                                } elseif ($instance.ProvisioningState -eq 'Deallocated' -or $instance.ProvisioningState -eq 'Succeeded' -and ($instanceView.PowerState -eq 'VM deallocated' -or !$instanceView) ) {
+                                     $instancePowerState = "VM deallocated"
+                                } else {
+                                    $instancePowerState = "N/A (status unavailable or unexpected)"
+                                }
+                            } catch {
+                                $instancePowerState = "N/A (exception getting status)"
+                            }
+
+                            $reportItem = [PSCustomObject]@{
+                                Timestamp           = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+                                SubscriptionName    = $subscription.Name
+                                SubscriptionId      = $subscription.Id
+                                ResourceGroupName   = $rg.ResourceGroupName
+                                ResourceType        = "VMSS Instance"
+                                ResourceName        = "$($vmss.Name)/$($instance.Name)"
+                                PowerState          = $instancePowerState
+                                NIC                 = $nic.Name
+                                IPConfiguration     = $ipConfig.Name
+                                PrivateIPAddress    = $ipConfig.PrivateIpAddress
+                                SubnetName          = ($ipConfig.Subnet.Id -split '/')[-1]
+                                VirtualNetwork      = ($ipConfig.Subnet.Id -split '/')[-3]
+                                IsLikelyDefaultEgress = $isDefaultEgress
+                                Reason              = $reason
+                            }
+                            $report += $reportItem
+                            Write-Warning "VMSS Instance '$($instance.Name)' in VMSS '$($vmss.Name)' (NIC '$($nic.Name)', IPConfig '$($ipConfig.Name)') in RG '$($rg.ResourceGroupName)' is potentially using default outbound access. Reason: $reason"
+                        } else {
+                            Write-Verbose "VMSS Instance '$($instance.Name)' (NIC '$($nic.Name)', IPConfig '$($ipConfig.Name)') has explicit outbound. Reason: $reason"
+                        }
+                    } 
+                } 
+            } 
+        } 
+    } 
+} 
+
+# --- Reporting ---
+Write-Host "`n--- Script Execution Summary ---"
+$endTime = Get-Date
+Write-Host "Script started at: $startTime"
+Write-Host "Script finished at: $endTime"
+Write-Host "Total duration: $($endTime - $startTime)"
+
+if ($report.Count -gt 0) {
+    Write-Warning "$($report.Count) resources identified as potentially using default outbound access."
+    Write-Host "Review the following flagged resources:"
+    $report | Format-Table -AutoSize
+
+    if (-not [string]::IsNullOrEmpty($CsvExportPath)) {
         try {
-            New-Item -Path $ExportPath -ItemType Directory -Force | Out-Null
-            Write-LogMessage "Created export directory: $ExportPath" -Level Info
+            $report | Export-Csv -Path $CsvExportPath -NoTypeInformation -Encoding UTF8
+            Write-Host "`nReport successfully exported to: $CsvExportPath"
+        } catch {
+            Write-Error "Failed to export report to CSV: $($_.Exception.Message)"
         }
-        catch {
-            Write-LogMessage "Failed to create export directory: $_" -Level Error
-        }
+    } else {
+        Write-Host "`nTo export this report to CSV, re-run the script with the -CsvExportPath parameter."
     }
-    
-    # Ensure we have an ArrayList to avoid binding issues
-    if ($null -eq $allResults) {
-        $allResults = [System.Collections.ArrayList]@()
-    } elseif ($allResults -isnot [System.Collections.ArrayList]) {
-        $tempResults = [System.Collections.ArrayList]@()
-        foreach ($item in $allResults) {
-            $tempResults.Add($item) | Out-Null
-        }
-        $allResults = $tempResults
-    }
-    
-    # Add a placeholder result if none found to avoid empty collection error
-    if ($allResults.Count -eq 0) {
-        $placeholderResult = [PSCustomObject]@{
-            ReportType = "INFO"
-            Message = "No impacted resources found"
-            ExecutionDateTime = $startTime
-            AnalysisDate = (Get-Date -Format "yyyy-MM-dd")
-        }
-        $allResults.Add($placeholderResult) | Out-Null
-        Write-LogMessage "No impacted workloads found to export. Adding placeholder entry." -Level Info
-    }
-      try {
-        # Calculate statistics
-        $totalVMs = ($allResults | Where-Object { $_.ReportType -eq "VM" }).Count
-        $totalImpactedVMs = ($allResults | Where-Object { $_.ReportType -eq "VM" -and $_.IsImpacted -eq $true }).Count
-        $totalCompliantVMs = $totalVMs - $totalImpactedVMs
-        $vmsByType = $allResults | Where-Object { $_.ReportType -eq "VM" } | Group-Object -Property VMType
-        $standardVMs = ($vmsByType | Where-Object { $_.Name -eq "VM" }).Count
-        $vmssInstances = ($vmsByType | Where-Object { $_.Name -eq "VMSS Instance" }).Count
-        
-        # Add execution summary with more detailed statistics
-        $executionSummary = [PSCustomObject]@{
-            ReportType = "SUMMARY"
-            ExecutionDateTime = $startTime
-            AnalysisDate = (Get-Date -Format "yyyy-MM-dd")
-            TotalSubscriptions = $global:processedSubscriptions.Count + $global:failedSubscriptions.Count
-            SuccessfulSubscriptions = $global:processedSubscriptions.Count
-            FailedSubscriptions = $global:failedSubscriptions.Count
-            TotalVMs = $totalVMs
-            TotalImpactedVMs = $totalImpactedVMs
-            TotalCompliantVMs = $totalCompliantVMs
-            StandardVMs = $standardVMs
-            VmssInstances = $vmssInstances
-            ElapsedTime = "$(((Get-Date) - $startTime).ToString("hh\:mm\:ss"))"
-        }
-        
-        $allResults.Add($executionSummary) | Out-Null
-        
-        # Export to CSV
-        $allResults | Export-Csv -Path $exportFullPath -NoTypeInformation -Force
-        
-        Write-LogMessage "Results exported to: $exportFullPath" -Level Success
-        
-        # Offer to open the CSV file
-        $openFile = Read-Host "Would you like to open the CSV file? (Y/N)"
-        if ($openFile -eq "Y" -or $openFile -eq "y") {
-            try {
-                Invoke-Item -Path $exportFullPath
-            }
-            catch {
-                Write-LogMessage "Could not open file: $_" -Level Error
-            }
-        }
-    }
-    catch {
-        Write-LogMessage "Failed to export results to CSV: $_" -Level Error
-    }
+} else {
+    Write-Host "No resources identified as potentially using default outbound access based on the checks performed."
 }
-#endregion
+
+Write-Host "--- Azure Egress Validation Script Finished ---"

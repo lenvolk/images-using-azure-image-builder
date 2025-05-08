@@ -1,0 +1,1 @@
+param ([string]$CsvPath = "C:\temp\test.csv") $report = @(); $item = [PSCustomObject]@{Name = "Test"; Value = 123}; $report += $item; if (-not [string]::IsNullOrEmpty($CsvPath)) { $report | Export-Csv -Path $CsvPath -NoTypeInformation }; Write-Host "Script executed successfully"
