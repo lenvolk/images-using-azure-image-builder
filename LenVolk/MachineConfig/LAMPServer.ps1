@@ -1,11 +1,4 @@
 
-# GuestConfiguration module
-# Install-Module -Name GuestConfiguration -Force -AllowClobber
-#
-# PSDscResources module
-# Install-Module -Name PSDscResources -Repository PSGallery -Force -AllowClobber
-#
-# Install-Module -Name nx -Repository PSGallery -Force -AllowClobber
 
 #Author a configuration
 configuration LAMPServer {
@@ -14,14 +7,12 @@ configuration LAMPServer {
     Node localhost {
  
          $requiredPackages = @("httpd","mod_ssl","php","php-mysqlnd","mariadb","mariadb-server")
-         $enabledServices = @("httpd","mariadb")
- 
-         #Ensure packages are installed
+         $enabledServices = @("httpd","mariadb")         #Ensure packages are installed
          ForEach ($package in $requiredPackages){
              nxPackage $Package{
                  Ensure = "Present"
                  Name = $Package
-                 PackageType = "yum"
+                 PackageManager = "yum"
              }
          }
  
@@ -48,14 +39,14 @@ $params = @{
 }
 New-GuestConfigurationPackage @params
 
-# Get the current compliance results for the local machine
-Get-GuestConfigurationPackageComplianceStatus -Path ./LAMPServer.zip
-# Test applying the configuration to local machine
-Start-GuestConfigurationPackageRemediation -Path ./LAMPServer.zip
+# # Get the current compliance results for the local machine
+# Get-GuestConfigurationPackageComplianceStatus -Path ./LAMPServer.zip
+# # Test applying the configuration to local machine
+# Start-GuestConfigurationPackageRemediation -Path ./LAMPServer.zip
 
 #Create a policy definition that enforces a custom configuration package, in a specified path
 $demoguid = New-Guid
-$contentUri = "https://saarcscripts01.blob.core.windows.net/machine-configuration/LAMPServer.zip?sp=r&st=2025-03-10T15:20:02Z&se=2025-03-17T23:20:02Z&spr=https&sv=2022-11-02&sr=b&sig=GEbpze6%2FhckV7r6HAcQIpp%2FZ8aHiQ1CmA6DQvboMHPA%3D"
+$contentUri = "https://sharexvolkbike.blob.core.windows.net/machine-configuration/LAMPServer.zip?sp=r&st=2025-05-15T22:18:51Z&se=2025-05-23T06:18:51Z&spr=https&sv=2024-11-04&sr=b&sig=hU7N1RE9dNv6s%2BiezEFTgZJ1dUq30DHTrMcFNMxz9L4%3D"
 
 $PolicyConfig      = @{
     PolicyId      = $demoguid
