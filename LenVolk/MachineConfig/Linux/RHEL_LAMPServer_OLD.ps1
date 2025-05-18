@@ -46,7 +46,7 @@ New-GuestConfigurationPackage @params
 
 #Create a policy definition that enforces a custom configuration package, in a specified path
 $demoguid = New-Guid
-$contentUri = "https://sharexvolkbike.blob.core.windows.net/machine-configuration/LAMPServer.zip?sp=r&st=2025-05-15T22:18:51Z&se=2025-05-23T06:18:51Z&spr=https&sv=2024-11-04&sr=b&sig=hU7N1RE9dNv6s%2BiezEFTgZJ1dUq30DHTrMcFNMxz9L4%3D"
+$contentUri = "https://sharexvolkbike.blob.core.windows.net/machine-configuration/LAMPServer.zip?"
 
 $PolicyConfig      = @{
     PolicyId      = $demoguid
