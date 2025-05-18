@@ -1,7 +1,7 @@
 # No MSI
 $PolicyConfig = @{
     PolicyId                 = (New-Guid).Guid # Or a predefined GUID
-    ContentUri               = 'https://img.volk.bike/TimeZone.zip' # URI of your uploaded package
+    ContentUri               = 'https://sharexvolkbike.blob.core.windows.net/machine-configuration/TimeZone.zip?xxxxxx' # URI of your uploaded package
     DisplayName              = 'Windows TimeZone EST Policy'
     Description              = 'AuditAndSet to ensure VMs are set to Eastern Standard Time.'
     Path                     = '.\policies' # Local directory to save generated policy files
@@ -18,6 +18,7 @@ New-AzPolicyDefinition -Name 'Windows TimeZone EST MachineConfig' -Policy '.\pol
 
 
 # with MSI
+
 $PolicyConfig = @{
     PolicyId                 = (New-Guid).Guid # Or a predefined GUID
     ContentUri               = 'YOUR_BLOB_STORAGE_URI/TimeZone.zip' # URI of your uploaded package

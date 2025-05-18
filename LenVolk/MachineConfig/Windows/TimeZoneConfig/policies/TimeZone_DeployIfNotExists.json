@@ -14,7 +14,7 @@
                 "name": "TimeZone",
                 "version": "1.0.0",
                 "contentType": "Custom",
-                "contentUri": "https://img.volk.bike/TimeZone.zip",
+                "contentUri": "https://sharexvolkbike.blob.core.windows.net/machine-configuration/TimeZone.zip?sp=r&st=2025-05-18T03:39:02Z&se=2025-05-30T11:39:02Z&spr=https&sv=2024-11-04&sr=b&sig=7OXGbC6sRvIuBlLkfVYjY2WrTddwUH55cqc9HqWdVNo%3D",
                 "contentHash": "038E00C333C1A4076151BA00B48175076C95AB51FF98C51413DB5DCB49E575B3"
             }
         },
@@ -323,7 +323,7 @@
                                                 "name": "TimeZone",
                                                 "version": "1.0.0",
                                                 "contentType": "Custom",
-                                                "contentUri": "https://img.volk.bike/TimeZone.zip",
+                                                "contentUri": "https://sharexvolkbike.blob.core.windows.net/machine-configuration/TimeZone.zip?sp=r&st=2025-05-18T03:39:02Z&se=2025-05-30T11:39:02Z&spr=https&sv=2024-11-04&sr=b&sig=7OXGbC6sRvIuBlLkfVYjY2WrTddwUH55cqc9HqWdVNo%3D",
                                                 "contentHash": "038E00C333C1A4076151BA00B48175076C95AB51FF98C51413DB5DCB49E575B3",
                                                 "assignmentType": "ApplyAndAutoCorrect"
                                             }
@@ -340,7 +340,7 @@
                                                 "name": "TimeZone",
                                                 "version": "1.0.0",
                                                 "contentType": "Custom",
-                                                "contentUri": "https://img.volk.bike/TimeZone.zip",
+                                                "contentUri": "https://sharexvolkbike.blob.core.windows.net/machine-configuration/TimeZone.zip?sp=r&st=2025-05-18T03:39:02Z&se=2025-05-30T11:39:02Z&spr=https&sv=2024-11-04&sr=b&sig=7OXGbC6sRvIuBlLkfVYjY2WrTddwUH55cqc9HqWdVNo%3D",
                                                 "contentHash": "038E00C333C1A4076151BA00B48175076C95AB51FF98C51413DB5DCB49E575B3",
                                                 "assignmentType": "ApplyAndAutoCorrect"
                                             }
@@ -357,7 +357,7 @@
                                                 "name": "TimeZone",
                                                 "version": "1.0.0",
                                                 "contentType": "Custom",
-                                                "contentUri": "https://img.volk.bike/TimeZone.zip",
+                                                "contentUri": "https://sharexvolkbike.blob.core.windows.net/machine-configuration/TimeZone.zip?sp=r&st=2025-05-18T03:39:02Z&se=2025-05-30T11:39:02Z&spr=https&sv=2024-11-04&sr=b&sig=7OXGbC6sRvIuBlLkfVYjY2WrTddwUH55cqc9HqWdVNo%3D",
                                                 "contentHash": "038E00C333C1A4076151BA00B48175076C95AB51FF98C51413DB5DCB49E575B3",
                                                 "assignmentType": "ApplyAndAutoCorrect"
                                             }
@@ -371,5 +371,5 @@
             }
         }
     },
-    "name": "65ad261b-76b5-416a-aef5-5a444d767658"
+    "name": "915cf4db-62b0-4962-bff8-90eb98b30763"
 }
