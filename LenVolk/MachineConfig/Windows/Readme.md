@@ -8,6 +8,13 @@ This guide explains how to create, test, and deploy custom Azure Machine Configu
 
 - [Azure Machine Configuration Overview](https://learn.microsoft.com/en-us/azure/governance/machine-configuration/overview)
 
+- [Azure Arc: Managing Azure Arc-enabled servers with Machine Configuration](https://wmatthyssen.com/2025/03/03/azure-arc-managing-azure-arc-enabled-servers-with-machine-configuration/)
+
+Logs:
+```cmd
+C:\ProgramData\GuestConfig\Configuration
+```
+
 ## Prerequisites
 
 - [Deploy requirements for Azure Virtual Machines](https://learn.microsoft.com/en-us/azure/governance/machine-configuration/overview#deploy-requirements-for-azure-virtual-machines)
@@ -51,6 +58,8 @@ This script defines the desired state for your target machines.
     5.  Execute this script. It will compile the DSC configuration and generate a `.mof` file (e.g., `localhost.mof`) located in a subfolder named after your configuration (e.g., `.\TimeZoneCustom\localhost.mof`).
 
 ### Step 2: Create the Guest Configuration Package (e.g., `2timeZonePackage.ps1`)
+
+- [Ref Repo](https://github.com/Azure/azure-policy/blob/master/samples/GuestConfiguration/package-samples/configurations/SetWindowsTimeZone/SetWindowsTimeZone.mof)
 
 This script packages the compiled `.mof` file into a `.zip` archive for the Guest Configuration agent.
 
