@@ -28,7 +28,7 @@ $PolicyConfig      = @{
         InstallLampUbuntu = "true"
     }
   }
-  
+    
   New-GuestConfigurationPolicy @PolicyConfig
 
-  New-AzPolicyDefinition -Name 'lamppolicyubuntu' -Policy '.\policies\deployIfNotExists.json\LAMPServer_DeployIfNotExists.json'
+  New-AzPolicyDefinition -Name 'lamppolicyubuntu' -Policy '.\policies\deployIfNotExists.json\LAMPServer_DeployIfNotExists.json' -ManagementGroupName 'volk'
