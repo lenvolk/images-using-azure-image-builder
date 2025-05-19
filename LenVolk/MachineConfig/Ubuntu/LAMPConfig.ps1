@@ -1,60 +1,31 @@
-Configuration LAMPConfig {
-    Import-DscResource -ModuleName 'nx'
-    
+configuration LAMPServerUbuntu {
+    Import-DSCResource -ModuleName nxtools
+ 
     Node localhost {
-        # Install Apache
-        nxPackage apache2 {
-            Name = "apache2"
-            Ensure = "Present"
-            PackageManager = "apt"
-        }
-        
-        # Install MySQL
-        nxPackage mysql {
-            Name = "mysql-server"
-            Ensure = "Present"
-            PackageManager = "apt"
-        }
-        
-        # Install PHP
-        nxPackage php {
-            Name = "php"
-            Ensure = "Present"
-            PackageManager = "apt"
-        }
-        
-        # Install PHP MySQL extension
-        nxPackage php_mysql {
-            Name = "php-mysql"
-            Ensure = "Present"
-            PackageManager = "apt"
-        }
-        
-        # Enable Apache service
-        nxService apache {
-            Name = "apache2"
-            Controller = "systemd"
-            Enabled = $true
-            State = "running"
-        }
-        
-        # Enable MySQL service
-        nxService mysql_service {
-            Name = "mysql"
-            Controller = "systemd"
-            Enabled = $true
-            State = "running"
-        }
-        
-        # Create a test PHP file
-        nxFile phpinfo {
-            DestinationPath = "/var/www/html/info.php"
-            Contents = "<?php\nphpinfo();\n?>"
-            Ensure = "Present"
-            Type = "File"
-            Mode = "0644"
-        }
+ 
+        # List of required packages (adjust package names as needed for Ubuntu)
+        $requiredPackages = @("apache2", "php", "php-mysql", "mariadb-server")
+        $enabledServices = @("apache2", "mariadb")
+ 
+         #Ensure packages are installed
+         ForEach ($package in $requiredPackages){
+             nxPackage $Package{
+                 Ensure = "Present"
+                 Name = $Package
+                 PackageType = "apt"
+             }
+         }
+ 
+         #Ensure daemons are enabled
+         ForEach ($service in $enabledServices){
+             nxService $service{
+                 Enabled = $true
+                 Name = $service
+                 Controller = "SystemD"
+                 State = "running"
+             }
+         }
     }
-}
+ }
 
-LAMPConfig
+LAMPServerUbuntu

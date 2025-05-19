@@ -1,10 +1,12 @@
 
+# Install-Module -Name nxtools -Force -AllowClobber
+
 .\LAMPConfig.ps1
 
 # Create a package that will audit and apply the configuration (Set)
 $params = @{
     Name          = 'LAMPServer'
-    Configuration = './LAMPConfig/localhost.mof'
+    Configuration = './LAMPServerUbuntu/localhost.mof'
     Type          = 'AuditAndSet'
     Force         = $true
 }
