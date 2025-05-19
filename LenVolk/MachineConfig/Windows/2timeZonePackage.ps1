@@ -15,9 +15,9 @@
 # (Get-Module GuestConfiguration).Version
 
 # # Handle paths with absolute paths
-# $scriptDir = $PSScriptRoot ? $PSScriptRoot : "c:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVolk\MachineConfig\Windows"
-# $configDir = Join-Path -Path $scriptDir -ChildPath "TimeZoneConfig"
-# $mofPath = Join-Path -Path $configDir -ChildPath "localhost.mof"
+$scriptDir = $PSScriptRoot ? $PSScriptRoot : "c:\Temp\BackUP\Temp\images-using-azure-image-builder\LenVolk\MachineConfig\Windows"
+$configDir = Join-Path -Path $scriptDir -ChildPath "TimeZoneConfig"
+$mofPath = Join-Path -Path $configDir -ChildPath "localhost.mof"
 
 # # Make sure the MOF exists
 # if (!(Test-Path -Path $mofPath)) {
