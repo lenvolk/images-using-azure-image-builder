@@ -1,5 +1,5 @@
 
-
+# REF https://learn.microsoft.com/en-us/azure/automation/quickstarts/dsc-configuration
 #Author a configuration
 configuration LAMPServer {
     Import-DSCResource -ModuleName nx
