@@ -2,6 +2,8 @@
 
 This repository contains tools and scripts for implementing and managing Azure Machine Configuration (formerly known as Azure Guest Configuration) across different operating systems. The framework provides consistent configuration, compliance monitoring, and automatic remediation capabilities for both Azure VMs and Azure Arc-enabled servers.
 
+# [Supported client types](https://learn.microsoft.com/en-us/azure/governance/machine-configuration/overview#supported-client-types)
+
 ## Project Overview
 
 Azure Machine Configuration is a policy-as-code framework that allows administrators to define, enforce, and monitor the configuration state of Windows and Linux machines. This repository includes implementation examples for both Windows and Ubuntu Linux, demonstrating how to:
