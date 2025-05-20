@@ -5,7 +5,7 @@
 
 # Create a package that will audit and apply the configuration (Set)
 $params = @{
-    Name          = 'LAMPServer'
+    Name          = 'LAMPServerRHEL'
     Configuration = './LAMPServerRHEL/localhost.mof'
     Type          = 'AuditAndSet'
     Force         = $true
@@ -35,4 +35,4 @@ $PolicyConfig      = @{
     
   New-GuestConfigurationPolicy @PolicyConfig
 
-  New-AzPolicyDefinition -Name 'lamppolicyrhel' -Policy '.\policies\deployIfNotExists.json\LAMPServer_DeployIfNotExists.json' -ManagementGroupName 'volk'
+  New-AzPolicyDefinition -Name 'lamppolicyrhel' -Policy '.\policies\deployIfNotExists.json\LAMPServerRHEL_DeployIfNotExists.json' -ManagementGroupName 'volk'
