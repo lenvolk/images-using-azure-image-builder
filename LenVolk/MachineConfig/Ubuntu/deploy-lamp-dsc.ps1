@@ -12,7 +12,7 @@ $params = @{
 }
 New-GuestConfigurationPackage @params
 
-# Before running the next command, ensure that teh package is uploaded to a storage account
+# Before running the next command, ensure that the package is uploaded to a storage account
 # and that the SAS URL is available.
 
 #Create a policy definition that enforces a custom configuration package, in a specified path
