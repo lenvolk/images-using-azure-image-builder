@@ -36,3 +36,11 @@ $PolicyConfig      = @{
   New-GuestConfigurationPolicy @PolicyConfig
 
   New-AzPolicyDefinition -Name 'lamppolicyrhel' -Policy '.\policies\deployIfNotExists.json\LAMPServerRHEL_DeployIfNotExists.json' -ManagementGroupName 'volk'
+
+  # to validate if LAMP has been installed, ssh to RHEL and run the following command
+  # rpm -q httpd mariadb: Checks if the packages are installed.
+  # sudo systemctl status httpd
+  # sudo systemctl status mariadb
+  # To enable the services to start on boot, run the following command:
+  # rpm -q httpd mariadb && sudo systemctl enable --now httpd mariadb
+
