@@ -61,8 +61,9 @@ az role assignment create --assignee $imgBuilderCliId --role $imageRoleDefName -
 #######################################
 #     Create VNET and Subnet          #
 #######################################
-$VNETName="aibVNet"
-$SubnetName="aibSubnet"
+$aibRG = "AVDNetWork"
+$VNETName="AVDVNet"
+$SubnetName="PE"
 az network vnet create --resource-group $aibRG --address-prefixes 10.150.0.0/24 --name $VNETName `
                                             --subnet-prefixes 10.150.0.0/25 --subnet-name $SubnetName 
 # Disable Private Link Policy
