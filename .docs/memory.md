@@ -84,11 +84,22 @@ The function will:
 4. Ready for integration with real email service (SendGrid, Logic Apps, etc.)
 
 ## Next Steps
-1. Test email notification deployment
-2. Monitor function execution in Azure Portal
-3. Check Application Insights for logs
-4. Verify daily health reports in blob storage
-5. Test email notification functionality
+1. (Optional) Further customize notification content or add additional notification channels
+2. (Optional) Integrate with a real email delivery service for production alerts  
+3. (Optional) Review Application Insights and blob storage for email notification logs after the next function execution
+4. Monitor function execution in Azure Portal
+5. Check Application Insights for logs
+6. Verify daily health reports in blob storage
+
+## Completed Tasks
+- ✅ Detailed explanation of monitored events and resource types added to README.md
+- ✅ Added comprehensive "What Gets Monitored?" section covering:
+  - All tracked Azure resource types (Compute, Storage, Networking, AI, Security, etc.)
+  - Service Health event types and severity levels (Critical, Warning, Information)
+  - Smart filtering logic and examples
+  - Sample report formats and email notification content
+- ✅ README.md now includes complete information about what resources are monitored and what events trigger alerts
+- ✅ User-friendly explanations with examples of filtering logic and alert content
 
 ## Known Issues & Solutions
 - Azure Developer CLI (azd) does not natively support PowerShell Azure Functions

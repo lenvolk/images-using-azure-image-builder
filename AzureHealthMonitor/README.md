@@ -49,6 +49,192 @@ graph TD
     style K fill:#f9fbe7
 ```
 
+## What Gets Monitored? 🔍
+
+### Resource Types Tracked 📋
+This system automatically inventories **ALL** resources in your Azure subscription, including but not limited to:
+
+**Compute Services:**
+- Virtual Machines (VMs)
+- Virtual Machine Scale Sets
+- App Services (Web Apps)
+- Function Apps
+- Container Instances
+- Kubernetes Services (AKS)
+- Azure Batch
+- Service Fabric
+
+**Storage & Databases:**
+- Storage Accounts (Blob, File, Queue, Table)
+- SQL Databases & Managed Instances
+- Cosmos DB
+- Azure Database for MySQL/PostgreSQL
+- Redis Cache
+- Azure Synapse Analytics
+
+**Networking:**
+- Virtual Networks (VNets)
+- Load Balancers
+- Application Gateways
+- VPN Gateways
+- Network Security Groups
+- Traffic Manager
+- Front Door
+- CDN
+
+**AI & Analytics:**
+- Cognitive Services
+- Machine Learning workspaces
+- Stream Analytics
+- Data Factory
+- Event Hubs
+- Service Bus
+
+**Security & Identity:**
+- Key Vaults
+- Azure Active Directory resources
+- Application Insights
+- Log Analytics workspaces
+
+**And Many More:**
+- Logic Apps, API Management, Event Grid, IoT Hubs, Power BI, etc.
+
+### Service Health Events Monitored ⚠️
+
+**Event Severity Levels:**
+- **🔴 Critical**: Service completely unavailable or major functionality broken
+- **🟡 Warning**: Performance degradation, intermittent issues, or planned maintenance
+- **🔵 Information**: General announcements that don't affect service availability
+
+**Types of Health Events Tracked:**
+1. **Service Outages**: Complete service unavailability
+2. **Performance Degradation**: Slower response times or reduced throughput
+3. **Connectivity Issues**: Problems accessing services
+4. **Authentication Problems**: Sign-in or permission issues
+5. **Feature Disruptions**: Specific features not working properly
+6. **Planned Maintenance**: Scheduled updates that might cause brief interruptions
+7. **Regional Issues**: Problems affecting specific Azure regions
+8. **Deployment Failures**: Issues with deploying or updating resources
+
+**Smart Filtering Logic:**
+The system only alerts you about events that meet ALL these criteria:
+- ✅ **Severity**: Critical or Warning level (ignores minor informational messages)
+- ✅ **Geography**: Affects regions where you actually have resources deployed
+- ✅ **Services**: Impacts service types you're actually using
+- ✅ **Timeline**: Current or recent events (not historical issues)
+
+**Example Filtering in Action:**
+- ❌ **Filtered OUT**: "SQL Database issues in Japan East" (you have no resources in Japan)
+- ❌ **Filtered OUT**: "IoT Hub connectivity problems" (you don't use IoT Hub)
+- ✅ **Alert Sent**: "Web Apps slow response times in East US" (you have 3 App Services there)
+
+### What You'll See in Reports 📊
+
+**Resource Inventory Summary:**
+```json
+{
+  "TotalResources": 42,
+  "ResourceTypes": {
+    "Microsoft.Web/sites": 8,           // App Services
+    "Microsoft.Sql/servers": 3,         // SQL Databases  
+    "Microsoft.Storage/storageAccounts": 5,
+    "Microsoft.Compute/virtualMachines": 2,
+    "Microsoft.KeyVault/vaults": 1,
+    // ... etc
+  },
+  "RegionDistribution": {
+    "eastus": 25,
+    "westus2": 12,
+    "canadacentral": 5
+  }
+}
+```
+
+**Health Event Details:**
+```json
+{
+  "HealthEvents": [
+    {
+      "EventId": "ABC123",
+      "Level": "Warning",
+      "Title": "Intermittent connectivity issues affecting App Service",
+      "Description": "Some customers may experience connection timeouts...",
+      "ImpactedServices": ["App Service", "Function Apps"],
+      "ImpactedRegions": ["East US", "East US 2"],
+      "StartTime": "2025-06-10T14:30:00Z",
+      "LastUpdate": "2025-06-10T16:45:00Z",
+      "Status": "Active"
+    }
+  ]
+}
+```
+
+### Monitoring Frequency ⏰
+
+**Daily Inventory Scan:**
+- Runs every day at 8:00 AM UTC
+- Takes ~30 seconds to complete
+- Scans your entire subscription
+- Identifies all resource types and their locations
+
+**Real-time Health Monitoring:**
+- Checks Azure Service Health status during each run
+- Looks for events from the past 24 hours
+- Filters events based on your actual resource footprint
+- Generates alerts only for relevant issues
+
+**Historical Tracking:**
+- Maintains 30+ days of resource inventory history
+- Tracks changes in your resource usage over time
+- Preserves health event records for trend analysis
+- Stores all data in your Azure Storage account
+
+### Email Notification Content 📧
+
+When health issues are detected, you'll receive detailed email notifications containing:
+
+**Subject Line Format:**
+```
+🚨 Azure Health Alert: [Severity] issues detected affecting your resources
+```
+
+**Email Body Includes:**
+- **Executive Summary**: Quick overview of what's happening
+- **Affected Resources**: List of your specific resources that might be impacted
+- **Issue Details**: Description of the problem and expected impact
+- **Geographic Scope**: Which regions are affected
+- **Recommendation**: Suggested actions or monitoring steps
+- **Timestamp**: When the issue was detected and last updated
+
+**Example Email Alert:**
+```
+🚨 Azure Health Alert: Warning issues detected affecting your resources
+
+Summary:
+- 1 Warning-level issue found
+- Potentially affecting 3 of your App Services in East US
+- Issue detected: 2025-06-10 at 2:30 PM UTC
+
+Issue Details:
+Title: Intermittent connectivity issues affecting App Service
+Severity: Warning
+Affected Services: App Service, Function Apps
+Affected Regions: East US, East US 2
+
+Your Potentially Impacted Resources:
+- my-web-app-prod (App Service, East US)
+- my-api-service (App Service, East US)  
+- my-function-app (Function App, East US)
+
+Recommended Actions:
+1. Monitor your applications for connectivity issues
+2. Check Application Insights for error rate increases
+3. Consider temporary traffic routing to other regions if needed
+
+This alert was generated by your Azure Health Monitor function.
+Full details saved to your storage account for review.
+```
+
 ## What You'll Get 📦
 
 ### 🏗️ Infrastructure (Automatically Created)
