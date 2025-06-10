@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: azure-health-monitor
+metadata:
+  template: azure-health-monitor@0.0.1-beta
+
+# Note: Azure Developer CLI does not natively support PowerShell functions
+# This configuration is provided for reference, but deployment will fall back to manual process
+
+workflows:
+  up:
+    steps:
+      - azd: provision
+      - azd: package
+      - azd: deploy
+
+services:
+  health-monitor:
+    project: ./src
+    host: function
+    language: other
+    dist: ./src
+
+infra:
+  provider: bicep
+  path: infra
+
+environments:
+  production:
+    dotenv: .env
