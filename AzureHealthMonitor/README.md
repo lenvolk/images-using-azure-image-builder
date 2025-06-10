@@ -301,6 +301,7 @@ Get-AzContext
 Get-AzSubscription
 ```
 
+
 ### When to Get Additional Help
 1. The deployment completes but shows consistent runtime errors after 24 hours
 2. You need to customize the monitoring for specific business requirements
