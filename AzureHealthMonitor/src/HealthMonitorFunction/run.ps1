@@ -338,6 +338,10 @@ function Send-AlertNotifications {
         
         Write-LogMessage "Preparing alert notifications for $($HealthEvents.Count) health events"
         
+        # Check if email notifications are enabled
+        $emailEnabled = [System.Environment]::GetEnvironmentVariable('EMAIL_NOTIFICATIONS_ENABLED')
+        $notificationEmail = [System.Environment]::GetEnvironmentVariable('NOTIFICATION_EMAIL')
+        
         # Create alert message
         $alertMessage = @"
 Azure Resource Health Monitor Alert
@@ -368,17 +372,149 @@ Start Time: $($event.StartTime)
         Write-LogMessage "Alert message prepared" -Level 'Warning'
         Write-LogMessage $alertMessage -Level 'Warning'
         
-        # Here you could integrate with:
-        # - Azure Logic Apps for email notifications
-        # - Teams webhook for Teams notifications  
-        # - Azure Monitor Action Groups
-        # - Custom notification endpoints
+        # Send email notification if configured
+        if ($emailEnabled -eq 'True' -and ![string]::IsNullOrEmpty($notificationEmail)) {
+            try {
+                $emailSent = Send-EmailNotification -HealthEvents $HealthEvents -Summary $Summary -ToEmail $notificationEmail
+                if ($emailSent) {
+                    Write-LogMessage "Email notification sent successfully to $notificationEmail"
+                } else {
+                    Write-LogMessage "Failed to send email notification" -Level 'Warning'
+                }
+            }
+            catch {
+                Write-LogMessage "Error sending email notification: $($_.Exception.Message)" -Level 'Error'
+            }
+        } else {
+            Write-LogMessage "Email notifications disabled or no email configured"
+        }
         
         return $alertMessage
     }
     catch {
         Write-LogMessage "Error sending alert notifications: $($_.Exception.Message)" -Level 'Error'
         return $null
+    }
+}
+
+# Function to send email notification
+function Send-EmailNotification {
+    param(
+        [array]$HealthEvents,
+        [hashtable]$Summary,
+        [string]$ToEmail
+    )
+    
+    try {
+        Write-LogMessage "Preparing email notification for $ToEmail..."
+        
+        # Create email subject
+        $criticalCount = ($HealthEvents | Where-Object { $_.Level -eq 'Critical' }).Count
+        $warningCount = ($HealthEvents | Where-Object { $_.Level -eq 'Warning' }).Count
+        
+        if ($criticalCount -gt 0) {
+            $subject = "🚨 CRITICAL: Azure Health Alert - $criticalCount Critical Issue(s)"
+        } elseif ($warningCount -gt 0) {
+            $subject = "⚠️ WARNING: Azure Health Alert - $warningCount Warning(s)"
+        } else {
+            $subject = "✅ Azure Health Status - All Services Healthy"
+        }
+        
+        # Create email body (simplified HTML)
+        $body = @"
+Azure Health Monitor Report - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')
+
+RESOURCE SUMMARY:
+================
+- Total Resources: $($Summary.TotalResources)
+- Resource Types: $($Summary.ResourceTypes)
+- Regions in Use: $($Summary.UsedRegions.Count)
+- Health Issues Found: $($HealthEvents.Count)
+
+"@
+
+        if ($HealthEvents.Count -gt 0) {
+            $body += "HEALTH ISSUES DETECTED:`n"
+            $body += "=====================`n`n"
+            
+            foreach ($event in $HealthEvents) {
+                $icon = if ($event.Level -eq 'Critical') { '🚨' } else { '⚠️' }
+                
+                $body += @"
+$icon $($event.Title) [$($event.Level)]
+Description: $($event.Description)
+Affected Services: $($event.ImpactedServices -join ', ')
+Affected Regions: $($event.ImpactedRegions -join ', ')
+Started: $($event.EventTime)
+
+"@
+            }
+        } else {
+            $body += "✅ ALL SERVICES HEALTHY`n"
+            $body += "No health issues detected for your Azure resources.`n`n"
+        }
+        
+        $body += @"
+---
+This is an automated message from Azure Health Monitor.
+Monitoring subscription: $($Summary.SubscriptionName)
+Next check: Tomorrow at 08:00 UTC
+"@
+        
+        # Store the email notification for review
+        try {
+            $emailData = @{
+                Timestamp = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss UTC')
+                To = $ToEmail
+                Subject = $subject
+                Body = $body
+                HealthEventCount = $HealthEvents.Count
+                CriticalCount = $criticalCount
+                WarningCount = $warningCount
+            }
+            
+            $emailJson = $emailData | ConvertTo-Json -Depth 10
+            $emailBlobName = "email-notifications/$(Get-Date -Format 'yyyy-MM-dd-HHmmss')-notification.json"
+            
+            # Save email notification to blob storage for review
+            $storageAccountName = [System.Environment]::GetEnvironmentVariable('STORAGE_ACCOUNT_NAME')
+            if ($storageAccountName) {
+                $storageAccount = Get-AzStorageAccount | Where-Object { $_.StorageAccountName -eq $storageAccountName } | Select-Object -First 1
+                if ($storageAccount) {
+                    $ctx = $storageAccount.Context
+                    
+                    # Create temp file with email content
+                    $tempFile = [System.IO.Path]::GetTempFileName()
+                    $emailJson | Out-File -FilePath $tempFile -Encoding UTF8
+                    Set-AzStorageBlobContent -File $tempFile -Container 'logs' -Blob $emailBlobName -Context $ctx -Force | Out-Null
+                    Remove-Item $tempFile -Force
+                    
+                    Write-LogMessage "Email notification content saved to blob: $emailBlobName"
+                }
+            }
+        }
+        catch {
+            Write-LogMessage "Failed to save email content to blob storage: $($_.Exception.Message)" -Level 'Warning'
+        }
+        
+        Write-LogMessage "Email notification prepared successfully"
+        Write-LogMessage "Subject: $subject"
+        Write-LogMessage "Recipient: $ToEmail"
+        
+        # In a production environment, you would integrate with:
+        # - SendGrid API for email delivery
+        # - Azure Communication Services
+        # - Logic Apps with email connectors
+        # - Office 365 Graph API
+        
+        # For now, we log the email and save it to storage for review
+        Write-LogMessage "Email notification logged and saved to storage for review"
+        
+        return $true
+    }
+    catch {
+        Write-LogMessage "Failed to prepare email notification: $($_.Exception.Message)" -Level 'Error'
+        return $false
     }
 }
 

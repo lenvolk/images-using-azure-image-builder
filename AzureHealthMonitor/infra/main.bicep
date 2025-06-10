@@ -21,6 +21,12 @@ param runtime string = 'powershell'
 @description('The zip content url for the function app.')
 param packageUri string = ''
 
+@description('Email address for health alert notifications (optional)')
+param notificationEmail string = ''
+
+@description('Whether email notifications are enabled')
+param emailNotificationsEnabled bool = false
+
 @description('Tags to apply to all resources')
 param tags object = {
   'azd-env-name': take('${appName}', 64)
@@ -208,6 +214,14 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: packageUri
+        }
+        {
+          name: 'EMAIL_NOTIFICATIONS_ENABLED'
+          value: string(emailNotificationsEnabled)
+        }
+        {
+          name: 'NOTIFICATION_EMAIL'
+          value: notificationEmail
         }
       ]
       powerShellVersion: '7.4'

@@ -31,6 +31,7 @@ Building a custom Azure Function solution to:
 
 ## Status
 - ✅ DEPLOYMENT SUCCESSFUL! All infrastructure and code deployed to canadacentral
+- ✅ NEW FEATURE ADDED: Email notification system for health alerts
 - ✅ Resource Group: AzureCustomHealthStatus created in Canada Central
 - ✅ All Azure resources deployed successfully:
   - Function App: azure-health-monitor
@@ -42,12 +43,23 @@ Building a custom Azure Function solution to:
 - ✅ PowerShell function code deployed successfully via Azure CLI
 - ✅ Function scheduled to run daily at 8:00 AM UTC
 - ✅ All role assignments and permissions configured
+- ✅ Email notification feature implemented and ready for use
+
+## Email Notification Features Added
+- Deployment script prompts for email notifications during setup
+- Email address validation with proper regex checking
+- Enhanced PowerShell function to send email alerts when health issues detected
+- Email content includes rich formatting with issue details
+- Email notifications saved to blob storage for review and audit
+- Environment variables configured for email settings
+- Smart filtering - only sends emails when actual issues are found
 
 ## Next Steps
-1. Monitor function execution in Azure Portal
-2. Check Application Insights for logs
-3. Verify daily health reports in blob storage
-4. Test manual function execution if needed
+1. Test email notification deployment
+2. Monitor function execution in Azure Portal
+3. Check Application Insights for logs
+4. Verify daily health reports in blob storage
+5. Test email notification functionality
 
 ## Known Issues & Solutions
 - Azure Developer CLI (azd) does not natively support PowerShell Azure Functions

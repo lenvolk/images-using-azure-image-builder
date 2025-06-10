@@ -46,6 +46,32 @@ catch {
     Write-Host "Install from: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli" -ForegroundColor Yellow
 }
 
+# Email notification configuration
+Write-Host "Email Notification Configuration:" -ForegroundColor Cyan
+$enableEmail = Read-Host "Would you like to receive email notifications for health alerts? (y/N)"
+$notificationEmail = ""
+
+if ($enableEmail -match '^[Yy]') {
+    do {
+        $notificationEmail = Read-Host "Please enter your email address for notifications"
+        
+        # Validate email format
+        $emailRegex = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if ($notificationEmail -match $emailRegex) {
+            Write-Host "✓ Email address validated: $notificationEmail" -ForegroundColor Green
+            break
+        } else {
+            Write-Host "✗ Invalid email format. Please try again." -ForegroundColor Red
+        }
+    } while ($true)
+    
+    Write-Host "✓ Email notifications will be configured" -ForegroundColor Green
+} else {
+    Write-Host "✓ Email notifications disabled" -ForegroundColor Green
+}
+
+Write-Host ""
+
 # Display deployment information
 Write-Host ""
 Write-Host "Deployment Configuration:" -ForegroundColor Cyan
@@ -53,6 +79,7 @@ Write-Host "  Resource Group: $ResourceGroupName" -ForegroundColor White
 Write-Host "  Location: $Location" -ForegroundColor White
 Write-Host "  Subscription: $((Get-AzContext).Subscription.Name)" -ForegroundColor White
 Write-Host "  Method: $(if ($TryAzd) { 'Azure Developer CLI (with fallback)' } else { 'Manual deployment' })" -ForegroundColor White
+Write-Host "  Email Notifications: $(if ($notificationEmail) { "Enabled ($notificationEmail)" } else { 'Disabled' })" -ForegroundColor White
 Write-Host ""
 
 # Note about PowerShell functions and azd
@@ -124,16 +151,29 @@ try {
         } else {
             Write-Host "✓ Resource group exists: $ResourceGroupName" -ForegroundColor Green
         }
-        
-        # Deploy infrastructure
+          # Deploy infrastructure
         Write-Host "Deploying infrastructure with Bicep..." -ForegroundColor Yellow
         
-        $deployment = New-AzResourceGroupDeployment `
-            -ResourceGroupName $ResourceGroupName `
-            -TemplateFile "infra/main.bicep" `
-            -TemplateParameterFile "infra/main.parameters.json" `
-            -location $Location `
-            -Verbose
+        # Prepare deployment parameters
+        $deploymentParams = @{
+            ResourceGroupName = $ResourceGroupName
+            TemplateFile = "infra/main.bicep"
+            TemplateParameterFile = "infra/main.parameters.json"
+            location = $Location
+            Verbose = $true
+        }
+        
+        # Add email notification parameters if email is configured
+        if (![string]::IsNullOrEmpty($notificationEmail)) {
+            $deploymentParams.Add('notificationEmail', $notificationEmail)
+            $deploymentParams.Add('emailNotificationsEnabled', $true)
+            Write-Host "✓ Email notifications will be configured for: $notificationEmail" -ForegroundColor Green
+        } else {
+            $deploymentParams.Add('emailNotificationsEnabled', $false)
+            Write-Host "✓ Email notifications disabled" -ForegroundColor Green
+        }
+        
+        $deployment = New-AzResourceGroupDeployment @deploymentParams
         
         if ($deployment.ProvisioningState -eq "Succeeded") {
             Write-Host "✓ Infrastructure deployed successfully" -ForegroundColor Green

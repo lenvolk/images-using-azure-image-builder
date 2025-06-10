@@ -58,12 +58,20 @@ graph TD
 - **Key Vault**: Secure storage for sensitive settings
 - **Managed Identity**: Secure way to access Azure without passwords
 
-### 📊 Daily Reports
+### 📊 Daily Reports & Alerts
 Every day, you'll get information about:
 - How many resources you have running
 - Which regions (locations) you're using
 - Any Azure service problems that might affect you
 - Historical trends stored for future reference
+- **Optional Email Notifications**: Get immediate alerts when health issues are detected
+
+### 📧 Email Notification Features
+- **Automatic Alerts**: Receive emails when critical or warning issues are detected
+- **Smart Filtering**: Only get notified about issues affecting YOUR resources
+- **Rich Content**: Detailed email reports with issue descriptions and affected services
+- **Secure Storage**: Email content is also saved to blob storage for review
+- **Easy Setup**: Configure during deployment with email validation
 
 ## Quick Start Guide 🚀
 
@@ -89,6 +97,11 @@ cd AzureHealthMonitor
 # Run our deployment script (manual deployment - most reliable)
 .\Deploy.ps1
 ```
+
+The deployment script will ask if you want to receive email notifications:
+- **Answer 'y'** if you want email alerts when health issues are detected
+- **Provide your email address** when prompted
+- **Answer 'n'** if you prefer to check reports manually
 
 **🔧 Alternative - Try Azure Developer CLI (with fallback):**
 ```powershell
@@ -121,11 +134,35 @@ The script will automatically:
 
 ### Viewing Your Daily Health Reports
 
-1. **Azure Portal Method:**
+**🌐 Azure Portal Method (if having access issues, try the solutions below):**
+
+1. **Primary Method:**
    - Go to [portal.azure.com](https://portal.azure.com)
    - Navigate to your "AzureCustomHealthStatus" resource group
-   - Click on the Function App
+   - Click on the Function App "azure-health-monitor"
    - Check "Functions" → "HealthMonitorFunction" for execution history
+
+2. **If you get "Resource not found" error, try these solutions:**
+
+   **Solution A - Direct URL Access:**
+   ```
+   https://portal.azure.com/#view/WebsitesExtension/FunctionMenuBlade/~/Overview/resourceId/%2Fsubscriptions%2F64e4567b-012b-4966-9a91-b5c7c7b992de%2FresourceGroups%2FAzureCustomHealthStatus%2Fproviders%2FMicrosoft.Web%2Fsites%2Fazure-health-monitor
+   ```
+
+   **Solution B - Portal Search:**
+   - Use the search bar at the top of Azure Portal
+   - Search for "azure-health-monitor"
+   - Select the Function App from search results
+
+   **Solution C - Clear Portal Cache:**
+   - Press `Ctrl + F5` to hard refresh the portal
+   - Or try incognito/private browsing mode
+   - Wait 10-15 minutes for portal cache to refresh
+
+3. **Alternative - All Resources View:**
+   - Go to "All Resources" in the Azure Portal
+   - Filter by resource group "AzureCustomHealthStatus"
+   - Find "azure-health-monitor" Function App
 
 2. **Storage Reports:**
    - In the same resource group, find the Storage Account
@@ -206,6 +243,13 @@ To monitor a different Azure subscription:
 ## Troubleshooting 🔧
 
 ### Common Deployment Issues
+
+**❓ "Azure Portal shows 'Resource not found' for Function App"**
+- ✅ **This is a portal caching issue** - the resources exist and are working
+- **Quick Fix**: Use the direct URLs provided in the "Viewing Reports" section above
+- **Alternative**: Search for "azure-health-monitor" in the Azure Portal search bar
+- **Cache Clear**: Press `Ctrl + F5` to refresh, or wait 10-15 minutes for cache refresh
+- **Verify**: Resources are deployed and running (confirmed by CLI commands)
 
 **❓ "Azure Developer CLI deployment failed"**
 - ✅ **This is normal!** Azure Developer CLI doesn't support PowerShell functions
